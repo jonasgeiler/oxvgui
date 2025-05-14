@@ -37,15 +37,15 @@
     "xo": "^0.52.4"
   },
   "scripts": {
-    "build": "gulp clean-build",
-    "start": "npm run dev",
-    "preview": "sirv build --port 8080 --dev --no-clear",
     "dev": "gulp dev",
-    "lint": "npm run lint:js && npm run lint:css",
-    "lint:css": "stylelint src/css/ --rd --risd",
-    "lint:js": "xo",
+    "start": "pnpm run dev",
+    "build": "gulp clean-build",
+    "preview": "sirv build --port 8080 --dev --no-clear",
+    "check": "pnpm run '/^check:.*/'",
+    "check:xo": "xo",
+    "check:stylelint": "stylelint src/css/ --rd --risd",
     "fix": "xo --fix",
-    "test": "npm run lint && npm run build"
+    "test": "pnpm run lint && pnpm run build"
   },
   "prettier": {
     "bracketSpacing": true,
