@@ -1,6 +1,6 @@
-const fs = require('fs/promises');
-const path = require('path');
-const process = require('process');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const process = require('node:process');
 const sirv = require('sirv-cli');
 const { version: SVGO_VERSION } = require('svgo/package.json');
 const sass = require('sass');
@@ -15,7 +15,7 @@ const rollup = require('rollup');
 const { nodeResolve: rollupResolve } = require('@rollup/plugin-node-resolve');
 const rollupCommon = require('@rollup/plugin-commonjs');
 const rollupReplace = require('@rollup/plugin-replace');
-const { terser: rollupTerser } = require('rollup-plugin-terser');
+const rollupTerser = require('@rollup/plugin-terser');
 
 const IS_DEV_TASK =
   process.argv.includes('dev') || process.argv.includes('--dev');
@@ -161,6 +161,7 @@ async function js(entry, outputPath) {
   await bundle.write({
     sourcemap: true,
     format: 'iife',
+    generatedCode: 'es2015',
     file: `build/${outputPath}/${name}.js`,
   });
 }
