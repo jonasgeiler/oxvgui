@@ -2,7 +2,6 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const process = require('node:process');
 const sirv = require('sirv-cli');
-const { version: SVGO_VERSION } = require('svgo/package.json');
 const sass = require('sass');
 const CleanCSS = require('clean-css');
 const vinylMap = require('vinyl-map');
@@ -108,7 +107,7 @@ async function html() {
         plugins: config.plugins,
         headCSS,
         SVGOMG_VERSION: pkg.version,
-        SVGO_VERSION,
+        SVGO_VERSION: pkg.devDependencies.svgo,
         liveBaseUrl: pkg.homepage,
         title: `SVGOMG - SVGO's Missing GUI`,
         description: pkg.description,
