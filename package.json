@@ -71,7 +71,6 @@
       "spaced-comment": "off",
       "unicorn/explicit-length-check": "off",
       "unicorn/no-unused-properties": "error",
-      "unicorn/prefer-add-event-listener": "off",
       "unicorn/prefer-module": "off",
       "unicorn/prevent-abbreviations": "off"
     }
