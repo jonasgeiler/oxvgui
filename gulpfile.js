@@ -1,7 +1,6 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const process = require('node:process');
-const sirv = require('sirv-cli');
 const sass = require('sass');
 const CleanCSS = require('clean-css');
 const vinylMap = require('vinyl-map');
@@ -15,6 +14,7 @@ const { nodeResolve: rollupResolve } = require('@rollup/plugin-node-resolve');
 const rollupCommon = require('@rollup/plugin-commonjs');
 const rollupReplace = require('@rollup/plugin-replace');
 const rollupTerser = require('@rollup/plugin-terser');
+const liveServer = require("live-server");
 const pkg = require('./package.json');
 
 const IS_DEV_TASK =
@@ -186,12 +186,13 @@ function watch() {
 }
 
 function serve() {
-  sirv('build', {
+  liveServer.start({
+    root: 'build',
     host: 'localhost',
-    port: 8080,
-    dev: true,
-    clear: false,
-  });
+    logLevel: 0,
+    open: false,
+    wait: 3000,
+  })
 }
 
 exports.clean = clean;
