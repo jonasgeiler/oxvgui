@@ -81,6 +81,7 @@ function copy() {
       'src/{.well-known,imgs,fonts}/**',
       'test-svgs/car-lite.svg', // Copy the demo SVG to the root
       'src/*.json',
+      'node_modules/@oxvg/wasm/dist/oxvg_wasm_bg.wasm',
       '!src/imgs/maskable.svg',
     ], {
       encoding: false, // Prevent image and font files from being re-encoded

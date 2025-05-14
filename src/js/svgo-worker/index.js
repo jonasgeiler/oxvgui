@@ -1,4 +1,4 @@
-import { optimize } from 'svgo/dist/svgo.browser.js';
+import init, { optimise } from '@oxvg/wasm';
 
 const createDimensionsExtractor = () => {
   const dimensions = {};
@@ -60,7 +60,7 @@ function compress(svgInput, settings) {
 
   // multipass optimization
   const [dimensions, extractDimensionsPlugin] = createDimensionsExtractor();
-  const { data, error } = optimize(svgInput, {
+  const data = optimise(svgInput, {
     multipass: settings.multipass,
     plugins: [...plugins, extractDimensionsPlugin],
     js2svg: {
@@ -69,7 +69,12 @@ function compress(svgInput, settings) {
     },
   });
 
-  if (error) throw new Error(error);
+  if (!dimensions.width || !dimensions.height) {
+    // TODO: Extract dimensions
+    dimensions.width = 100;
+    dimensions.height = 100;
+    //throw new Error('No dimensions found');
+  }
 
   return { data, dimensions };
 }
@@ -77,11 +82,16 @@ function compress(svgInput, settings) {
 const actions = {
   wrapOriginal({ data }) {
     const [dimensions, extractDimensionsPlugin] = createDimensionsExtractor();
-    const { error } = optimize(data, {
+    optimise(data, {
       plugins: [extractDimensionsPlugin],
     });
 
-    if (error) throw new Error(error);
+    if (!dimensions.width || !dimensions.height) {
+      // TODO: Extract dimensions
+      dimensions.width = 100;
+      dimensions.height = 100;
+      //throw new Error('No dimensions found');
+    }
 
     return dimensions;
   },
@@ -91,15 +101,18 @@ const actions = {
 };
 
 self.addEventListener('message', (event) => {
-  try {
-    self.postMessage({
-      id: event.data.id,
-      result: actions[event.data.action](event.data),
-    });
-  } catch (error) {
-    self.postMessage({
-      id: event.data.id,
-      error: error.message,
-    });
-  }
+  // TODO: Maybe download in main thread and then pass module to worker
+  init('/oxvg_wasm_bg.wasm').then(() => {
+    try {
+      self.postMessage({
+        id: event.data.id,
+        result: actions[event.data.action](event.data),
+      });
+    } catch (error) {
+      self.postMessage({
+        id: event.data.id,
+        error: error.message,
+      });
+    }
+  });
 });
