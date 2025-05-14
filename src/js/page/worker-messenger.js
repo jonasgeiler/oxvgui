@@ -45,7 +45,7 @@ export default class WorkerMessenger {
 
   _startWorker() {
     this._worker = new Worker(this._url);
-    this._worker.onmessage = (event) => this._onMessage(event);
+    this._worker.addEventListener('message', (event) => this._onMessage(event));
   }
 
   _onMessage(event) {

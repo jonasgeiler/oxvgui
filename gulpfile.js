@@ -1,8 +1,6 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const process = require('node:process');
-const sirv = require('sirv-cli');
-const { version: SVGO_VERSION } = require('svgo/package.json');
 const sass = require('sass');
 const CleanCSS = require('clean-css');
 const vinylMap = require('vinyl-map');
@@ -16,6 +14,8 @@ const { nodeResolve: rollupResolve } = require('@rollup/plugin-node-resolve');
 const rollupCommon = require('@rollup/plugin-commonjs');
 const rollupReplace = require('@rollup/plugin-replace');
 const rollupTerser = require('@rollup/plugin-terser');
+const liveServer = require("live-server");
+const pkg = require('./package.json');
 
 const IS_DEV_TASK =
   process.argv.includes('dev') || process.argv.includes('--dev');
@@ -24,7 +24,7 @@ const buildConfig = {
   cleancss: {
     level: {
       1: {
-        specialComments: 0,
+        specialComments: '0',
       },
       2: {
         all: false,
@@ -78,13 +78,13 @@ const minifyCss = vinylMap((buffer) => {
 function copy() {
   return gulp
     .src([
-      'src/{.well-known,imgs,test-svgs,fonts}/**',
-      // Exclude the test-svgs files except for `car-lite.svg`
-      // which is used in the demo
-      '!src/test-svgs/!(car-lite.svg)',
-      '!src/imgs/maskable.svg',
+      'src/{.well-known,imgs,fonts}/**',
+      'test-svgs/car-lite.svg', // Copy the demo SVG to the root
       'src/*.json',
-    ])
+      '!src/imgs/maskable.svg',
+    ], {
+      encoding: false, // Prevent image and font files from being re-encoded
+    })
     .pipe(gulp.dest('build'));
 }
 
@@ -97,9 +97,8 @@ function css() {
 }
 
 async function html() {
-  const [config, changelog, headCSS] = await Promise.all([
+  const [config, headCSS] = await Promise.all([
     readJSON(path.join(__dirname, 'src', 'config.json')),
-    readJSON(path.join(__dirname, 'src', 'changelog.json')),
     fs.readFile(path.join(__dirname, 'build', 'head.css'), 'utf8'),
   ]);
 
@@ -109,11 +108,11 @@ async function html() {
       gulpNunjucks.compile({
         plugins: config.plugins,
         headCSS,
-        SVGOMG_VERSION: changelog[0].version,
-        SVGO_VERSION,
-        liveBaseUrl: 'https://jakearchibald.github.io/svgomg/',
+        SVGOMG_VERSION: pkg.version,
+        SVGO_VERSION: pkg.devDependencies.svgo,
+        liveBaseUrl: pkg.homepage,
         title: `SVGOMG - SVGO's Missing GUI`,
-        description: 'Easy & visual compression of SVG images.',
+        description: pkg.description,
         iconPath: 'imgs/icon.png',
       }),
     )
@@ -125,16 +124,13 @@ const rollupCaches = new Map();
 
 async function js(entry, outputPath) {
   const name = path.basename(path.dirname(entry));
-  const changelog = await readJSON(
-    path.join(__dirname, 'src', 'changelog.json'),
-  );
   const bundle = await rollup.rollup({
     cache: rollupCaches.get(entry),
     input: `src/${entry}`,
     plugins: [
       rollupReplace({
         preventAssignment: true,
-        SVGOMG_VERSION: JSON.stringify(changelog[0].version),
+        SVGOMG_VERSION: JSON.stringify(pkg.version),
       }),
       rollupResolve({ browser: true }),
       rollupCommon({ include: /node_modules/ }),
@@ -190,12 +186,14 @@ function watch() {
 }
 
 function serve() {
-  sirv('build', {
+  liveServer.start({
+    root: 'build',
     host: 'localhost',
-    port: 8080,
-    dev: true,
-    clear: false,
+    logLevel: 0,
+    open: false,
+    wait: 3000,
   });
+  console.log('\x1b[32m---\nServing at http://localhost:8080\n---\x1b[0m');
 }
 
 exports.clean = clean;

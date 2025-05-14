@@ -11,7 +11,7 @@ export default class ResultsContainer {
       );
       this._query = matchMedia('(min-width: 640px)');
 
-      this._query.addListener(() => this._positionResults());
+      this._query.addEventListener('change', () => this._positionResults());
       this._positionResults();
     });
   }

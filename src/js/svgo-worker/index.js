@@ -46,7 +46,6 @@ function compress(svgInput, settings) {
       params: {},
     };
 
-    // TODO: revisit this
     // 0 almost always breaks images when used on `cleanupNumericValues`.
     // Better to allow 0 for everything else, but switch to 1 for this plugin.
     plugin.params.floatPrecision =
@@ -91,7 +90,7 @@ const actions = {
   },
 };
 
-self.onmessage = (event) => {
+self.addEventListener('message', (event) => {
   try {
     self.postMessage({
       id: event.data.id,
@@ -103,4 +102,4 @@ self.onmessage = (event) => {
       error: error.message,
     });
   }
-};
+});

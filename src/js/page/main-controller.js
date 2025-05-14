@@ -34,7 +34,7 @@ export default class MainController {
     const bgFillUi = new BgFillButton();
     const dropUi = new FileDrop();
     const preloaderUi = new Preloader();
-    const changelogUi = new Changelog(self.version);
+    const changelogUi = new Changelog(self.svgomgVersion);
     // _resultsContainerUi is unused
     this._resultsContainerUi = new ResultsContainer(this._resultsUi);
     const viewTogglerUi = new ViewToggler();
@@ -78,7 +78,7 @@ export default class MainController {
     // tell the user about the latest update
     storage.get('last-seen-version').then((lastSeenVersion) => {
       if (lastSeenVersion) changelogUi.showLogFrom(lastSeenVersion);
-      storage.set('last-seen-version', self.version);
+      storage.set('last-seen-version', self.svgomgVersion);
     });
 
     domReady.then(() => {
@@ -122,10 +122,10 @@ export default class MainController {
       // eslint-disable-next-line no-constant-condition
       if (false) {
         (async () => {
-          const data = await fetch('test-svgs/car-lite.svg').then((response) =>
-            response.text(),
-          );
-          this._onInputChange({ data, filename: 'car-lite.svg' });
+          const filename = 'car-lite.svg';
+          const data = await fetch(filename)
+            .then((response) => response.text());
+          this._onInputChange({ data, filename });
         })();
       }
     });

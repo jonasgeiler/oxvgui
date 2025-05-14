@@ -125,13 +125,10 @@ export default class MainMenu {
     this._spinner.show();
 
     try {
-      const data = await fetch('test-svgs/car-lite.svg').then((response) =>
-        response.text(),
-      );
-      this.emitter.emit('svgDataLoad', {
-        data,
-        filename: 'car-lite.svg',
-      });
+      const filename = 'car-lite.svg';
+      const data = await fetch(filename)
+        .then((response) => response.text());
+      this.emitter.emit('svgDataLoad', { data, filename });
     } catch {
       this.stopSpinner();
 
