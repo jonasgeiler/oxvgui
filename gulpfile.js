@@ -79,7 +79,7 @@ function copy() {
   return gulp
     .src([
       'src/{.well-known,imgs,fonts}/**',
-      'src/test-svgs/car-lite.svg', // Copy the demo SVG to the root
+      'test-svgs/car-lite.svg', // Copy the demo SVG to the root
       'src/*.json',
       '!src/imgs/maskable.svg',
     ])
