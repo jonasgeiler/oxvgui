@@ -21,7 +21,7 @@
     "@rollup/plugin-terser": "0.4.4",
     "@size-limit/file": "11.2.0",
     "clean-css": "5.3.3",
-    "gulp": "4.0.2",
+    "gulp": "5.0.0",
     "gulp-htmlmin": "5.0.1",
     "gulp-if": "3.0.0",
     "gulp-nunjucks": "5.1.0",
