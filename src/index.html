@@ -47,8 +47,21 @@
           <div class="app-title">
             {% include "_partials/icons/logo.svg" %}
             <div class="title-text">
-              <h1>SVGOMG</h1>
-              <p>Powered by <a href="https://github.com/svg/svgo">SVGO v{{ SVGO_VERSION }}</a></p>
+              <div>
+                <h1>SVGOMG</h1>
+                <small title="Version {{SVGOMG_VERSION}}">
+                  &nbsp;v{{SVGOMG_VERSION}}
+                </small>
+              </div>
+              <p>
+                Powered by
+                <a href="https://svgo.dev" target="_blank">
+                  SVGO
+                  <small title="Version {{SVGO_VERSION}}">
+                    v{{SVGO_VERSION}}
+                  </small>
+                </a>
+              </p>
             </div>
           </div>
           <ul>
