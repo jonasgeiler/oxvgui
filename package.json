@@ -43,7 +43,7 @@
     "preview": "sirv build --port 8080 --dev --no-clear",
     "check": "pnpm run '/^check:.*/'",
     "check:xo": "xo",
-    "check:stylelint": "stylelint src/css/ --rd --risd",
+    "check:stylelint": "stylelint src/css/",
     "fix": "xo --fix",
     "test": "pnpm run lint && pnpm run build"
   },
