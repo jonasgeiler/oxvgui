@@ -30,7 +30,7 @@
       // Delay analytics until after the page has loaded, to avoid extending
       // the browser spinner, and allow higher priority stuff through.
       addEventListener('load', function() {
-        var script = document.createElement('script');
+        const script = document.createElement('script');
         script.src = 'https://www.google-analytics.com/analytics.js';
         document.head.appendChild(script);
       });

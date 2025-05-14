@@ -23,12 +23,33 @@ importers:
       '@size-limit/file':
         specifier: 11.2.0
         version: 11.2.0(size-limit@11.2.0)
+      '@types/clean-css':
+        specifier: 4.2.11
+        version: 4.2.11
+      '@types/gulp':
+        specifier: 4.0.17
+        version: 4.0.17
+      '@types/gulp-htmlmin':
+        specifier: 1.3.36
+        version: 1.3.36
+      '@types/gulp-if':
+        specifier: 3.0.4
+        version: 3.0.4
+      '@types/gulp-sass':
+        specifier: 5.0.4
+        version: 5.0.4
       '@types/live-server':
         specifier: 1.2.3
         version: 1.2.3
       '@types/node':
         specifier: 22.15.18
         version: 22.15.18
+      '@types/pako':
+        specifier: 2.0.3
+        version: 2.0.3
+      '@types/prismjs':
+        specifier: 1.26.5
+        version: 1.26.5
       clean-css:
         specifier: 5.3.3
         version: 5.3.3
@@ -322,11 +343,38 @@ packages:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
 
+  '@types/clean-css@4.2.11':
+    resolution: {integrity: sha512-Y8n81lQVTAfP2TOdtJJEsCoYl1AnOkqDqMvXb9/7pfgZZ7r8YrEyurrAvAoAjHOGXKRybay+5CsExqIH6liccw==}
+
   '@types/eslint@7.29.0':
     resolution: {integrity: sha512-VNcvioYDH8/FxaeTKkM4/TiTwt6pBV9E3OfGmvaw8tPl0rrHCJ4Ll15HRT+pMiFAf/MLQvAzC+6RzUMEL9Ceng==}
 
   '@types/estree@1.0.5':
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
+
+  '@types/expect@1.20.4':
+    resolution: {integrity: sha512-Q5Vn3yjTDyCMV50TB6VRIbQNxSE4OmZR86VSbGaNpfUolm0iePBB4KdEEHmxoY5sT2+2DIvXW0rvMDP2nHZ4Mg==}
+
+  '@types/glob-stream@8.0.3':
+    resolution: {integrity: sha512-vctgrT9AH/GK3TRaIbRUU0TZn12GBU4kzelZdPyJp1Sc8L/6Wrq21UrtN4+x4saqTg6COUIUtFV6JSYcVln/EQ==}
+
+  '@types/gulp-htmlmin@1.3.36':
+    resolution: {integrity: sha512-8n33l0jrVAGGLkKER+xWaqgbPKRf3Er1x4ZKx2lPlHEkGstqw4+mFOYlTfafCHfRzGyWUeD11/SP0xKqpBtrEw==}
+
+  '@types/gulp-if@3.0.4':
+    resolution: {integrity: sha512-H4IMVqoiw6sRj9HQzh75+TAft7lAz1iEr9oUcLUNvlj/gMQtQRzFHnJOeWRBdc1+nD1fsMcB8LMGG0trzi/Uvg==}
+
+  '@types/gulp-match@1.1.5':
+    resolution: {integrity: sha512-FF1YFUQduj2i7kzT9j13jK3L0G+eTvRyPYrBET25n+/MfUZqvNeRkmwNweqQqBjzlHWbrPc0J0G8MXxl5hTJDg==}
+
+  '@types/gulp-sass@5.0.4':
+    resolution: {integrity: sha512-wDgpyM9fRq/k7kn1ZGcoY69Pj8+AlB50U9TKmBdbmHUduy+4b7WZ1zrDl4df43W+IqJegEgen6XAKO2+/RQILA==}
+
+  '@types/gulp@4.0.17':
+    resolution: {integrity: sha512-+pKQynu2C/HS16kgmDlAicjtFYP8kaa86eE9P0Ae7GB5W29we/E2TIdbOWtEZD5XkpY+jr8fyqfwO6SWZecLpQ==}
+
+  '@types/html-minifier@4.0.5':
+    resolution: {integrity: sha512-LfE7f7MFd+YUfZnlBz8W43P4NgSObWiqyKapANsWCj63Aqeqli8/9gVsGP4CwC8jPpTTYlTopKCk9rJSuht/ew==}
 
   '@types/json-schema@7.0.11':
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
@@ -337,8 +385,14 @@ packages:
   '@types/live-server@1.2.3':
     resolution: {integrity: sha512-s8SQNTnUgaYQemV1Nt7SILh5ChYbWVg8ONLBbcmjHcpAwpyHh7MXBIpwgwPNvx19lIbBWszQJ3k8ynNIHLtlyg==}
 
+  '@types/minimatch@5.1.2':
+    resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
+
   '@types/minimist@1.2.2':
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
+
+  '@types/node-sass@4.11.8':
+    resolution: {integrity: sha512-dWWMGPX8uselSQ1MLzDvQnVz5Qy1pe7SJuUl1Yqi2NCNRkrk5DmHlP44VZmTWm+buR2T217+5zEAPbAmTwKIOQ==}
 
   '@types/node@22.15.18':
     resolution: {integrity: sha512-v1DKRfUdyW+jJhZNEI1PYy29S2YRxMV5AOO/x/SjKmW0acCIOqmbj6Haf9eHAhsPmrhlHSxEhv/1WszcLWV4cg==}
@@ -346,11 +400,41 @@ packages:
   '@types/normalize-package-data@2.4.1':
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
 
+  '@types/pako@2.0.3':
+    resolution: {integrity: sha512-bq0hMV9opAcrmE0Byyo0fY3Ew4tgOevJmQ9grUhpXQhYfyLJ1Kqg3P33JT5fdbT2AjeAjR51zqqVjAL/HMkx7Q==}
+
   '@types/parse-json@4.0.0':
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
 
+  '@types/picomatch@4.0.0':
+    resolution: {integrity: sha512-J1Bng+wlyEERWSgJQU1Pi0HObCLVcr994xT/M+1wcl/yNRTGBupsCxthgkdYG+GCOMaQH7iSVUY3LJVBBqG7MQ==}
+
+  '@types/prismjs@1.26.5':
+    resolution: {integrity: sha512-AUZTa7hQ2KY5L7AmtSiqxlhWxb4ina0yd8hNbl4TWuqnv/pFP0nDMb3YrfSBf4hJVGLh2YEIBfKaBW/9UEl6IQ==}
+
+  '@types/relateurl@0.2.33':
+    resolution: {integrity: sha512-bTQCKsVbIdzLqZhLkF5fcJQreE4y1ro4DIyVrlDNSCJRRwHhB8Z+4zXXa8jN6eDvc2HbRsEYgbvrnGvi54EpSw==}
+
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
+
+  '@types/streamx@2.9.5':
+    resolution: {integrity: sha512-IHYsa6jYrck8VEdSwpY141FTTf6D7boPeMq9jy4qazNrFMA4VbRz/sw5LSsfR7jwdDcx0QKWkUexZvsWBC2eIQ==}
+
+  '@types/uglify-js@3.17.5':
+    resolution: {integrity: sha512-TU+fZFBTBcXj/GpDpDaBmgWk/gn96kMZ+uocaFUlV2f8a6WdMzzI44QBCmGcCiYR0Y6ZlNRiyUyKKt5nl/lbzQ==}
+
+  '@types/undertaker-registry@1.0.4':
+    resolution: {integrity: sha512-tW77pHh2TU4uebWXWeEM5laiw8BuJ7pyJYDh6xenOs75nhny2kVgwYbegJ4BoLMYsIrXaBpKYaPdYO3/udG+hg==}
+
+  '@types/undertaker@1.2.11':
+    resolution: {integrity: sha512-j1Z0V2ByRHr8ZK7eOeGq0LGkkdthNFW0uAZGY22iRkNQNL9/vAV0yFPr1QN3FM/peY5bxs9P+1f0PYJTQVa5iA==}
+
+  '@types/vinyl-fs@3.0.6':
+    resolution: {integrity: sha512-e9GHnmABNUnJ4D99OjVO5s87TfYpmEs7/VKbVS/rt0KkZnKA2vIMyEC5K0H7W/XBiRUO4pdaZxvVUmzjRnrydA==}
+
+  '@types/vinyl@2.0.12':
+    resolution: {integrity: sha512-Sr2fYMBUVGYq8kj3UthXFAu5UN6ZW+rYr4NACjZQJvHvj+c8lYv0CahmZ2P/r7iUkN44gGUBwqxZkrKXYPb7cw==}
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
@@ -466,10 +550,6 @@ packages:
   anymatch@2.0.0:
     resolution: {integrity: sha512-5teOsQWABXHHBFP9y3skS5P3d/WfWXpv3FUpy+LorMrNYaT9pI4oLMQX7jzQ2KklNpGpWHzdCXTDT2Y3XGlZBw==}
 
-  anymatch@3.1.2:
-    resolution: {integrity: sha512-P43ePfOAIupkguHUycrc4qJ9kz8ZiuOUijaETwX7THt0Y/GNK7v0aa8rY816xWjZ7rJdA5XdMcpVFTKMq+RvWg==}
-    engines: {node: '>= 8'}
-
   anymatch@3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
     engines: {node: '>= 8'}
@@ -542,6 +622,10 @@ packages:
   astral-regex@2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
+
+  async-done@1.3.2:
+    resolution: {integrity: sha512-uYkTP8dw2og1tu1nmza1n1CMW0qb8gWWlwqMmLb7MhBVs4BXrFziT6HXUd+/RlRA/i4H9AkofYloUbs1fwMqlw==}
+    engines: {node: '>= 0.10'}
 
   async-done@2.0.0:
     resolution: {integrity: sha512-j0s3bzYq9yKIVLKGE/tWlCpa3PfFLcrDZLTSVdnnCTGagXuXBJO4SsY9Xdk/fQBirCkH4evW5xOeJXqlAQFdsw==}
@@ -3597,6 +3681,11 @@ snapshots:
 
   '@trysound/sax@0.2.0': {}
 
+  '@types/clean-css@4.2.11':
+    dependencies:
+      '@types/node': 22.15.18
+      source-map: 0.6.1
+
   '@types/eslint@7.29.0':
     dependencies:
       '@types/estree': 1.0.5
@@ -3604,13 +3693,61 @@ snapshots:
 
   '@types/estree@1.0.5': {}
 
+  '@types/expect@1.20.4': {}
+
+  '@types/glob-stream@8.0.3':
+    dependencies:
+      '@types/node': 22.15.18
+      '@types/picomatch': 4.0.0
+      '@types/streamx': 2.9.5
+
+  '@types/gulp-htmlmin@1.3.36':
+    dependencies:
+      '@types/html-minifier': 4.0.5
+      '@types/node': 22.15.18
+
+  '@types/gulp-if@3.0.4':
+    dependencies:
+      '@types/gulp-match': 1.1.5
+      '@types/minimatch': 5.1.2
+      '@types/node': 22.15.18
+
+  '@types/gulp-match@1.1.5':
+    dependencies:
+      '@types/minimatch': 5.1.2
+      '@types/vinyl': 2.0.12
+
+  '@types/gulp-sass@5.0.4':
+    dependencies:
+      '@types/node': 22.15.18
+      '@types/node-sass': 4.11.8
+
+  '@types/gulp@4.0.17':
+    dependencies:
+      '@types/node': 22.15.18
+      '@types/undertaker': 1.2.11
+      '@types/vinyl-fs': 3.0.6
+      chokidar: 3.5.3
+
+  '@types/html-minifier@4.0.5':
+    dependencies:
+      '@types/clean-css': 4.2.11
+      '@types/relateurl': 0.2.33
+      '@types/uglify-js': 3.17.5
+
   '@types/json-schema@7.0.11': {}
 
   '@types/json5@0.0.29': {}
 
   '@types/live-server@1.2.3': {}
 
+  '@types/minimatch@5.1.2': {}
+
   '@types/minimist@1.2.2': {}
+
+  '@types/node-sass@4.11.8':
+    dependencies:
+      '@types/node': 22.15.18
 
   '@types/node@22.15.18':
     dependencies:
@@ -3618,9 +3755,44 @@ snapshots:
 
   '@types/normalize-package-data@2.4.1': {}
 
+  '@types/pako@2.0.3': {}
+
   '@types/parse-json@4.0.0': {}
 
+  '@types/picomatch@4.0.0': {}
+
+  '@types/prismjs@1.26.5': {}
+
+  '@types/relateurl@0.2.33': {}
+
   '@types/resolve@1.20.2': {}
+
+  '@types/streamx@2.9.5':
+    dependencies:
+      '@types/node': 22.15.18
+
+  '@types/uglify-js@3.17.5':
+    dependencies:
+      source-map: 0.6.1
+
+  '@types/undertaker-registry@1.0.4': {}
+
+  '@types/undertaker@1.2.11':
+    dependencies:
+      '@types/node': 22.15.18
+      '@types/undertaker-registry': 1.0.4
+      async-done: 1.3.2
+
+  '@types/vinyl-fs@3.0.6':
+    dependencies:
+      '@types/glob-stream': 8.0.3
+      '@types/node': 22.15.18
+      '@types/vinyl': 2.0.12
+
+  '@types/vinyl@2.0.12':
+    dependencies:
+      '@types/expect': 1.20.4
+      '@types/node': 22.15.18
 
   '@ungap/structured-clone@1.3.0': {}
 
@@ -3766,11 +3938,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  anymatch@3.1.2:
-    dependencies:
-      normalize-path: 3.0.0
-      picomatch: 2.3.1
-
   anymatch@3.1.3:
     dependencies:
       normalize-path: 3.0.0
@@ -3824,6 +3991,13 @@ snapshots:
   assign-symbols@1.0.0: {}
 
   astral-regex@2.0.0: {}
+
+  async-done@1.3.2:
+    dependencies:
+      end-of-stream: 1.4.4
+      once: 1.4.0
+      process-nextick-args: 2.0.1
+      stream-exhaust: 1.0.2
 
   async-done@2.0.0:
     dependencies:
@@ -4020,7 +4194,7 @@ snapshots:
 
   chokidar@3.5.3:
     dependencies:
-      anymatch: 3.1.2
+      anymatch: 3.1.3
       braces: 3.0.2
       glob-parent: 5.1.2
       is-binary-path: 2.1.0

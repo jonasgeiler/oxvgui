@@ -6,7 +6,7 @@
   "reportNeedlessDisables": true,
   "overrides": [
     {
-      "files": "**/*.scss",
+      "files": ["*.scss", "**/*.scss"],
       "rules": {
         "color-named": null,
         "no-duplicate-selectors": null,

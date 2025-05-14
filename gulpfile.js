@@ -24,7 +24,7 @@ const buildConfig = {
   cleancss: {
     level: {
       1: {
-        specialComments: 0,
+        specialComments: '0',
       },
       2: {
         all: false,
@@ -192,7 +192,8 @@ function serve() {
     logLevel: 0,
     open: false,
     wait: 3000,
-  })
+  });
+  console.log('\x1b[32m---\nServing at http://localhost:8080\n---\x1b[0m');
 }
 
 exports.clean = clean;

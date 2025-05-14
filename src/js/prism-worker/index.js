@@ -6,7 +6,7 @@ self.addEventListener('message', (event) => {
   try {
     self.postMessage({
       id: event.data.id,
-      result: highlight(event.data.data, languages.markup),
+      result: highlight(event.data.data, languages.svg, 'svg'),
     });
   } catch (error) {
     self.postMessage({

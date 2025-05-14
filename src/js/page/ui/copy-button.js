@@ -25,6 +25,11 @@ export default class CopyButton extends FloatingActionButton {
   copyText() {
     if (!this._text) return false;
 
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(this._text);
+      return true;
+    }
+
     this._pre.textContent = this._text;
     document.body.append(this._pre);
     window.getSelection().removeAllRanges();
