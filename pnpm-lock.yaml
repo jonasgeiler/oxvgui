@@ -20,6 +20,9 @@ importers:
       '@rollup/plugin-terser':
         specifier: ^0.4.0
         version: 0.4.4(rollup@3.29.5)
+      '@size-limit/file':
+        specifier: ^11.2.0
+        version: 11.2.0(size-limit@11.2.0)
       clean-css:
         specifier: ^5.3.2
         version: 5.3.3
@@ -56,6 +59,9 @@ importers:
       sirv-cli:
         specifier: ^2.0.2
         version: 2.0.2
+      size-limit:
+        specifier: ^11.2.0
+        version: 11.2.0
       stylelint:
         specifier: ^14.16.1
         version: 14.16.1
@@ -297,6 +303,12 @@ packages:
   '@sindresorhus/is@3.1.2':
     resolution: {integrity: sha512-JiX9vxoKMmu8Y3Zr2RVathBL1Cdu4Nt4MuNWemt1Nc06A0RAin9c5FArkhGsyMBWfCu4zj+9b+GxtjAnE4qqLQ==}
     engines: {node: '>=10'}
+
+  '@size-limit/file@11.2.0':
+    resolution: {integrity: sha512-OZHE3putEkQ/fgzz3Tp/0hSmfVo3wyTpOJSRNm6AmcwX4Nm9YtTfbQQ/hZRwbBFR23S7x2Sd9EbqYzngKwbRoA==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    peerDependencies:
+      size-limit: 11.2.0
 
   '@trysound/sax@0.2.0':
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
@@ -618,6 +630,10 @@ packages:
 
   builtins@5.0.1:
     resolution: {integrity: sha512-qwVpFEHNfhYJIzNRBvd2C1kyo6jz3ZSMPyyuR47OPdiKWlbYnZNyDWuyR175qDnAJLiCo5fBBqPb3RiXgWlkOQ==}
+
+  bytes-iec@3.1.1:
+    resolution: {integrity: sha512-fey6+4jDK7TFtFg/klGSvNKJctyU7n2aQdnM+CO0ruLPbqqMOM8Tio0Pc+deqUeVKX1tL5DQep1zQ7+37aTAsA==}
+    engines: {node: '>= 0.8'}
 
   cache-base@1.0.1:
     resolution: {integrity: sha512-AKcdTnFSWATd5/GCPRxr2ChwIJ85CeyrEyjRHlKxQ56d4XJMGym0uAiKn0xbLOGOl3+yRpOTi484dVCEc5AUzQ==}
@@ -1283,6 +1299,14 @@ packages:
   fastq@1.13.0:
     resolution: {integrity: sha512-YpkpUnK8od0o1hmeSc7UUs/eB/vIPWJYjKck2QKIzAf71Vm1AAQ3EbuZB3g2JIy+pg+ERD0vqI79KyZiB2e2Nw==}
 
+  fdir@6.4.4:
+    resolution: {integrity: sha512-1NZP+GK4GfuAv3PqKvxQRDMjdSRZjnkq7KfhlNrCNNlZ0ygQFpebfrnfnq/W7fpUnAv9aGWmY1zKx7FYL3gwhg==}
+    peerDependencies:
+      picomatch: ^3 || ^4
+    peerDependenciesMeta:
+      picomatch:
+        optional: true
+
   file-entry-cache@6.0.1:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}
     engines: {node: ^10.12.0 || >=12.0.0}
@@ -1904,6 +1928,10 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
 
+  jiti@2.4.2:
+    resolution: {integrity: sha512-rg9zJN+G4n2nfJl5MW3BMygZX56zKPNVEYYqq7adpmMh4Jn2QNEwhvQlFy6jPVdcod7txZtKHWnyZiA3a0zP7A==}
+    hasBin: true
+
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -1985,6 +2013,10 @@ packages:
   liftoff@3.1.0:
     resolution: {integrity: sha512-DlIPlJUkCV0Ips2zf2pJP0unEoT1kwYhiiPUGF3s/jtxTCjziNLoiVVh+jqWOWeFi6mmwQ5fNxvAUyPad4Dfog==}
     engines: {node: '>= 0.8'}
+
+  lilconfig@3.1.3:
+    resolution: {integrity: sha512-/vlFKAoH5Cgt3Ie+JLhRbwOsCQePABiU3tJ1egGvyQ+33R/vcwM2Zl2QR/LzjsBeItPt3oSVXapn+m4nQDvpzw==}
+    engines: {node: '>=14'}
 
   line-column-path@3.0.0:
     resolution: {integrity: sha512-Atocnm7Wr9nuvAn97yEPQa3pcQI5eLQGBz+m6iTb+CVw+IOzYB9MrYK7jI7BfC9ISnT4Fu0eiwhAScV//rp4Hw==}
@@ -2190,6 +2222,9 @@ packages:
   nanomatch@1.2.13:
     resolution: {integrity: sha512-fpoe2T0RbHwBTBUOftAfBPaDEi06ufaUai0mE6Yn1kacc3SnTErfb/h+X94VXzI64rKFHYImXSvdwGGCmwOqCA==}
     engines: {node: '>=0.10.0'}
+
+  nanospinner@1.2.2:
+    resolution: {integrity: sha512-Zt/AmG6qRU3e+WnzGGLuMCEAO/dAu45stNbHY223tUxldaDAeE+FxSPsd9Q+j+paejmm0ZbrNVs5Sraqy3dRxA==}
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
@@ -2435,9 +2470,16 @@ packages:
   picocolors@1.0.1:
     resolution: {integrity: sha512-anP1Z8qwhkbmu7MFP5iTt+wQKXgwzf7zTyGlcdzabySa9vd0Xt392U0rVmz9poOaBj0uHJKyyo9/upk0HrEQew==}
 
+  picocolors@1.1.1:
+    resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
+
   picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
+
+  picomatch@4.0.2:
+    resolution: {integrity: sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==}
+    engines: {node: '>=12'}
 
   pify@2.3.0:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
@@ -2808,6 +2850,11 @@ packages:
     resolution: {integrity: sha512-4Qog6aE29nIjAOKe/wowFTxOdmbEZKb+3tsLljaBRzJwtqto0BChD2zzH0LhgCSXiI+V7X+Y45v14wBZQ1TK3w==}
     engines: {node: '>= 10'}
 
+  size-limit@11.2.0:
+    resolution: {integrity: sha512-2kpQq2DD/pRpx3Tal/qRW1SYwcIeQ0iq8li5CJHQgOC+FtPn2BVmuDtzUCgNnpCrbgtfEHqh+iWzxK+Tq6C+RQ==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    hasBin: true
+
   slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
@@ -3093,6 +3140,10 @@ packages:
   tinydate@1.3.0:
     resolution: {integrity: sha512-7cR8rLy2QhYHpsBDBVYnnWXm8uRTr38RoZakFSW7Bs7PzfMPNZthuMLkwqZv7MTu8lhQ91cOFYS5a7iFj2oR3w==}
     engines: {node: '>=4'}
+
+  tinyglobby@0.2.13:
+    resolution: {integrity: sha512-mEwzpUgrLySlveBwEVDMKk5B57bhLPYovRfPAXD5gA/98Opn0rCDj3GtLwFvCvH5RK9uPCExUROW5NjDwvqkxw==}
+    engines: {node: '>=12.0.0'}
 
   to-absolute-glob@2.0.2:
     resolution: {integrity: sha512-rtwLUQEwT8ZeKQbyFJyomBRYXyE16U5VKuy0ftxLMK/PZb2fkOsg5r9kHdauuVDbsNdIBoC/HCthpidamQFXYA==}
@@ -3588,6 +3639,10 @@ snapshots:
 
   '@sindresorhus/is@3.1.2': {}
 
+  '@size-limit/file@11.2.0(size-limit@11.2.0)':
+    dependencies:
+      size-limit: 11.2.0
+
   '@trysound/sax@0.2.0': {}
 
   '@types/eslint@7.29.0':
@@ -3936,6 +3991,8 @@ snapshots:
   builtins@5.0.1:
     dependencies:
       semver: 7.3.8
+
+  bytes-iec@3.1.1: {}
 
   cache-base@1.0.1:
     dependencies:
@@ -4426,7 +4483,7 @@ snapshots:
       array-find: 1.0.0
       debug: 3.2.7
       enhanced-resolve: 0.9.1
-      eslint-plugin-import: 2.26.0(eslint-import-resolver-webpack@0.13.2)(eslint@8.57.1)
+      eslint-plugin-import: 2.26.0(eslint-import-resolver-webpack@0.13.2(eslint-plugin-import@2.26.0(eslint@8.57.1))(webpack@5.94.0))(eslint@8.57.1)
       find-root: 1.1.0
       has: 1.0.3
       interpret: 1.4.0
@@ -4473,7 +4530,7 @@ snapshots:
       eslint: 8.57.1
       ignore: 5.2.0
 
-  eslint-plugin-import@2.26.0(eslint-import-resolver-webpack@0.13.2)(eslint@8.57.1):
+  eslint-plugin-import@2.26.0(eslint-import-resolver-webpack@0.13.2(eslint-plugin-import@2.26.0(eslint@8.57.1))(webpack@5.94.0))(eslint@8.57.1):
     dependencies:
       array-includes: 3.1.5
       array.prototype.flat: 1.3.0
@@ -4738,6 +4795,10 @@ snapshots:
   fastq@1.13.0:
     dependencies:
       reusify: 1.0.4
+
+  fdir@6.4.4(picomatch@4.0.2):
+    optionalDependencies:
+      picomatch: 4.0.2
 
   file-entry-cache@6.0.1:
     dependencies:
@@ -5394,6 +5455,8 @@ snapshots:
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
+  jiti@2.4.2: {}
+
   js-tokens@4.0.0: {}
 
   js-types@1.0.0: {}
@@ -5468,6 +5531,8 @@ snapshots:
       resolve: 1.22.1
     transitivePeerDependencies:
       - supports-color
+
+  lilconfig@3.1.3: {}
 
   line-column-path@3.0.0:
     dependencies:
@@ -5687,6 +5752,10 @@ snapshots:
       to-regex: 3.0.2
     transitivePeerDependencies:
       - supports-color
+
+  nanospinner@1.2.2:
+    dependencies:
+      picocolors: 1.1.1
 
   natural-compare@1.4.0: {}
 
@@ -5937,7 +6006,11 @@ snapshots:
 
   picocolors@1.0.1: {}
 
+  picocolors@1.1.1: {}
+
   picomatch@2.3.1: {}
+
+  picomatch@4.0.2: {}
 
   pify@2.3.0: {}
 
@@ -6316,6 +6389,16 @@ snapshots:
       mrmime: 1.0.1
       totalist: 3.0.0
 
+  size-limit@11.2.0:
+    dependencies:
+      bytes-iec: 3.1.1
+      chokidar: 4.0.3
+      jiti: 2.4.2
+      lilconfig: 3.1.3
+      nanospinner: 1.2.2
+      picocolors: 1.1.1
+      tinyglobby: 0.2.13
+
   slash@3.0.0: {}
 
   slash@4.0.0: {}
@@ -6659,6 +6742,11 @@ snapshots:
 
   tinydate@1.3.0: {}
 
+  tinyglobby@0.2.13:
+    dependencies:
+      fdir: 6.4.4(picomatch@4.0.2)
+      picomatch: 4.0.2
+
   to-absolute-glob@2.0.2:
     dependencies:
       is-absolute: 1.0.0
@@ -6939,7 +7027,7 @@ snapshots:
       eslint-import-resolver-webpack: 0.13.2(eslint-plugin-import@2.26.0(eslint@8.57.1))(webpack@5.94.0)
       eslint-plugin-ava: 13.2.0(eslint@8.57.1)
       eslint-plugin-eslint-comments: 3.2.0(eslint@8.57.1)
-      eslint-plugin-import: 2.26.0(eslint-import-resolver-webpack@0.13.2)(eslint@8.57.1)
+      eslint-plugin-import: 2.26.0(eslint-import-resolver-webpack@0.13.2(eslint-plugin-import@2.26.0(eslint@8.57.1))(webpack@5.94.0))(eslint@8.57.1)
       eslint-plugin-n: 15.7.0(eslint@8.57.1)
       eslint-plugin-no-use-extend-native: 0.5.0
       eslint-plugin-prettier: 4.2.1(eslint-config-prettier@8.5.0(eslint@8.57.1))(eslint@8.57.1)(prettier@2.7.1)
