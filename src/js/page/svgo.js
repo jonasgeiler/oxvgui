@@ -3,7 +3,11 @@ import SvgFile from './svg-file.js';
 
 export default class Svgo extends WorkerMessenger {
   constructor() {
-    super('js/svgo-worker.js');
+    // We start the worker immediately (`true`), because we need to preload the
+    // WASM file before we can use the worker, which happens in the background
+    // when we start it. Otherwise, the file would be loaded on the first
+    // request, which would make the first request slow.
+    super('js/svgo-worker.js', true);
     this._currentJob = Promise.resolve();
   }
 
