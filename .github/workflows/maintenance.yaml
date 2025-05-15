@@ -1,0 +1,61 @@
+name: Maintenance
+
+on:
+  schedule:
+    - cron: '0 4 * * 1'
+
+  workflow_dispatch:
+
+jobs:
+  update-oxvg-wasm-bindings:
+    name: Update oxvg-wasm-bindings
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Update oxvg-wasm-bindings version
+        id: update-version
+        # TODO: Switch to "latest" tag when it is fixed
+        run: |
+          IFS=$' \n\t'; set -ux
+
+          # Get the latest version from npm registry (usually we would use "latest", but at the time of writing it is broken, so we use "next")
+          version="$(curl -s -H 'Accept: application/json' "https://registry.npmjs.org/@oxvg/wasm/next" | jq -r '.version')"
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+
+          # Replace the version field in Cargo.toml with the latest version
+          sed -i -E "s/^\s*version\s*=\s*('|\")\s*[a-zA-Z0-9.-]+\s*('|\")/version = \"${version}\"/" Cargo.toml
+
+      - name: Draft a pull request if needed
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          draft: true
+          signoff: true
+          sign-commits: true
+          delete-branch: true
+          branch: feat/oxvg-wasm-bindings-v${{ steps.update-version.outputs.version }}
+          commit-message: 'feat: update oxvg-wasm-bindings to version `${{ steps.update-version.outputs.version }}`'
+          title: 'feat: update oxvg-wasm-bindings to version `${{ steps.update-version.outputs.version }}`'
+          body: |
+            This PR updates the version of the oxvg-wasm-bindings to `${{ steps.update-version.outputs.version }}`.
+
+            Look at the [`@oxvg/wasm` npm package source code](https://github.com/noahbald/oxvg/tree/main/packages/wasm)
+            (specifically the [`v${{ steps.update-version.outputs.version }}` tag](https://github.com/noahbald/oxvg/tree/v${{ steps.update-version.outputs.version }}/packages/wasm))
+            and check if there are any required changes to [the Rust code](https://github.com/jonasgeiler/oxvgui/tree/main/src/rust),
+            since `oxvg-wasm-bindings` is sort of a OXVGUI-customized fork of `@oxvg/wasm`.
+
+            If there are any changes required, commit them to the `feat/oxvg-wasm-bindings-v${{ steps.update-version.outputs.version }}` branch, and merge this PR once it is ready.
+          labels: enhancement
+          assignees: ${{ github.repository_owner }}

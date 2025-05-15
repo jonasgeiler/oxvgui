@@ -47,12 +47,14 @@
     "stylelint-config-twbs-bootstrap": "7.0.0",
     "svgo": "3.3.2",
     "vinyl-map": "1.0.2",
+    "wasm-pack": "0.13.1",
     "xo": "0.53.1"
   },
   "scripts": {
     "dev": "gulp dev",
     "start": "pnpm run dev",
     "build": "gulp clean-build",
+    "build:oxvg-wasm-bindings": "wasm-pack build --target web --no-pack --out-dir dist",
     "preview": "live-server --verbose --no-browser --wait=15000 build",
     "check": "pnpm run '/^check:.*/'",
     "check:xo": "xo",
