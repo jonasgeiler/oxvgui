@@ -6,7 +6,7 @@ export default class BgFillButton extends FloatingActionButton {
     const lightTitle = 'Preview on light background';
 
     super({
-      darkTitle,
+      title: darkTitle,
       iconSvg:
         // prettier-ignore
         '<svg aria-hidden="true" class="icon" viewBox="0 0 24 24">' +
