@@ -54,7 +54,6 @@
     "dev": "gulp dev",
     "start": "pnpm run dev",
     "build": "gulp clean-build",
-    "build:oxvg-wasm-bindings": "wasm-pack build --target web --no-pack --out-dir dist",
     "preview": "live-server --verbose --no-browser --wait=15000 build",
     "check": "pnpm run '/^check:.*/'",
     "check:xo": "xo",

@@ -1,11 +1,11 @@
-import init, { optimise } from '@oxvg/wasm';
+import init, { optimise } from '../../rust/dist/oxvg_wasm_bindings';
 
 // We have to specify the path to the wasm file because it tries to use
 // `document` otherwise, which is not available in a web worker.
 // We also use a relative path so the app can be hosted from a sub-route,
 // and we use "../" because the worker is loaded from the `js` directory, not
 // the root directory, where the file is.
-const initPromise = init('../oxvg_wasm_bg.wasm');
+const initPromise = init('../oxvg_wasm_bindings_bg.wasm');
 
 const createDimensionsExtractor = () => {
   const dimensions = {};

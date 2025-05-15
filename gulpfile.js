@@ -1,6 +1,8 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const process = require('node:process');
+const childProcess = require('node:child_process');
+const { styleText } = require('node:util');
 const sass = require('sass');
 const CleanCSS = require('clean-css');
 const vinylMap = require('vinyl-map');
@@ -19,6 +21,7 @@ const pkg = require('./package.json');
 
 const IS_DEV_TASK =
   process.argv.includes('dev') || process.argv.includes('--dev');
+console.log(styleText('green', '--- ' + (IS_DEV_TASK ? 'Development Mode' : 'Production Mode') + ' ---'));
 
 const buildConfig = {
   cleancss: {
@@ -81,7 +84,6 @@ function copy() {
       'src/{.well-known,imgs,fonts}/**',
       'test-svgs/car-lite.svg', // Copy the demo SVG to the root
       'src/*.json',
-      'node_modules/@oxvg/wasm/dist/oxvg_wasm_bg.wasm',
       '!src/imgs/maskable.svg',
     ], {
       encoding: false, // Prevent image and font files from being re-encoded
@@ -163,19 +165,65 @@ async function js(entry, outputPath) {
   });
 }
 
+async function rust() {
+  await new Promise((resolve, reject) => {
+    const wasmPack = childProcess.spawn('wasm-pack', [
+      'build',
+      IS_DEV_TASK ? '--dev' : '--release',
+      '--target=web',
+      '--no-pack', // Don't create package.json
+      '--out-dir=src/rust/dist',
+    ]);
+
+    wasmPack.stdout.pipe(process.stdout);
+    wasmPack.stderr.pipe(process.stderr);
+
+    wasmPack.on('error', (err) => {
+      const wrapErr = new Error(`Failed to spawn '${err.path} ${err.spawnargs.join(' ')}' (${err.code})`);
+      wrapErr.cause = err;
+      reject(wrapErr);
+    });
+
+    wasmPack.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`The wasm-pack process exited with code ${code}`));
+      } else {
+        resolve();
+      }
+    });
+  });
+
+  return gulp
+    .src(['src/rust/dist/oxvg_wasm_bindings_bg.wasm'], {
+      encoding: false, // Prevent file from being re-encoded
+    })
+    .pipe(gulp.dest('build'));
+}
+
 function clean() {
   return fs.rm('build', { force: true, recursive: true });
 }
 
-const allJs = gulp.parallel(
+const oxvgWorker = js.bind(null, 'js/svgo-worker/index.js', 'js/');
+const allJsExceptOxvgWorker = gulp.parallel(
   js.bind(null, 'js/prism-worker/index.js', 'js/'),
   js.bind(null, 'js/gzip-worker/index.js', 'js/'),
-  js.bind(null, 'js/svgo-worker/index.js', 'js/'),
   js.bind(null, 'js/sw/index.js', ''),
   js.bind(null, 'js/page/index.js', 'js/'),
 );
+const allJs = gulp.parallel(
+  oxvgWorker,
+  allJsExceptOxvgWorker,
+);
 
-const mainBuild = gulp.parallel(gulp.series(css, html), allJs, copy);
+const mainBuild = gulp.parallel(
+  gulp.series(css, html),
+  gulp.parallel(
+    gulp.series(rust, oxvgWorker),
+    allJsExceptOxvgWorker,
+  ),
+  copy,
+);
 
 function watch() {
   gulp.watch(['src/css/**/*.scss'], gulp.series(css, html));
@@ -183,6 +231,10 @@ function watch() {
   gulp.watch(
     ['src/**/*.{html,svg,woff2}', 'src/*.json'],
     gulp.parallel(html, copy, allJs),
+  );
+  gulp.watch(
+    ['src/rust/**/*.rs', 'Cargo.toml', 'Cargo.lock'],
+    gulp.series(rust, oxvgWorker),
   );
 }
 
@@ -194,13 +246,14 @@ function serve() {
     open: false,
     wait: 3000,
   });
-  console.log('\x1b[32m---\nServing at http://localhost:8080\n---\x1b[0m');
+  console.log(styleText('green', '---\nServing at http://localhost:8080\n---'));
 }
 
 exports.clean = clean;
-exports.allJs = allJs;
+exports.js = allJs;
 exports.css = css;
 exports.html = html;
+exports.rust = rust;
 exports.copy = copy;
 exports.build = mainBuild;
 
