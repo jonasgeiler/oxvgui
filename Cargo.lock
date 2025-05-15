@@ -582,6 +582,7 @@ dependencies = [
  "oxvg_optimiser",
  "serde-wasm-bindgen",
  "serde_json",
+ "tsify",
  "typed-arena",
  "wasm-bindgen",
 ]

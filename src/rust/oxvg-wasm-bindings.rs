@@ -3,13 +3,47 @@
 //! but customized for OXVGUI (returns SVG dimensions).
 extern crate console_error_panic_hook;
 use oxvg_ast::{
+  element::Element as ElementTrait,
   implementations::{roxmltree::parse, shared::Element},
   serialize::{self, Node as _, Options},
-  visitor::Info,
+  visitor::{Context, ContextFlags, Info, PrepareOutcome, Visitor}
 };
 use oxvg_optimiser::{Extends, Jobs};
-
+use tsify::Tsify;
 use wasm_bindgen::prelude::*;
+
+#[derive(Tsify, Debug, Clone, Default)]
+/// Extracts the SVG's width and height from the `width`/`height` or `viewBox` attribute on `<svg>`.
+pub struct ExtractDimensions(pub bool);
+
+impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
+  type Error = String;
+
+  fn prepare(
+    &self,
+    _document: &E,
+    _info: &Info<'arena, E>,
+    _context_flags: &mut ContextFlags,
+  ) -> Result<PrepareOutcome, Self::Error> {
+    Ok(if self.0 {
+      PrepareOutcome::none
+    } else {
+      PrepareOutcome::skip
+    })
+  }
+
+  fn element(
+    &self,
+    element: &mut E,
+    _context: &mut Context<'arena, '_, '_, E>,
+  ) -> Result<(), Self::Error> {
+    // TODO: Traverse the tree and find the root <svg> element, then extract the width and height from the attributes.
+    //       See: https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_view_box.rs
+    //       See: https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
+
+    Ok(())
+  }
+}
 
 #[wasm_bindgen]
 /// Optimise an SVG document using the provided config
