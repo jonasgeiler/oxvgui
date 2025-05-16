@@ -578,8 +578,10 @@ version = "0.0.3-1"
 dependencies = [
  "console_error_panic_hook",
  "getrandom",
+ "lazy_static",
  "oxvg_ast",
  "oxvg_optimiser",
+ "regex",
  "serde-wasm-bindgen",
  "serde_json",
  "tsify",

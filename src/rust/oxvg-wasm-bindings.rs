@@ -1,12 +1,17 @@
 //! WebAssembly bindings for OXVG based on
 //! https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/packages/wasm/src/lib.rs,
 //! but customized for OXVGUI (returns SVG dimensions).
+
 extern crate console_error_panic_hook;
+
+#[macro_use]
+extern crate lazy_static;
+
 use oxvg_ast::{
-  element::Element as ElementTrait,
-  implementations::{roxmltree::parse, shared::Element},
-  serialize::{self, Node as _, Options},
-  visitor::{Context, ContextFlags, Info, PrepareOutcome, Visitor}
+    element::Element as ElementTrait,
+    implementations::{roxmltree::parse, shared::Element},
+    serialize::{self, Node as _, Options},
+    visitor::{Context, ContextFlags, Info, PrepareOutcome, Visitor},
 };
 use oxvg_optimiser::{Extends, Jobs};
 use tsify::Tsify;
@@ -14,35 +19,72 @@ use wasm_bindgen::prelude::*;
 
 #[derive(Tsify, Debug, Clone, Default)]
 /// Extracts the SVG's width and height from the `width`/`height` or `viewBox` attribute on `<svg>`.
+/// Based on
+/// https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_view_box.rs,
+/// https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
 pub struct ExtractDimensions(pub bool);
 
 impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
-  type Error = String;
+    type Error = String;
 
-  fn prepare(
-    &self,
-    _document: &E,
-    _info: &Info<'arena, E>,
-    _context_flags: &mut ContextFlags,
-  ) -> Result<PrepareOutcome, Self::Error> {
-    Ok(if self.0 {
-      PrepareOutcome::none
-    } else {
-      PrepareOutcome::skip
-    })
-  }
+    fn prepare(
+        &self,
+        _document: &E,
+        _info: &Info<'arena, E>,
+        _context_flags: &mut ContextFlags,
+    ) -> Result<PrepareOutcome, Self::Error> {
+        Ok(if self.0 {
+            PrepareOutcome::none
+        } else {
+            PrepareOutcome::skip
+        })
+    }
 
-  fn element(
-    &self,
-    element: &mut E,
-    _context: &mut Context<'arena, '_, '_, E>,
-  ) -> Result<(), Self::Error> {
-    // TODO: Traverse the tree and find the root <svg> element, then extract the width and height from the attributes.
-    //       See: https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_view_box.rs
-    //       See: https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
+    fn element(
+        &self,
+        element: &mut E,
+        _context: &mut Context<'arena, '_, '_, E>,
+    ) -> Result<(), Self::Error> {
+        // TODO: Traverse the tree and find the root <svg> element, then extract the width and height from the attributes.
+        //       See: https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_view_box.rs
+        //       See: https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
 
-    Ok(())
-  }
+        // TODO: Check if root
+        if element.prefix().is_some() || element.local_name().as_ref() != "svg" {
+            return Ok(());
+        }
+
+        if let (Some(width_attr), Some(height_attr)) = (
+            element.get_attribute_local(&"width".into()),
+            element.get_attribute_local(&"height".into()),
+        ) {
+            if let (Ok(width), Ok(height)) = (
+                width_attr.as_ref().parse::<f64>(),
+                height_attr.as_ref().parse::<f64>(),
+            ) {
+                // Return width/height
+            }
+        }
+
+        if let Some(view_box_attr) = element.get_attribute_local(&"viewBox".into()) {
+            let mut nums = Vec::with_capacity(4);
+            nums.extend(SEPARATOR.split(view_box_attr.as_ref()));
+            if nums.len() == 4 {
+                if let (Ok(width), Ok(height)) = (
+                    nums[2].parse::<f64>(),
+                    nums[3].parse::<f64>(),
+                ) {
+                    // Return width/height
+                }
+            }
+        };
+
+        Ok(())
+    }
+}
+
+lazy_static! {
+    pub static ref SEPARATOR: regex::Regex = regex::Regex::new(r"[ ,]+").unwrap();
 }
 
 #[wasm_bindgen]
@@ -83,19 +125,19 @@ impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
 /// );
 /// ```
 pub fn optimise(svg: &str, config: Option<Jobs>) -> Result<String, String> {
-  console_error_panic_hook::set_once();
+    console_error_panic_hook::set_once();
 
-  let arena = typed_arena::Arena::new();
-  let dom = parse(svg, &arena).map_err(|e| e.to_string())?;
-  config
-    .unwrap_or_default()
-    .run(&dom, &Info::<Element>::new(&arena))
-    .map_err(|err| err.to_string())?;
+    let arena = typed_arena::Arena::new();
+    let dom = parse(svg, &arena).map_err(|e| e.to_string())?;
+    config
+        .unwrap_or_default()
+        .run(&dom, &Info::<Element>::new(&arena))
+        .map_err(|err| err.to_string())?;
 
-  dom.serialize_with_options(Options {
-    indent: serialize::Indent::None,
-    ..Default::default()
-  })
+    dom.serialize_with_options(Options {
+        indent: serialize::Indent::None,
+        ..Default::default()
+    })
     .map_err(|err| err.to_string())
 }
 
@@ -108,8 +150,8 @@ pub fn optimise(svg: &str, config: Option<Jobs>) -> Result<String, String> {
 /// Returns the given config with omitted options replaced with the config provided by `extends`.
 /// I.e. acts like `{ ...extends, ...config }`
 pub fn extend(extends: &Extends, config: Option<Jobs>) -> Jobs {
-  match config {
-    Some(ref jobs) => extends.extend(jobs),
-    None => extends.jobs(),
-  }
+    match config {
+        Some(ref jobs) => extends.extend(jobs),
+        None => extends.jobs(),
+    }
 }
