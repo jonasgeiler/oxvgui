@@ -125,7 +125,7 @@ export default class MainMenu {
     this._spinner.show();
 
     try {
-      const filename = 'car-lite.svg';
+      const filename = 'demo.svg';
       const data = await fetch(filename)
         .then((response) => response.text());
       this.emitter.emit('svgDataLoad', { data, filename });

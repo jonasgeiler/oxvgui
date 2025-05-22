@@ -3,37 +3,22 @@
   <head>
     <meta charset="utf-8">
     <title>{{ title }}</title>
-    <meta name="theme-color" content="#303f9f">
+    <meta name="theme-color" content="#d32f2f">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="preload" crossorigin as="font" href="fonts/code-latin.woff2">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="{{ iconPath }}">
-    <link rel="icon" href="{{ iconPath }}">
+    <link rel="preload" crossorigin as="font" href="code-latin.woff2">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="favicon.ico" sizes="32x32">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="SVGOMG">
     <meta name="twitter:card" content="summary">
     <meta name="description" content="{{ description }}">
     <meta property="og:description" content="{{ description }}">
-    <meta property="og:image" content="{{ liveBaseUrl }}{{ iconPath }}">
+    <meta property="og:image" content="{{ liveBaseUrl }}icon-mask.png">
     <meta property="og:title" content="{{ title }}">
     <script>
-      if ((!location.port || location.port === '80') && location.protocol !== 'https:') {
-        location.protocol = 'https:';
-      }
-
-      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-      ga('create', 'UA-58850134-1', 'auto');
-      ga('send', 'pageview');
-
       window.svgomgVersion = '{{SVGOMG_VERSION}}';
-
-      // Delay analytics until after the page has loaded, to avoid extending
-      // the browser spinner, and allow higher priority stuff through.
-      addEventListener('load', function() {
-        const script = document.createElement('script');
-        script.src = 'https://www.google-analytics.com/analytics.js';
-        document.head.appendChild(script);
-      });
     </script>
     <script src="js/page.js" defer></script>
     <style>{{headCSS|safe}}</style>
@@ -195,9 +180,7 @@
       </div>
       <script>
         document.querySelector('.preloader').addEventListener('click', function() {
-          // track it
-          ga('send', 'event', 'preloader', 'clicked');
-          this.className = 'preloader active';
+          this.classList.add('active');
         });
       </script>
     </div>

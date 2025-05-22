@@ -17,10 +17,10 @@ addEventListener('install', (event) => {
       await cache.addAll([
         './',
         'all.css',
-        'car-lite.svg',
+        'demo.svg',
         'changelog.json',
-        'fonts/code-latin.woff2',
-        'imgs/icon.png',
+        'code-latin.woff2',
+        'icon.svg',
         'js/gzip-worker.js',
         'js/page.js',
         'js/prism-worker.js',

@@ -81,10 +81,9 @@ const minifyCss = vinylMap((buffer) => {
 function copy() {
   return gulp
     .src([
-      'src/{.well-known,imgs,fonts}/**',
-      'test-svgs/car-lite.svg', // Copy the demo SVG to the root
+      'src/fonts/*',
+      'src/public/*',
       'src/*.json',
-      '!src/imgs/maskable.svg',
     ], {
       encoding: false, // Prevent image and font files from being re-encoded
     })
@@ -116,7 +115,6 @@ async function html() {
         liveBaseUrl: pkg.homepage,
         title: `SVGOMG - SVGO's Missing GUI`,
         description: pkg.description,
-        iconPath: 'imgs/icon.png',
       }),
     )
     .pipe(gulpif(!IS_DEV_TASK, gulpHtmlmin(buildConfig.htmlmin)))
