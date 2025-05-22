@@ -78,8 +78,8 @@ function compress(svgInput, settings) {
 
   if (!dimensions.width || !dimensions.height) {
     // TODO: Extract dimensions
-    dimensions.width = 100;
-    dimensions.height = 100;
+    dimensions.width = 200;
+    dimensions.height = 200;
     //throw new Error('No dimensions found');
   }
 
@@ -95,8 +95,8 @@ const actions = {
 
     if (!dimensions.width || !dimensions.height) {
       // TODO: Extract dimensions
-      dimensions.width = 100;
-      dimensions.height = 100;
+      dimensions.width = 200;
+      dimensions.height = 200;
       //throw new Error('No dimensions found');
     }
 

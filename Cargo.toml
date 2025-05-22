@@ -26,7 +26,7 @@ float_cmp = "allow"
 dbg_macro = "warn"
 
 [lib]
-path = "src/rust/oxvg-wasm-bindings.rs"
+path = "src/rust/oxvg_wasm_bindings.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
