@@ -113,7 +113,7 @@ async function html() {
         SVGOMG_VERSION: pkg.version,
         SVGO_VERSION: pkg.devDependencies.svgo,
         liveBaseUrl: pkg.homepage,
-        title: `SVGOMG - SVGO's Missing GUI`,
+        title: 'OXVGUI - OXVG User Interface',
         description: pkg.description,
       }),
     )
