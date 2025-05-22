@@ -582,6 +582,7 @@ dependencies = [
  "oxvg_ast",
  "oxvg_optimiser",
  "regex",
+ "serde",
  "serde-wasm-bindgen",
  "serde_json",
  "tsify",

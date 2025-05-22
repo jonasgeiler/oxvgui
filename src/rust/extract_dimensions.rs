@@ -1,8 +1,12 @@
+use oxvg_ast::{
+    element::Element as ElementTrait,
+    visitor::{Context, ContextFlags, Info, PrepareOutcome, Visitor}
+};
+use serde::{Deserialize, Serialize};
 use tsify::Tsify;
-use oxvg_ast::element::Element as ElementTrait;
-use oxvg_ast::visitor::{Context, ContextFlags, Info, PrepareOutcome, Visitor};
 
-#[derive(Tsify, Debug, Clone, Default)]
+#[derive(Tsify, Deserialize, Serialize, Debug, Clone)]
+#[serde(transparent)]
 /// Extracts the SVG's width and height from the `width`/`height` or `viewBox` attribute on `<svg>`.
 /// Based on
 /// https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_view_box.rs,
@@ -65,6 +69,12 @@ impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
         };
 
         Ok(())
+    }
+}
+
+impl Default for ExtractDimensions {
+    fn default() -> Self {
+        Self(true)
     }
 }
 
