@@ -21,17 +21,7 @@ use serde::{Deserialize, Serialize};
 use tsify::Tsify;
 
 use crate::custom_jobs::CustomJobs;
-
-#[derive(Tsify, Deserialize, Serialize, Clone, Debug)]
-#[tsify(from_wasm_abi, into_wasm_abi)]
-/// Dimensions of the SVG document
-pub struct Dimensions {
-    // TODO: Make width/height Option<f64>
-    /// Width of the SVG document
-    pub width: f64,
-    /// Height of the SVG document
-    pub height: f64,
-}
+use crate::extract_dimensions::Dimensions;
 
 #[derive(Tsify, Deserialize, Serialize, Clone, Debug)]
 #[tsify(from_wasm_abi, into_wasm_abi)]
@@ -40,7 +30,7 @@ pub struct OptimiseResult {
     /// Optimised SVG document
     pub data: String,
     /// Dimensions of the SVG document
-    pub dimensions: Option<Dimensions>,
+    pub dimensions: Dimensions,
 }
 
 #[wasm_bindgen]
@@ -103,7 +93,7 @@ pub fn optimise(svg: &str, config: Option<Jobs>) -> Result<OptimiseResult, Strin
 
     Ok(OptimiseResult {
         data,
-        dimensions: custom_jobs.extract_dimensions.0.into_inner().map(|(width, height)| Dimensions { width, height }),
+        dimensions: custom_jobs.extract_dimensions.0.into_inner(),
     })
 }
 
@@ -125,7 +115,7 @@ pub fn extend(extends: &Extends, config: Option<Jobs>) -> Jobs {
 #[wasm_bindgen(js_name = getDimensions)]
 /// Returns the dimensions of the SVG document.
 /// Basically does the same as `optimise`, but doesn't run any optimisations.
-pub fn get_dimensions(svg: &str) -> Result<Option<Dimensions>, String> {
+pub fn get_dimensions(svg: &str) -> Result<Dimensions, String> {
     console_error_panic_hook::set_once();
 
     let arena = typed_arena::Arena::new();
@@ -136,5 +126,5 @@ pub fn get_dimensions(svg: &str) -> Result<Option<Dimensions>, String> {
         .run(&dom, &Info::<Element>::new(&arena))
         .map_err(|err| err.to_string())?;
 
-    Ok(custom_jobs.extract_dimensions.0.into_inner().map(|(width, height)| Dimensions { width, height }))
+    Ok(custom_jobs.extract_dimensions.0.into_inner())
 }

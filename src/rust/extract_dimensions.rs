@@ -6,13 +6,23 @@ use oxvg_ast::{
 use serde::{Deserialize, Serialize};
 use tsify::Tsify;
 
+#[derive(Tsify, Deserialize, Serialize, Clone, Debug)]
+#[tsify(from_wasm_abi, into_wasm_abi)]
+/// Dimensions of the SVG document
+pub struct Dimensions {
+    /// Width of the SVG document
+    pub width: Option<f64>,
+    /// Height of the SVG document
+    pub height: Option<f64>,
+}
+
 #[derive(Tsify, Deserialize, Serialize, Debug, Clone)]
 #[serde(transparent)]
 /// Extracts the SVG's width and height from the `width`/`height` or `viewBox` attribute on `<svg>`.
 /// Based on:
 /// - https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_view_box.rs
 /// - https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
-pub struct ExtractDimensions(pub RefCell<Option<(f64, f64)>>);
+pub struct ExtractDimensions(pub RefCell<Dimensions>);
 
 impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
     type Error = String;
@@ -27,15 +37,18 @@ impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
         //       See: https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
 
         // Already extracted
-        if self.0.borrow().is_some() {
+        let dimensions = self.0.borrow();
+        if dimensions.width.is_some() && dimensions.height.is_some() {
             return Ok(());
         }
+        drop(dimensions);
 
         // TODO: Check if root
         if element.prefix().is_some() || element.local_name().as_ref() != "svg" {
             return Ok(());
         }
 
+        // TODO: Check if units are supported in SVGs and parse them
         if let (Some(width_attr), Some(height_attr)) = (
             element.get_attribute_local(&"width".into()),
             element.get_attribute_local(&"height".into()),
@@ -44,11 +57,15 @@ impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
                 width_attr.as_ref().parse::<f64>(),
                 height_attr.as_ref().parse::<f64>(),
             ) {
-                *self.0.borrow_mut() = Some((width, height));
+                *self.0.borrow_mut() = Dimensions {
+                    width: Some(width),
+                    height: Some(height),
+                };
                 return Ok(());
             }
         }
 
+        // TODO: Check if units are supported in SVGs and parse them
         if let Some(view_box_attr) = element.get_attribute_local(&"viewBox".into()) {
             let mut nums = Vec::with_capacity(4);
             nums.extend(SEPARATOR.split(view_box_attr.as_ref()));
@@ -57,7 +74,10 @@ impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
                     nums[2].parse::<f64>(),
                     nums[3].parse::<f64>(),
                 ) {
-                    *self.0.borrow_mut() = Some((width, height));
+                    *self.0.borrow_mut() = Dimensions {
+                        width: Some(width),
+                        height: Some(height),
+                    };
                     return Ok(());
                 }
             }
@@ -69,7 +89,10 @@ impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
 
 impl Default for ExtractDimensions {
     fn default() -> Self {
-        Self(RefCell::new(None))
+        Self(RefCell::new(Dimensions {
+            width: None,
+            height: None,
+        }))
     }
 }
 
