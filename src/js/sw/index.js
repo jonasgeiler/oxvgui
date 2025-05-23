@@ -21,6 +21,7 @@ addEventListener('install', (event) => {
         'changelog.json',
         'code-latin.woff2',
         'icon.svg',
+        'oxvg_wasm_bindings_bg.wasm',
         'js/gzip-worker.js',
         'js/page.js',
         'js/prism-worker.js',
