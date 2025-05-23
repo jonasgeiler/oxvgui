@@ -1,6 +1,7 @@
+use std::cell::RefCell;
 use oxvg_ast::{
     element::Element as ElementTrait,
-    visitor::{Context, ContextFlags, Info, PrepareOutcome, Visitor}
+    visitor::{Context, Visitor}
 };
 use serde::{Deserialize, Serialize};
 use tsify::Tsify;
@@ -8,26 +9,13 @@ use tsify::Tsify;
 #[derive(Tsify, Deserialize, Serialize, Debug, Clone)]
 #[serde(transparent)]
 /// Extracts the SVG's width and height from the `width`/`height` or `viewBox` attribute on `<svg>`.
-/// Based on
-/// https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_view_box.rs,
-/// https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
-pub struct ExtractDimensions(pub bool);
+/// Based on:
+/// - https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_view_box.rs
+/// - https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
+pub struct ExtractDimensions(pub RefCell<Option<(f64, f64)>>);
 
 impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
     type Error = String;
-
-    fn prepare(
-        &self,
-        _document: &E,
-        _info: &Info<'arena, E>,
-        _context_flags: &mut ContextFlags,
-    ) -> Result<PrepareOutcome, Self::Error> {
-        Ok(if self.0 {
-            PrepareOutcome::none
-        } else {
-            PrepareOutcome::skip
-        })
-    }
 
     fn element(
         &self,
@@ -37,6 +25,11 @@ impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
         // TODO: Traverse the tree and find the root <svg> element, then extract the width and height from the attributes.
         //       See: https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_view_box.rs
         //       See: https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
+
+        // Already extracted
+        if self.0.borrow().is_some() {
+            return Ok(());
+        }
 
         // TODO: Check if root
         if element.prefix().is_some() || element.local_name().as_ref() != "svg" {
@@ -51,7 +44,8 @@ impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
                 width_attr.as_ref().parse::<f64>(),
                 height_attr.as_ref().parse::<f64>(),
             ) {
-                // Return width/height
+                *self.0.borrow_mut() = Some((width, height));
+                return Ok(());
             }
         }
 
@@ -63,7 +57,8 @@ impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
                     nums[2].parse::<f64>(),
                     nums[3].parse::<f64>(),
                 ) {
-                    // Return width/height
+                    *self.0.borrow_mut() = Some((width, height));
+                    return Ok(());
                 }
             }
         };
@@ -74,7 +69,7 @@ impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
 
 impl Default for ExtractDimensions {
     fn default() -> Self {
-        Self(true)
+        Self(RefCell::new(None))
     }
 }
 

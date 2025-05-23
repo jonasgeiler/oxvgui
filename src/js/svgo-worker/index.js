@@ -7,38 +7,6 @@ import init, { optimise } from '../../rust/dist/oxvg_wasm_bindings';
 // the root directory, where the file is.
 const initPromise = init('../oxvg_wasm_bindings_bg.wasm');
 
-const createDimensionsExtractor = () => {
-  const dimensions = {};
-  const plugin = {
-    type: 'visitor',
-    name: 'extract-dimensions',
-    fn() {
-      return {
-        element: {
-          // Node, parentNode
-          enter({ name, attributes }, { type }) {
-            if (name === 'svg' && type === 'root') {
-              if (
-                attributes.width !== undefined &&
-                attributes.height !== undefined
-              ) {
-                dimensions.width = Number.parseFloat(attributes.width);
-                dimensions.height = Number.parseFloat(attributes.height);
-              } else if (attributes.viewBox !== undefined) {
-                const viewBox = attributes.viewBox.split(/,\s*|\s+/);
-                dimensions.width = Number.parseFloat(viewBox[2]);
-                dimensions.height = Number.parseFloat(viewBox[3]);
-              }
-            }
-          },
-        },
-      };
-    },
-  };
-
-  return [dimensions, plugin];
-};
-
 function compress(svgInput, settings) {
   // setup plugin list
   const floatPrecision = Number(settings.floatPrecision);
@@ -66,39 +34,21 @@ function compress(svgInput, settings) {
   }
 
   // multipass optimization
-  const [dimensions, extractDimensionsPlugin] = createDimensionsExtractor();
-  const data = optimise(svgInput, {
+  let { data, dimensions } = optimise(svgInput, {
     multipass: settings.multipass,
-    plugins: [...plugins, extractDimensionsPlugin],
+    plugins,
     js2svg: {
       indent: 2,
       pretty: settings.pretty,
     },
   });
 
-  if (!dimensions.width || !dimensions.height) {
-    // TODO: Extract dimensions
-    dimensions.width = 200;
-    dimensions.height = 200;
-    //throw new Error('No dimensions found');
-  }
-
   return { data, dimensions };
 }
 
 const actions = {
   wrapOriginal({ data }) {
-    const [dimensions, extractDimensionsPlugin] = createDimensionsExtractor();
-    optimise(data, {
-      plugins: [extractDimensionsPlugin],
-    });
-
-    if (!dimensions.width || !dimensions.height) {
-      // TODO: Extract dimensions
-      dimensions.width = 200;
-      dimensions.height = 200;
-      //throw new Error('No dimensions found');
-    }
+    let { dimensions } = optimise(data);
 
     return dimensions;
   },
