@@ -30,12 +30,12 @@
     left: 0;
     right: 0;
     top: 0;
-    border-bottom: 2px solid transparent;
+    border-bottom: 4px solid transparent;
   }
 
   :checked + .selected,
   :focus + .selected {
-    border-color: #00bcd4;
+    border-color: #ffcdd2;
   }
 
   :focus + .selected {
