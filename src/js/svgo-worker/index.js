@@ -1,4 +1,7 @@
-import init, { optimise } from '../../rust/dist/oxvg_wasm_bindings';
+import init, {
+  getDimensions,
+  optimise,
+} from '../../rust/dist/oxvg_wasm_bindings';
 
 // We have to specify the path to the wasm file because it tries to use
 // `document` otherwise, which is not available in a web worker.
@@ -34,7 +37,7 @@ function compress(svgInput, settings) {
   }
 
   // multipass optimization
-  let { data, dimensions } = optimise(svgInput, {
+  return optimise(svgInput, {
     multipass: settings.multipass,
     plugins,
     js2svg: {
@@ -42,15 +45,11 @@ function compress(svgInput, settings) {
       pretty: settings.pretty,
     },
   });
-
-  return { data, dimensions };
 }
 
 const actions = {
   wrapOriginal({ data }) {
-    let { dimensions } = optimise(data);
-
-    return dimensions;
+    return getDimensions(data);
   },
   process({ data, settings }) {
     return compress(data, settings);

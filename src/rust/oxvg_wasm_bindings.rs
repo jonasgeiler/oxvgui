@@ -10,7 +10,6 @@ extern crate console_error_panic_hook;
 mod extract_dimensions;
 mod custom_jobs;
 
-use std::cell::RefCell;
 use oxvg_ast::{
     implementations::{roxmltree::parse, shared::Element},
     serialize::{self, Node as _, Options},
@@ -22,11 +21,11 @@ use serde::{Deserialize, Serialize};
 use tsify::Tsify;
 
 use crate::custom_jobs::CustomJobs;
-use crate::extract_dimensions::ExtractDimensions;
 
 #[derive(Tsify, Deserialize, Serialize, Clone, Debug)]
 #[tsify(from_wasm_abi, into_wasm_abi)]
 pub struct Dimensions {
+    // TODO: Make width/height Option<f64>
     pub width: f64,
     pub height: f64,
 }
@@ -115,4 +114,21 @@ pub fn extend(extends: &Extends, config: Option<Jobs>) -> Jobs {
         Some(ref jobs) => extends.extend(jobs),
         None => extends.jobs(),
     }
+}
+
+#[wasm_bindgen(js_name = getDimensions)]
+/// Returns the dimensions of the SVG document.
+/// Basically does the same as `optimise`, but doesn't run any optimisations.
+pub fn get_dimensions(svg: &str) -> Result<Option<Dimensions>, String> {
+    console_error_panic_hook::set_once();
+
+    let arena = typed_arena::Arena::new();
+    let dom = parse(svg, &arena).map_err(|e| e.to_string())?;
+
+    let custom_jobs = CustomJobs::default();
+    custom_jobs
+        .run(&dom, &Info::<Element>::new(&arena))
+        .map_err(|err| err.to_string())?;
+
+    Ok(custom_jobs.extract_dimensions.0.into_inner().map(|(width, height)| Dimensions { width, height }))
 }
