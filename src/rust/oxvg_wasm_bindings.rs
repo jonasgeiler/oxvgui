@@ -24,16 +24,22 @@ use crate::custom_jobs::CustomJobs;
 
 #[derive(Tsify, Deserialize, Serialize, Clone, Debug)]
 #[tsify(from_wasm_abi, into_wasm_abi)]
+/// Dimensions of the SVG document
 pub struct Dimensions {
     // TODO: Make width/height Option<f64>
+    /// Width of the SVG document
     pub width: f64,
+    /// Height of the SVG document
     pub height: f64,
 }
 
 #[derive(Tsify, Deserialize, Serialize, Clone, Debug)]
 #[tsify(from_wasm_abi, into_wasm_abi)]
+/// Result of the optimisation
 pub struct OptimiseResult {
+    /// Optimised SVG document
     pub data: String,
+    /// Dimensions of the SVG document
     pub dimensions: Option<Dimensions>,
 }
 
