@@ -15,3 +15,8 @@ max_line_length          = 80
 [*.rs]
 indent_size = 4
 max_line_length = 100
+
+[/src/rust/dist/*.{ts,js}]
+# Since git is tracking the generated type definitions file, we don't
+# want to accidentally modify it on save.
+trim_trailing_whitespace = false
