@@ -1,5 +1,29 @@
-/.netlify/
-/build/
-/node_modules/
-/.idea/
-/target/
+# Git ignore file
+# See: https://git-scm.com/docs/gitignore
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# JavaScript Dependencies
+node_modules/
+.pnp/
+.yarn/
+.pnp.*
+package-lock.json
+yarn.lock
+
+# Rust Dependencies
+target/
+
+# Debug
+.size-limit/
+esbuild-why-*/
+build-*/
+*.log
+
+# Build
+build/
