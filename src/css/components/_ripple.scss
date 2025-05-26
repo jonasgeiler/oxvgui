@@ -1,3 +1,5 @@
+@use "../variables";
+
 @keyframes ripple-pop {
   0% {
     transform: scale(0);
@@ -25,6 +27,6 @@
   display: block;
 
   &.animate {
-    animation: ripple-pop 0.5s $easeOutQuint;
+    animation: ripple-pop 0.5s variables.$easeOutQuint;
   }
 }
