@@ -85,6 +85,7 @@ pub fn optimise(svg: &str, config: Option<Jobs>) -> Result<OptimiseResult, Strin
     .run(&dom, &Info::<Element>::new(&arena))
     .map_err(|err| err.to_string())?;
 
+    // TODO: Allow prettifying the SVG output
     let data = dom.serialize_with_options(Options {
         indent: serialize::Indent::None,
         ..Default::default()

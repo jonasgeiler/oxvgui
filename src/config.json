@@ -1,4 +1,252 @@
 {
+  "// Based on": "https://github.com/noahbald/oxvg/blob/94b2abbc1126ca4056d4bb4d14b3ad24f376db15/crates/oxvg_optimiser/src/jobs/mod.rs",
+  "// but": "the 'enabledByDefault' ones are basically the 'safe' ones",
+  "// and": "some jobs are always enabled, like 'precheck' - these can be found in `js/oxvg-worker/index.js`",
+  "jobs": [
+    {
+      "id": "addAttributesToSvgElement",
+      "name": "AddAttributesToSVGElement"
+    },
+    {
+      "id": "addClassesToSvg",
+      "name": "AddClassesToSVG"
+    },
+    {
+      "id": "cleanupListOfValues",
+      "name": "CleanupListOfValues"
+    },
+    {
+      "id": "removeAttributesBySelector",
+      "name": "RemoveAttributesBySelector"
+    },
+    {
+      "id": "removeAttrs",
+      "name": "RemoveAttrs"
+    },
+    {
+      "id": "removeDimensions",
+      "name": "RemoveDimensions"
+    },
+    {
+      "id": "removeElementsByAttr",
+      "name": "RemoveElementsByAttr"
+    },
+    {
+      "id": "removeOffCanvasPaths",
+      "name": "RemoveOffCanvasPaths"
+    },
+    {
+      "id": "removeRasterImages",
+      "name": "RemoveRasterImages"
+    },
+    {
+      "id": "removeScripts",
+      "name": "RemoveScripts"
+    },
+    {
+      "id": "removeStyleElement",
+      "name": "RemoveStyleElement"
+    },
+    {
+      "id": "removeTitle",
+      "name": "RemoveTitle"
+    },
+    {
+      "id": "removeViewBox",
+      "name": "RemoveViewBox"
+    },
+    {
+      "id": "reusePaths",
+      "name": "ReusePaths"
+    },
+    {
+      "id": "removeXMLNS",
+      "name": "RemoveXMLNS"
+    },
+    {
+      "id": "removeDoctype",
+      "name": "RemoveDoctype",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeXmlProcInst",
+      "name": "RemoveXMLProcInst",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeComments",
+      "name": "RemoveComments",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeDeprecatedAttrs",
+      "name": "RemoveDeprecatedAttrs",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeMetadata",
+      "name": "RemoveMetadata",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeEditorsNsData",
+      "name": "RemoveEditorsNSData",
+      "enabledByDefault": true
+    },
+    {
+      "id": "cleanupAttributes",
+      "name": "CleanupAttributes",
+      "enabledByDefault": true
+    },
+    {
+      "id": "mergeStyles",
+      "name": "MergeStyles",
+      "enabledByDefault": true
+    },
+    {
+      "id": "inlineStyles",
+      "name": "InlineStyles",
+      "enabledByDefault": true
+    },
+    {
+      "id": "minifyStyles",
+      "name": "MinifyStyles",
+      "enabledByDefault": true
+    },
+    {
+      "id": "cleanupIds",
+      "name": "CleanupIds",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeUselessDefs",
+      "name": "RemoveUselessDefs",
+      "enabledByDefault": true
+    },
+    {
+      "id": "cleanupNumericValues",
+      "name": "CleanupNumericValues",
+      "enabledByDefault": true
+    },
+    {
+      "id": "convertColors",
+      "name": "ConvertColors",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeUnknownsAndDefaults",
+      "name": "RemoveUnknownsAndDefaults",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeNonInheritableGroupAttrs",
+      "name": "RemoveNonInheritableGroupAttrs",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeUselessStrokeAndFill",
+      "name": "RemoveUselessStrokeAndFill",
+      "enabledByDefault": true
+    },
+    {
+      "id": "cleanupEnableBackground",
+      "name": "CleanupEnableBackground",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeHiddenElems",
+      "name": "RemoveHiddenElems",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeEmptyText",
+      "name": "RemoveEmptyText",
+      "enabledByDefault": true
+    },
+    {
+      "id": "convertShapeToPath",
+      "name": "ConvertShapeToPath",
+      "enabledByDefault": true
+    },
+    {
+      "id": "convertEllipseToCircle",
+      "name": "ConvertEllipseToCircle",
+      "enabledByDefault": true
+    },
+    {
+      "id": "moveElemsAttrsToGroup",
+      "name": "MoveElemsAttrsToGroup",
+      "enabledByDefault": true
+    },
+    {
+      "id": "moveGroupAttrsToElems",
+      "name": "MoveGroupAttrsToElems",
+      "enabledByDefault": true
+    },
+    {
+      "id": "collapseGroups",
+      "name": "CollapseGroups",
+      "enabledByDefault": true
+    },
+    {
+      "id": "applyTransforms",
+      "name": "ApplyTransforms",
+      "enabledByDefault": true
+    },
+    {
+      "id": "convertPathData",
+      "name": "ConvertPathData",
+      "enabledByDefault": true
+    },
+    {
+      "id": "convertTransform",
+      "name": "ConvertTransform",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeEmptyAttrs",
+      "name": "RemoveEmptyAttrs",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeEmptyContainers",
+      "name": "RemoveEmptyContainers",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeUnusedNS",
+      "name": "RemoveUnusedNS",
+      "enabledByDefault": true
+    },
+    {
+      "id": "mergePaths",
+      "name": "MergePaths",
+      "enabledByDefault": true
+    },
+    {
+      "id": "sortAttrs",
+      "name": "SortAttrs",
+      "enabledByDefault": true
+    },
+    {
+      "id": "sortDefsChildren",
+      "name": "SortDefsChildren",
+      "enabledByDefault": true
+    },
+    {
+      "id": "removeDesc",
+      "name": "RemoveDesc",
+      "enabledByDefault": true
+    },
+    {
+      "id": "prefixIds",
+      "name": "PrefixIds"
+    },
+    {
+      "id": "removeXlink",
+      "name": "RemoveXlink"
+    }
+  ],
   "plugins": [
     {
       "id": "removeDoctype",

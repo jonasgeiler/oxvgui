@@ -144,13 +144,13 @@
             </section>
             <section class="plugins">
               <h1 class="settings-sub-heading">Features</h1>
-              {% for plugin in plugins %}
+              {% for job in jobs %}
                 <label class="setting-item-toggle">
                   <input type="checkbox"
-                         name="{{ plugin.id }}"
-                         {% if plugin.enabledByDefault %}checked{% endif %}>
+                         name="{{ job.id }}"
+                         {% if job.enabledByDefault %}checked{% endif %}>
                   {% include "_partials/material-switch.html" %}
-                  {{ plugin.name }}
+                  {{ job.name }}
                 </label>
               {% endfor %}
             </section>

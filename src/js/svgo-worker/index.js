@@ -10,6 +10,33 @@ import init, {
 // the root directory, where the file is.
 const initPromise = init('../oxvg_wasm_bindings_bg.wasm');
 
+const booleanPlugins = [
+  'cleanupEnableBackground',
+  'collapseGroups',
+  'convertEllipseToCircle',
+  'mergeStyles',
+  'moveElemsAttrsToGroup',
+  'moveGroupAttrsToElems',
+  'removeDimensions',
+  'removeDoctype',
+  'removeEmptyAttrs',
+  'removeEmptyContainers',
+  'removeMetadata',
+  'removeNonInheritableGroupAttrs',
+  'removeOffCanvasPaths',
+  'removeRasterImages',
+  'removeScripts',
+  'removeStyleElement',
+  'removeTitle',
+  'removeUnusedNS',
+  'removeUselessDefs',
+  'removeViewBox',
+  'removeXMLNS',
+  'removeXmlProcInst',
+  'reusePaths',
+  'sortDefsChildren',
+];
+
 function compress(svgInput, settings) {
   // setup plugin list
   const floatPrecision = Number(settings.floatPrecision);
@@ -24,6 +51,7 @@ function compress(svgInput, settings) {
       params: {},
     };
 
+    // TODO: Verify if this is still true with OXVG
     // 0 almost always breaks images when used on `cleanupNumericValues`.
     // Better to allow 0 for everything else, but switch to 1 for this plugin.
     plugin.params.floatPrecision =
@@ -33,17 +61,49 @@ function compress(svgInput, settings) {
 
     plugin.params.transformPrecision = transformPrecision;
 
+    if (booleanPlugins.includes(name)) {
+      // If the plugin is a boolean plugin, we set it to true
+      plugin.params = true;
+    }
+
     plugins.push(plugin);
   }
 
-  // multipass optimization
+  // TODO: Already change plugins to match this key-value format
+  const jobs = {};
+  for (const { name, params } of plugins) {
+    jobs[name] = params;
+  }
+
+  console.log(jobs);
+
+  /*
+  const jobsIncrement = [];
+  for (let i = 1; i < plugins.length; i++) {
+    const jobs2 = {};
+    for (const { name, params } of plugins) {
+      jobs2[name] = params;
+      if (Object.keys(jobs2).length === i) {
+        break;
+      }
+    }
+    jobsIncrement.push(jobs2);
+  }
+
+  console.log(jobsIncrement);
+
+  for (const jobs2 of jobsIncrement) {
+    console.log(jobs2);
+    optimise(svgInput, {
+      precheck: {},
+      ...jobs2,
+    });
+  }
+   */
+
   return optimise(svgInput, {
-    multipass: settings.multipass,
-    plugins,
-    js2svg: {
-      indent: 2,
-      pretty: settings.pretty,
-    },
+    precheck: {}, // Always run precheck with default settings
+    ...jobs,
   });
 }
 

@@ -109,6 +109,7 @@ async function html() {
     .pipe(
       gulpNunjucks.compile({
         plugins: config.plugins,
+        jobs: config.jobs,
         headCSS,
         SVGOMG_VERSION: pkg.version,
         SVGO_VERSION: pkg.devDependencies.svgo,
