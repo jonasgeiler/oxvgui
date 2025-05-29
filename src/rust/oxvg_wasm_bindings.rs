@@ -104,6 +104,7 @@ pub fn optimise(svg: &str, config: Option<Jobs>) -> Result<OptimiseResult, Strin
 
 #[wasm_bindgen]
 #[allow(clippy::needless_pass_by_value)]
+// TODO: Probably able to remove
 /// Returns the given config with omitted options replaced with the config provided by `extends`.
 /// I.e. acts like `{ ...extends, ...config }`
 pub fn extend(extends: &Extends, config: Option<Jobs>) -> Jobs {
