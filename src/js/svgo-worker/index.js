@@ -41,38 +41,21 @@ function compress(svgInput, settings) {
   // setup plugin list
   const floatPrecision = Number(settings.floatPrecision);
   const transformPrecision = Number(settings.transformPrecision);
-  const plugins = [];
-
+  const jobs = {};
   for (const [name, enabled] of Object.entries(settings.plugins)) {
     if (!enabled) continue;
 
-    const plugin = {
-      name,
-      params: {},
-    };
-
-    // TODO: Verify if this is still true with OXVG
-    // 0 almost always breaks images when used on `cleanupNumericValues`.
-    // Better to allow 0 for everything else, but switch to 1 for this plugin.
-    plugin.params.floatPrecision =
-      plugin.name === 'cleanupNumericValues' && floatPrecision === 0
-        ? 1
-        : floatPrecision;
-
-    plugin.params.transformPrecision = transformPrecision;
-
-    if (booleanPlugins.includes(name)) {
-      // If the plugin is a boolean plugin, we set it to true
-      plugin.params = true;
-    }
-
-    plugins.push(plugin);
-  }
-
-  // TODO: Already change plugins to match this key-value format
-  const jobs = {};
-  for (const { name, params } of plugins) {
-    jobs[name] = params;
+    jobs[name] = booleanPlugins.includes(name)
+      ? true
+      : {
+        // TODO: Verify if this is still true with OXVG
+        // 0 almost always breaks images when used on `cleanupNumericValues`.
+        // Better to allow 0 for everything else, but switch to 1 for this plugin.
+        floatPrecision: name === 'cleanupNumericValues' && floatPrecision === 0
+          ? 1
+          : floatPrecision,
+        transformPrecision,
+      };
   }
 
   console.log(jobs);
