@@ -8,7 +8,9 @@ import init, {
 // We also use a relative path so the app can be hosted from a sub-route,
 // and we use "../" because the worker is loaded from the `js` directory, not
 // the root directory, where the file is.
-const initPromise = init('../oxvg_wasm_bindings_bg.wasm');
+const initPromise = init({
+  module_or_path: '../oxvg_wasm_bindings_bg.wasm',
+});
 
 const booleanPlugins = [
   'cleanupEnableBackground',
