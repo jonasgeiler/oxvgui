@@ -89,7 +89,7 @@ function compress(svgInput, settings) {
   return optimise(svgInput, {
     precheck: {}, // Always run precheck with default settings
     ...jobs,
-  });
+  }, settings.pretty);
 }
 
 const actions = {

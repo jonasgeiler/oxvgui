@@ -1,6 +1,6 @@
 //! WebAssembly bindings for OXVG based on
 //! https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/packages/wasm/src/lib.rs,
-//! but customized for OXVGUI (returns SVG dimensions).
+//! but customized for OXVGUI (returns SVG dimensions and allows prettifying).
 
 #[macro_use]
 extern crate lazy_static;
@@ -70,7 +70,15 @@ pub struct OptimiseResult {
 ///     extend("default", { convertPathData: { removeUseless: false } }),
 /// );
 /// ```
-pub fn optimise(svg: &str, config: Option<Jobs>) -> Result<OptimiseResult, String> {
+///
+/// Prettify the output with the default config:
+///
+/// ```js
+/// import { optimise } from "@oxvg/wasm";
+///
+/// const result = optimise(`<svg />`, undefined, true);
+/// ```
+pub fn optimise(svg: &str, config: Option<Jobs>, prettify: Option<bool>) -> Result<OptimiseResult, String> {
     console_error_panic_hook::set_once();
 
     let arena = typed_arena::Arena::new();
@@ -85,9 +93,12 @@ pub fn optimise(svg: &str, config: Option<Jobs>) -> Result<OptimiseResult, Strin
     .run(&dom, &Info::<Element>::new(&arena))
     .map_err(|err| err.to_string())?;
 
-    // TODO: Allow prettifying the SVG output
     let data = dom.serialize_with_options(Options {
-        indent: serialize::Indent::None,
+        indent: if prettify.unwrap_or(false) {
+            serialize::Indent::Spaces(2)
+        } else {
+            serialize::Indent::None
+        },
         ..Default::default()
     })
     .map_err(|err| err.to_string())?;
