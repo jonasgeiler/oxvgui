@@ -18,6 +18,7 @@ const rollupReplace = require('@rollup/plugin-replace');
 const rollupTerser = require('@rollup/plugin-terser');
 const liveServer = require("live-server");
 const pkg = require('./package.json');
+const TOML = require('smol-toml');
 
 const IS_DEV_TASK =
   process.argv.includes('dev') || process.argv.includes('--dev');
@@ -74,6 +75,11 @@ const readJSON = async (filePath) => {
   return JSON.parse(content);
 };
 
+const readTOML = async (filePath) => {
+  const content = await fs.readFile(filePath, 'utf8');
+  return TOML.parse(content);
+};
+
 const minifyCss = vinylMap((buffer) => {
   return new CleanCSS(buildConfig.cleancss).minify(buffer.toString()).styles;
 });
@@ -100,9 +106,10 @@ function css() {
 }
 
 async function html() {
-  const [config, headCSS] = await Promise.all([
+  const [config, headCSS, cargoToml] = await Promise.all([
     readJSON(path.join(__dirname, 'src', 'config.json')),
     fs.readFile(path.join(__dirname, 'build', 'head.css'), 'utf8'),
+    readTOML(path.join(__dirname, 'Cargo.toml')),
   ]);
 
   return gulp
@@ -113,7 +120,7 @@ async function html() {
         jobs: config.jobs,
         headCSS,
         OXVGUI_VERSION: pkg.version,
-        OXVG_VERSION: pkg.devDependencies.svgo,
+        OXVG_VERSION: cargoToml.package.version,
         liveBaseUrl: pkg.homepage,
         title: 'OXVGUI - OXVG User Interface',
         description: pkg.description,
@@ -229,7 +236,7 @@ function watch() {
   gulp.watch(['src/css/**/*.scss'], gulp.series(css, html));
   gulp.watch(['src/js/**/*.js'], allJs);
   gulp.watch(
-    ['src/**/*.{html,svg,woff2}', 'src/*.json'],
+    ['src/**/*.{html,svg,woff2}', 'src/*.json', 'Cargo.toml'],
     gulp.parallel(html, copy, allJs),
   );
   gulp.watch(
