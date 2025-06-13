@@ -1,7 +1,7 @@
 MIT License
 ===========
 
-Copyright (c) 2025 Jonas Geiler
+Copyright (c) 2025 Jonas Geiler  
 Copyright (c) 2015 Jake Archibald
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
