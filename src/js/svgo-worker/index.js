@@ -50,7 +50,6 @@ function compress(svgInput, settings) {
     jobs[name] = booleanPlugins.includes(name)
       ? true
       : {
-        // TODO: Verify if this is still true with OXVG
         // 0 almost always breaks images when used on `cleanupNumericValues`.
         // Better to allow 0 for everything else, but switch to 1 for this plugin.
         floatPrecision: name === 'cleanupNumericValues' && floatPrecision === 0
