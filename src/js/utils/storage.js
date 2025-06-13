@@ -7,7 +7,7 @@ export const idbKeyval = (() => {
     if (dbInstance) return dbInstance;
 
     dbInstance = new Promise((resolve, reject) => {
-      const openreq = indexedDB.open('svgo-keyval', 1);
+      const openreq = indexedDB.open('oxvgui-db', 1);
 
       openreq.onerror = () => {
         reject(openreq.error);
