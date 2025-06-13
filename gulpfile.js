@@ -113,7 +113,7 @@ async function html() {
         jobs: config.jobs,
         headCSS,
         OXVGUI_VERSION: pkg.version,
-        SVGO_VERSION: pkg.devDependencies.svgo,
+        OXVG_VERSION: pkg.devDependencies.svgo,
         liveBaseUrl: pkg.homepage,
         title: 'OXVGUI - OXVG User Interface',
         description: pkg.description,
