@@ -2,6 +2,7 @@
   "// Based on": "https://github.com/noahbald/oxvg/blob/94b2abbc1126ca4056d4bb4d14b3ad24f376db15/crates/oxvg_optimiser/src/jobs/mod.rs",
   "// but": "the 'enabledByDefault' ones are basically the 'safe' ones",
   "// and": "some jobs are always enabled, like 'precheck' - these can be found in `js/oxvg-worker/index.js`.",
+  "// Some jobs": "only take a boolean, not an object. We need to define those in `js/oxvg-worker/index.js` too.",
   "// We also": "set 'disabled' to 'false' for every job that requires user config to do anything. They won't show up in the UI, but are here for completeness.",
   "jobs": [
     {
@@ -211,32 +212,32 @@
     },
     {
       "id": "addAttributesToSvgElement",
-      "name": "Add Attributes To SVG Element",
+      "name": "Add attributes to SVG element",
       "disabled": true
     },
     {
       "id": "addClassesToSvg",
-      "name": "Add Classes To SVG",
+      "name": "Add classes to SVG",
       "disabled": true
     },
     {
       "id": "removeAttributesBySelector",
-      "name": "Remove Attributes By Selector",
+      "name": "Remove attributes by selector",
       "disabled": true
     },
     {
       "id": "removeAttrs",
-      "name": "Remove Attributes",
+      "name": "Remove attrs",
       "disabled": true
     },
     {
       "id": "removeElementsByAttr",
-      "name": "Remove Elements By Attribute",
+      "name": "Remove elements by attr",
       "disabled": true
     },
     {
       "id": "removeDeprecatedAttrs",
-      "name": "Remove Deprecated Attributes",
+      "name": "Remove deprecated attributes",
       "enabledByDefault": true
     },
     {
@@ -246,11 +247,11 @@
     },
     {
       "id": "prefixIds",
-      "name": "Prefix Ids"
+      "name": "Prefix IDs"
     },
     {
       "id": "removeXlink",
-      "name": "Remove Xlink"
+      "name": "Remove xlink"
     }
   ],
   "plugins": [
