@@ -69,9 +69,9 @@ function compress(svgInput, settings) {
     }
   }
 
+  /*
   console.log(jobs);
 
-  /*
   const jobsIncrement = [];
   for (let i = 1; i < plugins.length; i++) {
     const jobs2 = {};
