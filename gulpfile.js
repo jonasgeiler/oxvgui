@@ -116,7 +116,6 @@ async function html() {
     .src('src/*.html')
     .pipe(
       gulpNunjucks.compile({
-        plugins: config.plugins,
         jobs: config.jobs,
         headCSS,
         OXVGUI_VERSION: pkg.version,

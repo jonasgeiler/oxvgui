@@ -12,7 +12,11 @@ const initPromise = init({
   module_or_path: '../oxvg_wasm_bindings_bg.wasm',
 });
 
-const booleanPlugins = [
+/**
+ * Jobs that only accept a boolean value, not an object with parameters.
+ * @type {string[]}
+ */
+const booleanJobs = [
   'cleanupEnableBackground',
   'collapseGroups',
   'convertEllipseToCircle',
@@ -39,25 +43,29 @@ const booleanPlugins = [
   'sortDefsChildren',
 ];
 
-const floatPrecisionNonZeroPlugins = [
+/**
+ * Jobs where setting `floatPrecision` to 0 would break the output.
+ * @type {string[]}
+ */
+const floatPrecisionNonZeroJobs = [
   'cleanupListOfValues',
   'cleanupNumericValues',
 ];
 
 function compress(svgInput, settings) {
-  // setup plugin list
+  // Setup job list
   const floatPrecision = Number(settings.floatPrecision);
   const transformPrecision = Number(settings.transformPrecision);
   const jobs = {};
-  for (const [name, enabled] of Object.entries(settings.plugins)) {
+  for (const [name, enabled] of Object.entries(settings.jobs)) {
     if (!enabled) continue;
 
-    jobs[name] = booleanPlugins.includes(name)
+    jobs[name] = booleanJobs.includes(name)
       ? true
       : {
-        // 0 almost always breaks images when used on `cleanupNumericValues`.
-        // Better to allow 0 for everything else, but switch to 1 for this plugin.
-        floatPrecision: floatPrecision === 0 && floatPrecisionNonZeroPlugins.includes(name)
+        // 0 almost always breaks images when used on `cleanupNumericValues` and others.
+        // Better to allow 0 for everything else, but switch to 1 for this job.
+        floatPrecision: floatPrecision === 0 && floatPrecisionNonZeroJobs.includes(name)
           ? 1
           : floatPrecision,
         transformPrecision,
@@ -73,9 +81,9 @@ function compress(svgInput, settings) {
   console.log(jobs);
 
   const jobsIncrement = [];
-  for (let i = 1; i < plugins.length; i++) {
+  for (let i = 1; i < jobs.length; i++) {
     const jobs2 = {};
-    for (const { name, params } of plugins) {
+    for (const { name, params } of jobs) {
       jobs2[name] = params;
       if (Object.keys(jobs2).length === i) {
         break;
