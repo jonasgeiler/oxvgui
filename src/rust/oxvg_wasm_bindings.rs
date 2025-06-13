@@ -109,21 +109,13 @@ pub fn optimise(svg: &str, config: Option<Jobs>, prettify: Option<bool>) -> Resu
     })
 }
 
-////////////////////////////////////////////////////////////////////////////////////
-// NOTE: Cut out convert_svgo_config since I don't need it and there was an error //
-////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+// NOTE: Cut out `convert_svgo_config` since I don't need it and there was an error //
+//////////////////////////////////////////////////////////////////////////////////////
 
-#[wasm_bindgen]
-#[allow(clippy::needless_pass_by_value)]
-// TODO: Probably able to remove
-/// Returns the given config with omitted options replaced with the config provided by `extends`.
-/// I.e. acts like `{ ...extends, ...config }`
-pub fn extend(extends: &Extends, config: Option<Jobs>) -> Jobs {
-    match config {
-        Some(ref jobs) => extends.extend(jobs),
-        None => extends.jobs(),
-    }
-}
+//////////////////////////////////////////////////
+// NOTE: Cut out `extend` since I don't need it //
+//////////////////////////////////////////////////
 
 #[wasm_bindgen(js_name = getDimensions)]
 /// Returns the dimensions of the SVG document.

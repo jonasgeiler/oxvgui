@@ -48,11 +48,6 @@
  */
 export function optimise(svg: string, config?: Jobs | null, prettify?: boolean | null): OptimiseResult;
 /**
- * Returns the given config with omitted options replaced with the config provided by `extends`.
- * I.e. acts like `{ ...extends, ...config }`
- */
-export function extend(_extends: Extends, config?: Jobs | null): Jobs;
-/**
  * Returns the dimensions of the SVG document.
  * Basically does the same as `optimise`, but doesn't run any optimisations.
  */
@@ -67,6 +62,20 @@ export interface CustomJobs {
      *
      */
     extractDimensions: ExtractDimensions;
+}
+
+/**
+ * Result of the optimisation
+ */
+export interface OptimiseResult {
+    /**
+     * Optimised SVG document
+     */
+    data: string;
+    /**
+     * Dimensions of the SVG document
+     */
+    dimensions: Dimensions;
 }
 
 /**
@@ -89,20 +98,6 @@ export interface Dimensions {
      * Height of the SVG document
      */
     height: number | undefined;
-}
-
-/**
- * Result of the optimisation
- */
-export interface OptimiseResult {
-    /**
-     * Optimised SVG document
-     */
-    data: string;
-    /**
-     * Dimensions of the SVG document
-     */
-    dimensions: Dimensions;
 }
 
 /**
@@ -1801,7 +1796,6 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly optimise: (a: number, b: number, c: number, d: number) => [number, number, number];
-  readonly extend: (a: any, b: number) => any;
   readonly getDimensions: (a: number, b: number) => [number, number, number];
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
