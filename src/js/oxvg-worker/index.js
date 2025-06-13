@@ -73,7 +73,7 @@ function compress(svgInput, settings) {
 
     if (name === 'prefixIds') {
       // TODO: Maybe let user customize prefix in the future?
-      jobs[name].prefix = 'oxvgui';
+      jobs[name].prefix = Date.now().toString(36);
     }
   }
 
