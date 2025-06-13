@@ -1,10 +1,10 @@
-use std::fmt::Display;
 use oxvg_ast::{
     element::Element,
     visitor::{Info, PrepareOutcome, Visitor},
 };
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use std::fmt::Display;
 use tsify::Tsify;
 
 use crate::extract_dimensions::ExtractDimensions;

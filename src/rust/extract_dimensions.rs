@@ -1,9 +1,9 @@
-use std::cell::RefCell;
 use oxvg_ast::{
     element::Element as ElementTrait,
     visitor::{Context, Visitor}
 };
 use serde::{Deserialize, Serialize};
+use std::cell::RefCell;
 use tsify::Tsify;
 
 #[derive(Tsify, Deserialize, Serialize, Clone, Debug)]

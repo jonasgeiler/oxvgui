@@ -2,10 +2,9 @@
 //! https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/packages/wasm/src/lib.rs,
 //! but customized for OXVGUI (returns SVG dimensions and allows prettifying).
 
+extern crate console_error_panic_hook;
 #[macro_use]
 extern crate lazy_static;
-
-extern crate console_error_panic_hook;
 
 mod extract_dimensions;
 mod custom_jobs;
@@ -15,10 +14,10 @@ use oxvg_ast::{
     serialize::{self, Node as _, Options},
     visitor::Info,
 };
-use oxvg_optimiser::{Extends, Jobs};
-use wasm_bindgen::prelude::*;
+use oxvg_optimiser::Jobs;
 use serde::{Deserialize, Serialize};
 use tsify::Tsify;
+use wasm_bindgen::prelude::*;
 
 use crate::custom_jobs::CustomJobs;
 use crate::extract_dimensions::Dimensions;
