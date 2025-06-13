@@ -1,7 +1,7 @@
 import WorkerMessenger from './worker-messenger.js';
 import SvgFile from './svg-file.js';
 
-export default class Svgo extends WorkerMessenger {
+export default class Oxvg extends WorkerMessenger {
   constructor() {
     // We start the worker immediately (`true`), because we need to preload the
     // WASM file before we can use the worker, which happens in the background

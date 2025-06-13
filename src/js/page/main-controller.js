@@ -1,5 +1,5 @@
 import { idbKeyval as storage } from '../utils/storage.js';
-import Svgo from './svgo.js';
+import Oxvg from './oxvg.js';
 import { domReady } from './utils.js';
 import Output from './ui/output.js';
 import DownloadButton from './ui/download-button.js';
@@ -17,7 +17,7 @@ import ViewToggler from './ui/view-toggler.js';
 import ResultsCache from './results-cache.js';
 import MainUi from './ui/main-ui.js';
 
-const svgo = new Svgo();
+const oxvg = new Oxvg();
 
 export default class MainController {
   constructor() {
@@ -227,7 +227,7 @@ export default class MainController {
     this._userHasInteracted = true;
 
     try {
-      this._inputItem = await svgo.wrapOriginal(data);
+      this._inputItem = await oxvg.wrapOriginal(data);
       this._inputFilename = filename;
     } catch (error) {
       this._mainMenuUi.stopSpinner();
@@ -263,7 +263,7 @@ export default class MainController {
   async _compressSvg(settings) {
     const thisJobId = (this._latestCompressJobId = Math.random());
 
-    await svgo.abort();
+    await oxvg.abort();
 
     if (thisJobId !== this._latestCompressJobId) {
       // while we've been waiting, there's been a newer call
@@ -291,7 +291,7 @@ export default class MainController {
     this._downloadButtonUi.working();
 
     try {
-      const resultFile = await svgo.process(this._inputItem.text, settings);
+      const resultFile = await oxvg.process(this._inputItem.text, settings);
 
       this._updateForFile(resultFile, {
         compareToFile: this._inputItem,
