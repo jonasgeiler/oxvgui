@@ -25,7 +25,7 @@ addEventListener('install', (event) => {
         'js/gzip-worker.js',
         'js/page.js',
         'js/prism-worker.js',
-        'js/svgo-worker.js',
+        'js/oxvg-worker.js',
       ]);
 
       const activeVersion = await activeVersionPromise;

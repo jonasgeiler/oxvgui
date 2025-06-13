@@ -211,7 +211,7 @@ function clean() {
   return fs.rm('build', { force: true, recursive: true });
 }
 
-const oxvgWorker = js.bind(null, 'js/svgo-worker/index.js', 'js/');
+const oxvgWorker = js.bind(null, 'js/oxvg-worker/index.js', 'js/');
 const allJsExceptOxvgWorker = gulp.parallel(
   js.bind(null, 'js/prism-worker/index.js', 'js/'),
   js.bind(null, 'js/gzip-worker/index.js', 'js/'),

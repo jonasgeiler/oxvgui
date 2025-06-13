@@ -7,7 +7,7 @@ export default class Svgo extends WorkerMessenger {
     // WASM file before we can use the worker, which happens in the background
     // when we start it. Otherwise, the file would be loaded on the first
     // request, which would make the first request slow.
-    super('js/svgo-worker.js', true);
+    super('js/oxvg-worker.js', true);
     this._currentJob = Promise.resolve();
   }
 
