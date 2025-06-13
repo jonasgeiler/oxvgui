@@ -1,0 +1,51 @@
+# Based on https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/Cargo.toml
+
+[package]
+name = "oxvg-wasm-bindings"
+version = "0.0.3-1" # This reflects the "@oxvg/wasm" NPM package version, and is used by the Maintenance workflow to commit updates
+edition = "2021"
+description = "WebAssembly bindings for OXVG based on '@oxvg/wasm', but customized for OXVGUI"
+license = "MIT"
+repository = "https://github.com/jonasgeiler/oxvgui"
+authors = [
+  "Jonas Geiler <crates@jonasgeiler.com>", # OXVGUI author
+  "Noah <noahwbaldwin@gmail.com>" # OXVG author
+]
+publish = false
+
+[lints.rust]
+missing_docs = { level = "warn" }
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+# Too noisy and not really an issue
+must_use_candidate = "allow"
+return_self_not_must_use = "allow"
+# Not a priority for svgo parity
+float_cmp = "allow"
+dbg_macro = "warn"
+
+[lib]
+path = "src/rust/oxvg_wasm_bindings.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+# TODO: Set version to 0.0.3 when released
+oxvg_optimiser = { git = "https://github.com/noahbald/oxvg.git", tag = "v0.0.3-1", features = ["wasm"] }
+oxvg_ast = { git = "https://github.com/noahbald/oxvg.git", tag = "v0.0.3-1" }
+
+console_error_panic_hook = "0.1.7"
+getrandom = { version = "0.2", features = ["js"] }
+serde_json = "1.0"
+serde-wasm-bindgen = "0.6"
+typed-arena = "2.0"
+wasm-bindgen = "=0.2.100"
+tsify = { version = "0.5", default-features = false, features = ["js"] }
+lazy_static = "1.5"
+regex = "1.11"
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
+serde_with = "3.12"
+# web-sys = { version = "=0.3.70", features = ['console'] }
+
+[dev-dependencies]

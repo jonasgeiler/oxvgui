@@ -7,7 +7,8 @@ export default class SvgOutput {
     this.container = strToEl(
       '<div class="svg-output">' +
         '<div class="svg-container">' +
-          '<iframe class="svg-frame" sandbox="allow-scripts" scrolling="no" title="Loaded SVG file"></iframe>' +
+          //'<iframe class="svg-frame" sandbox="allow-scripts" scrolling="no" title="Loaded SVG file"></iframe>' +
+          '<img class="svg-frame" title="Loaded SVG file" />' +
         '</div>' +
       '</div>'
     );
@@ -35,7 +36,7 @@ export default class SvgOutput {
   }
 
   reset() {
-    this._svgFrame.src = 'about:blank';
+    this._svgFrame.src = '';
     this._panZoom.reset();
   }
 

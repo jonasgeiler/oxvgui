@@ -1,5 +1,7 @@
+@use "../mixins";
+
 .svg-output {
-  @include user-select(none);
+  @include mixins.user-select(none);
   position: absolute;
   top: 0;
   left: 0;
@@ -23,7 +25,7 @@
   right: 0;
   bottom: 0;
   transform-origin: 0 0;
-  transform: translateZ(0); // TODO: Is this needed?
+  transform: translateZ(0);
 }
 
 .svg-frame {

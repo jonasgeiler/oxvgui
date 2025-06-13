@@ -10,8 +10,8 @@ export default class Settings {
 
     domReady.then(() => {
       this.container = document.querySelector('.settings');
-      this._pluginInputs = [
-        ...this.container.querySelectorAll('.plugins input'),
+      this._jobInputs = [
+        ...this.container.querySelectorAll('.jobs input'),
       ];
       this._globalInputs = [
         ...this.container.querySelectorAll('.global input'),
@@ -75,7 +75,7 @@ export default class Settings {
       }
     }
 
-    for (const inputEl of this._pluginInputs) {
+    for (const inputEl of this._jobInputs) {
       inputEl.checked = inputEl.hasAttribute('checked');
     }
 
@@ -94,9 +94,9 @@ export default class Settings {
       }
     }
 
-    for (const inputEl of this._pluginInputs) {
-      if (!(inputEl.name in settings.plugins)) continue;
-      inputEl.checked = settings.plugins[inputEl.name];
+    for (const inputEl of this._jobInputs) {
+      if (!(inputEl.name in settings.jobs)) continue;
+      inputEl.checked = settings.jobs[inputEl.name];
     }
   }
 
@@ -104,7 +104,7 @@ export default class Settings {
     // fingerprint is used for cache lookups
     const fingerprint = [];
     const output = {
-      plugins: {},
+      jobs: {},
     };
 
     for (const inputEl of this._globalInputs) {
@@ -120,9 +120,9 @@ export default class Settings {
         inputEl.type === 'checkbox' ? inputEl.checked : inputEl.value;
     }
 
-    for (const inputEl of this._pluginInputs) {
+    for (const inputEl of this._jobInputs) {
       fingerprint.push(Number(inputEl.checked));
-      output.plugins[inputEl.name] = inputEl.checked;
+      output.jobs[inputEl.name] = inputEl.checked;
     }
 
     output.fingerprint = fingerprint.join(',');

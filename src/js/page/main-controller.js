@@ -1,5 +1,5 @@
 import { idbKeyval as storage } from '../utils/storage.js';
-import Svgo from './svgo.js';
+import Oxvg from './oxvg.js';
 import { domReady } from './utils.js';
 import Output from './ui/output.js';
 import DownloadButton from './ui/download-button.js';
@@ -17,7 +17,7 @@ import ViewToggler from './ui/view-toggler.js';
 import ResultsCache from './results-cache.js';
 import MainUi from './ui/main-ui.js';
 
-const svgo = new Svgo();
+const oxvg = new Oxvg();
 
 export default class MainController {
   constructor() {
@@ -34,7 +34,7 @@ export default class MainController {
     const bgFillUi = new BgFillButton();
     const dropUi = new FileDrop();
     const preloaderUi = new Preloader();
-    const changelogUi = new Changelog(self.svgomgVersion);
+    const changelogUi = new Changelog(self.oxvguiVersion);
     // _resultsContainerUi is unused
     this._resultsContainerUi = new ResultsContainer(this._resultsUi);
     const viewTogglerUi = new ViewToggler();
@@ -78,7 +78,7 @@ export default class MainController {
     // tell the user about the latest update
     storage.get('last-seen-version').then((lastSeenVersion) => {
       if (lastSeenVersion) changelogUi.showLogFrom(lastSeenVersion);
-      storage.set('last-seen-version', self.svgomgVersion);
+      storage.set('last-seen-version', self.oxvguiVersion);
     });
 
     domReady.then(() => {
@@ -122,7 +122,7 @@ export default class MainController {
       // eslint-disable-next-line no-constant-condition
       if (false) {
         (async () => {
-          const filename = 'car-lite.svg';
+          const filename = 'demo.svg';
           const data = await fetch(filename)
             .then((response) => response.text());
           this._onInputChange({ data, filename });
@@ -227,7 +227,7 @@ export default class MainController {
     this._userHasInteracted = true;
 
     try {
-      this._inputItem = await svgo.wrapOriginal(data);
+      this._inputItem = await oxvg.wrapOriginal(data);
       this._inputFilename = filename;
     } catch (error) {
       this._mainMenuUi.stopSpinner();
@@ -263,7 +263,7 @@ export default class MainController {
   async _compressSvg(settings) {
     const thisJobId = (this._latestCompressJobId = Math.random());
 
-    await svgo.abort();
+    await oxvg.abort();
 
     if (thisJobId !== this._latestCompressJobId) {
       // while we've been waiting, there's been a newer call
@@ -291,7 +291,7 @@ export default class MainController {
     this._downloadButtonUi.working();
 
     try {
-      const resultFile = await svgo.process(this._inputItem.text, settings);
+      const resultFile = await oxvg.process(this._inputItem.text, settings);
 
       this._updateForFile(resultFile, {
         compareToFile: this._inputItem,

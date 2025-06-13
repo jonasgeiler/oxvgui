@@ -1,10 +1,10 @@
-@import 'mixins';
-@import 'variables';
-@import 'fonts';
-@import 'utils';
-@import 'global';
-@import 'components/main-menu';
-@import 'components/preloader';
+@use 'mixins';
+@use 'variables';
+@use 'fonts';
+@use 'utils';
+@use 'global';
+@use 'components/main-menu';
+@use 'components/preloader';
 
 .unbutton {
   display: inline-block;

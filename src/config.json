@@ -1,12 +1,17 @@
 {
-  "plugins": [
+  "// Based on": "https://github.com/noahbald/oxvg/blob/94b2abbc1126ca4056d4bb4d14b3ad24f376db15/crates/oxvg_optimiser/src/jobs/mod.rs",
+  "// but": "the 'enabledByDefault' ones are basically the 'safe' ones",
+  "// and": "some jobs are always enabled, like 'precheck' - these can be found in `js/oxvg-worker/index.js`.",
+  "// Some jobs": "only take a boolean, not an object. We need to define those in `js/oxvg-worker/index.js` too.",
+  "// We also": "set 'disabled' to 'false' for every job that requires user config to do anything. They won't show up in the UI, but are here for completeness.",
+  "jobs": [
     {
       "id": "removeDoctype",
       "name": "Remove doctype",
       "enabledByDefault": true
     },
     {
-      "id": "removeXMLProcInst",
+      "id": "removeXmlProcInst",
       "name": "Remove XML instructions",
       "enabledByDefault": true
     },
@@ -22,16 +27,15 @@
     },
     {
       "id": "removeXMLNS",
-      "name": "Remove xmlns",
-      "enabledByDefault": false
+      "name": "Remove xmlns"
     },
     {
-      "id": "removeEditorsNSData",
+      "id": "removeEditorsNsData",
       "name": "Remove editor data",
       "enabledByDefault": true
     },
     {
-      "id": "cleanupAttrs",
+      "id": "cleanupAttributes",
       "name": "Clean up attribute whitespace",
       "enabledByDefault": true
     },
@@ -51,19 +55,13 @@
       "enabledByDefault": true
     },
     {
-      "id": "convertStyleToAttrs",
-      "name": "Style to attributes",
-      "enabledByDefault": false
-    },
-    {
       "id": "cleanupIds",
       "name": "Clean up IDs",
       "enabledByDefault": true
     },
     {
       "id": "removeRasterImages",
-      "name": "Remove raster images",
-      "enabledByDefault": false
+      "name": "Remove raster images"
     },
     {
       "id": "removeUselessDefs",
@@ -77,12 +75,11 @@
     },
     {
       "id": "cleanupListOfValues",
-      "name": "Round/rewrite number lists",
-      "enabledByDefault": false
+      "name": "Round/rewrite number lists"
     },
     {
       "id": "convertColors",
-      "name": "Minify colours",
+      "name": "Minify colors",
       "enabledByDefault": true
     },
     {
@@ -102,8 +99,7 @@
     },
     {
       "id": "removeViewBox",
-      "name": "Remove viewBox",
-      "enabledByDefault": false
+      "name": "Remove viewBox"
     },
     {
       "id": "cleanupEnableBackground",
@@ -177,8 +173,7 @@
     },
     {
       "id": "reusePaths",
-      "name": "Replace duplicate elements with links",
-      "enabledByDefault": false
+      "name": "Replace duplicate elements with links"
     },
     {
       "id": "sortAttrs",
@@ -192,8 +187,7 @@
     },
     {
       "id": "removeTitle",
-      "name": "Remove <title>",
-      "enabledByDefault": false
+      "name": "Remove <title>"
     },
     {
       "id": "removeDesc",
@@ -202,23 +196,62 @@
     },
     {
       "id": "removeDimensions",
-      "name": "Prefer viewBox to width/height",
-      "enabledByDefault": false
+      "name": "Prefer viewBox to width/height"
     },
     {
       "id": "removeStyleElement",
-      "name": "Remove style elements",
-      "enabledByDefault": false
+      "name": "Remove style elements"
     },
     {
-      "id": "removeScriptElement",
-      "name": "Remove script elements",
-      "enabledByDefault": false
+      "id": "removeScripts",
+      "name": "Remove script elements"
     },
     {
       "id": "removeOffCanvasPaths",
-      "name": "Remove out-of-bounds paths",
-      "enabledByDefault": false
+      "name": "Remove out-of-bounds paths"
+    },
+    {
+      "id": "addAttributesToSvgElement",
+      "name": "Add attributes to SVG element",
+      "disabled": true
+    },
+    {
+      "id": "addClassesToSvg",
+      "name": "Add classes to SVG",
+      "disabled": true
+    },
+    {
+      "id": "removeAttributesBySelector",
+      "name": "Remove attributes by selector",
+      "disabled": true
+    },
+    {
+      "id": "removeAttrs",
+      "name": "Remove attrs",
+      "disabled": true
+    },
+    {
+      "id": "removeElementsByAttr",
+      "name": "Remove elements by attr",
+      "disabled": true
+    },
+    {
+      "id": "removeDeprecatedAttrs",
+      "name": "Remove deprecated attributes",
+      "enabledByDefault": true
+    },
+    {
+      "id": "applyTransforms",
+      "name": "Apply transforms",
+      "enabledByDefault": true
+    },
+    {
+      "id": "prefixIds",
+      "name": "Prefix IDs"
+    },
+    {
+      "id": "removeXlink",
+      "name": "Remove xlink"
     }
   ]
 }

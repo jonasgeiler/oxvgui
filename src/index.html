@@ -3,37 +3,22 @@
   <head>
     <meta charset="utf-8">
     <title>{{ title }}</title>
-    <meta name="theme-color" content="#303f9f">
+    <meta name="theme-color" content="#e64a19">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="preload" crossorigin as="font" href="fonts/code-latin.woff2">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="{{ iconPath }}">
-    <link rel="icon" href="{{ iconPath }}">
+    <link rel="preload" crossorigin as="font" href="code-latin.woff2">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="favicon.ico" sizes="32x32">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="SVGOMG">
+    <meta name="application-name" content="OXVGUI">
     <meta name="twitter:card" content="summary">
     <meta name="description" content="{{ description }}">
     <meta property="og:description" content="{{ description }}">
-    <meta property="og:image" content="{{ liveBaseUrl }}{{ iconPath }}">
+    <meta property="og:image" content="{{ liveBaseUrl }}icon-mask.png">
     <meta property="og:title" content="{{ title }}">
     <script>
-      if ((!location.port || location.port === '80') && location.protocol !== 'https:') {
-        location.protocol = 'https:';
-      }
-
-      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-      ga('create', 'UA-58850134-1', 'auto');
-      ga('send', 'pageview');
-
-      window.svgomgVersion = '{{SVGOMG_VERSION}}';
-
-      // Delay analytics until after the page has loaded, to avoid extending
-      // the browser spinner, and allow higher priority stuff through.
-      addEventListener('load', function() {
-        const script = document.createElement('script');
-        script.src = 'https://www.google-analytics.com/analytics.js';
-        document.head.appendChild(script);
-      });
+      window.oxvguiVersion = '{{OXVGUI_VERSION}}';
     </script>
     <script src="js/page.js" defer></script>
     <style>{{headCSS|safe}}</style>
@@ -48,23 +33,27 @@
             {% include "_partials/icons/logo.svg" %}
             <div class="title-text">
               <div>
-                <h1>SVGOMG</h1>
-                <small title="Version {{SVGOMG_VERSION}}">
-                  &nbsp;v{{SVGOMG_VERSION}}
+                <h1>OXVGUI</h1>
+                <small title="Version {{OXVGUI_VERSION}}">
+                  &nbsp;v{{OXVGUI_VERSION}}
                 </small>
               </div>
               <p>
                 Powered by
-                <a href="https://svgo.dev" target="_blank">
-                  SVGO
-                  <small title="Version {{SVGO_VERSION}}">
-                    v{{SVGO_VERSION}}
+                <a href="https://github.com/noahbald/oxvg" target="_blank">
+                  OXVG
+                  <small title="Version {{OXVG_VERSION}}">
+                    v{{OXVG_VERSION}}
                   </small>
                 </a>
               </p>
             </div>
           </div>
           <ul>
+            <!-- TODO: Remove unstable warning at some point -->
+            <li>
+              <span class="menu-item" style="justify-content:center;color:#a00">WARNING: Unstable!</span>
+            </li>
             <li>
               <button class="load-file unbutton menu-item" type="button">
                 {% include "_partials/icons/open.svg" %}
@@ -88,7 +77,7 @@
               </button>
             </li>
             <li>
-              <a href="https://github.com/jakearchibald/svgomg" class="menu-item">
+              <a href="https://github.com/jonasgeiler/oxvgui" class="menu-item">
                 {% include "_partials/icons/contribute.svg" %}
                 <span class="menu-item-text">Contribute</span>
               </a>
@@ -143,11 +132,13 @@
                 {% include "_partials/material-switch.html" %}
                 Prettify markup
               </label>
+              <!--
               <label class="setting-item-toggle">
                 <input type="checkbox" name="multipass">
                 {% include "_partials/material-switch.html" %}
                 Multipass
               </label>
+              -->
               <label class="setting-item-range">
                 <span class="label-text">Number precision</span>
                 <input type="range" min="0" max="8" step="1" value="3" name="floatPrecision">
@@ -157,16 +148,18 @@
                 <input type="range" min="0" max="8" step="1" value="5" name="transformPrecision">
               </label>
             </section>
-            <section class="plugins">
+            <section class="jobs">
               <h1 class="settings-sub-heading">Features</h1>
-              {% for plugin in plugins %}
-                <label class="setting-item-toggle">
-                  <input type="checkbox"
-                         name="{{ plugin.id }}"
-                         {% if plugin.enabledByDefault %}checked{% endif %}>
-                  {% include "_partials/material-switch.html" %}
-                  {{ plugin.name }}
-                </label>
+              {% for job in jobs %}
+                {% if not job.disabled %}
+                  <label class="setting-item-toggle">
+                    <input type="checkbox"
+                           name="{{ job.id }}"
+                           {% if job.enabledByDefault %}checked{% endif %}>
+                    {% include "_partials/material-switch.html" %}
+                    {{ job.name }}
+                  </label>
+                {% endif %}
               {% endfor %}
             </section>
             <div class="setting-reset-row">
@@ -179,13 +172,12 @@
         <div class="spinner">
           <div class="spinner-container">
             <div class="spinner-layer">
+              <!-- Whitespace here would break the spinner -->
               <div class="circle-clipper left">
                 <div class="circle"></div>
-              </div>
-              <div class="gap-patch">
+              </div><div class="gap-patch">
                 <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
+              </div><div class="circle-clipper right">
                 <div class="circle"></div>
               </div>
             </div>
@@ -195,9 +187,7 @@
       </div>
       <script>
         document.querySelector('.preloader').addEventListener('click', function() {
-          // track it
-          ga('send', 'event', 'preloader', 'clicked');
-          this.className = 'preloader active';
+          this.classList.add('active');
         });
       </script>
     </div>

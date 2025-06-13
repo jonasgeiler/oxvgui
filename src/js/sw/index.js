@@ -1,9 +1,9 @@
-/* globals SVGOMG_VERSION:false */
+/* globals OXVGUI_VERSION:false */
 
 import { idbKeyval as storage } from '../utils/storage.js';
 
-const version = SVGOMG_VERSION;
-const cachePrefix = 'svgomg-';
+const version = OXVGUI_VERSION;
+const cachePrefix = 'oxvgui-';
 const staticCacheName = `${cachePrefix}static-${version}`;
 const fontCacheName = `${cachePrefix}fonts`;
 const expectedCaches = new Set([staticCacheName, fontCacheName]);
@@ -17,14 +17,15 @@ addEventListener('install', (event) => {
       await cache.addAll([
         './',
         'all.css',
-        'car-lite.svg',
+        'demo.svg',
         'changelog.json',
-        'fonts/code-latin.woff2',
-        'imgs/icon.png',
+        'code-latin.woff2',
+        'icon.svg',
+        'oxvg_wasm_bindings_bg.wasm',
         'js/gzip-worker.js',
         'js/page.js',
         'js/prism-worker.js',
-        'js/svgo-worker.js',
+        'js/oxvg-worker.js',
       ]);
 
       const activeVersion = await activeVersionPromise;
@@ -43,7 +44,7 @@ addEventListener('install', (event) => {
 addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
-      // remove caches beginning "svgomg-" that aren't in expectedCaches
+      // remove caches beginning "oxvgui-" that aren't in expectedCaches
       const cacheNames = await caches.keys();
 
       await Promise.all(

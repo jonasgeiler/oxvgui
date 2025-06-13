@@ -1,5 +1,8 @@
+@use "sass:color";
+@use "../mixins";
+
 .material-tabs {
-  @include user-select(none);
+  @include mixins.user-select(none);
   display: flex;
   align-self: stretch;
   text-transform: uppercase;
@@ -30,15 +33,15 @@
     left: 0;
     right: 0;
     top: 0;
-    border-bottom: 2px solid transparent;
+    border-bottom: 4px solid transparent;
   }
 
   :checked + .selected,
   :focus + .selected {
-    border-color: #00bcd4;
+    border-color: #ffccbc;
   }
 
   :focus + .selected {
-    background-color: transparentize(#fff, 0.9);
+    background-color: color.adjust(#fff, $alpha: -0.9);
   }
 }

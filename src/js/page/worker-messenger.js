@@ -1,10 +1,15 @@
 export default class WorkerMessenger {
-  constructor(url) {
+  constructor(url, startImmediately = false) {
     this._requestId = 0;
     // worker jobs awaiting response { [requestId]: [ resolve, reject ] }
     this._pending = {};
     this._url = url;
     this._worker = null;
+
+    // Mainly used by the OXVG worker to preload the WASM file.
+    if (startImmediately) {
+      this._startWorker();
+    }
   }
 
   release() {
