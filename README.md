@@ -8,16 +8,16 @@ This is a fork of [SVGOMG](https://jakearchibald.github.io/svgomg/).
 
 [Check out the issues](https://github.com/jonasgeiler/oxvgui/issues) to see what's planned, or suggest ideas of your own!
 
-## Running locally
+## Local development
 
 Install dependencies:
 
 ```sh
-npm install
+pnpm install
 ```
 
-Run dev server:
+Run development server:
 
 ```sh
-npm run dev
+pnpm run dev
 ```
