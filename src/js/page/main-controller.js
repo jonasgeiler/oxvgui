@@ -34,7 +34,7 @@ export default class MainController {
     const bgFillUi = new BgFillButton();
     const dropUi = new FileDrop();
     const preloaderUi = new Preloader();
-    const changelogUi = new Changelog(self.svgomgVersion);
+    const changelogUi = new Changelog(self.oxvguiVersion);
     // _resultsContainerUi is unused
     this._resultsContainerUi = new ResultsContainer(this._resultsUi);
     const viewTogglerUi = new ViewToggler();
@@ -78,7 +78,7 @@ export default class MainController {
     // tell the user about the latest update
     storage.get('last-seen-version').then((lastSeenVersion) => {
       if (lastSeenVersion) changelogUi.showLogFrom(lastSeenVersion);
-      storage.set('last-seen-version', self.svgomgVersion);
+      storage.set('last-seen-version', self.oxvguiVersion);
     });
 
     domReady.then(() => {

@@ -112,7 +112,7 @@ async function html() {
         plugins: config.plugins,
         jobs: config.jobs,
         headCSS,
-        SVGOMG_VERSION: pkg.version,
+        OXVGUI_VERSION: pkg.version,
         SVGO_VERSION: pkg.devDependencies.svgo,
         liveBaseUrl: pkg.homepage,
         title: 'OXVGUI - OXVG User Interface',
@@ -133,7 +133,7 @@ async function js(entry, outputPath) {
     plugins: [
       rollupReplace({
         preventAssignment: true,
-        SVGOMG_VERSION: JSON.stringify(pkg.version),
+        OXVGUI_VERSION: JSON.stringify(pkg.version),
       }),
       rollupResolve({ browser: true }),
       rollupCommon({ include: /node_modules/ }),
