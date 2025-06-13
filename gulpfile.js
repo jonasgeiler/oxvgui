@@ -123,6 +123,7 @@ async function html() {
         liveBaseUrl: pkg.homepage,
         title: 'OXVGUI - OXVG User Interface',
         description: pkg.description,
+        author: pkg.author,
       }),
     )
     .pipe(gulpif(!IS_DEV_TASK, gulpHtmlmin(buildConfig.htmlmin)))
