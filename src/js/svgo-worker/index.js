@@ -39,6 +39,11 @@ const booleanPlugins = [
   'sortDefsChildren',
 ];
 
+const floatPrecisionNonZeroPlugins = [
+  'cleanupListOfValues',
+  'cleanupNumericValues',
+];
+
 function compress(svgInput, settings) {
   // setup plugin list
   const floatPrecision = Number(settings.floatPrecision);
@@ -52,11 +57,16 @@ function compress(svgInput, settings) {
       : {
         // 0 almost always breaks images when used on `cleanupNumericValues`.
         // Better to allow 0 for everything else, but switch to 1 for this plugin.
-        floatPrecision: name === 'cleanupNumericValues' && floatPrecision === 0
+        floatPrecision: floatPrecision === 0 && floatPrecisionNonZeroPlugins.includes(name)
           ? 1
           : floatPrecision,
         transformPrecision,
       };
+
+    if (name === 'prefixIds') {
+      // TODO: Maybe let user customize prefix in the future?
+      jobs[name].prefix = 'oxvgui';
+    }
   }
 
   console.log(jobs);

@@ -1,250 +1,256 @@
 {
   "// Based on": "https://github.com/noahbald/oxvg/blob/94b2abbc1126ca4056d4bb4d14b3ad24f376db15/crates/oxvg_optimiser/src/jobs/mod.rs",
   "// but": "the 'enabledByDefault' ones are basically the 'safe' ones",
-  "// and": "some jobs are always enabled, like 'precheck' - these can be found in `js/oxvg-worker/index.js`",
+  "// and": "some jobs are always enabled, like 'precheck' - these can be found in `js/oxvg-worker/index.js`.",
+  "// We also": "set 'disabled' to 'false' for every job that requires user config to do anything. They won't show up in the UI, but are here for completeness.",
   "jobs": [
     {
       "id": "addAttributesToSvgElement",
-      "name": "AddAttributesToSVGElement"
+      "name": "Add Attributes To SVG Element",
+      "disabled": true
     },
     {
       "id": "addClassesToSvg",
-      "name": "AddClassesToSVG"
+      "name": "Add Classes To SVG",
+      "disabled": true
     },
     {
       "id": "cleanupListOfValues",
-      "name": "CleanupListOfValues"
+      "name": "Cleanup List Of Values"
     },
     {
       "id": "removeAttributesBySelector",
-      "name": "RemoveAttributesBySelector"
+      "name": "Remove Attributes By Selector",
+      "disabled": true
     },
     {
       "id": "removeAttrs",
-      "name": "RemoveAttrs"
+      "name": "Remove Attributes",
+      "disabled": true
     },
     {
       "id": "removeDimensions",
-      "name": "RemoveDimensions"
+      "name": "Remove Dimensions"
     },
     {
       "id": "removeElementsByAttr",
-      "name": "RemoveElementsByAttr"
+      "name": "Remove Elements By Attribute",
+      "disabled": true
     },
     {
       "id": "removeOffCanvasPaths",
-      "name": "RemoveOffCanvasPaths"
+      "name": "Remove Off Canvas Paths"
     },
     {
       "id": "removeRasterImages",
-      "name": "RemoveRasterImages"
+      "name": "Remove Raster Images"
     },
     {
       "id": "removeScripts",
-      "name": "RemoveScripts"
+      "name": "Remove Scripts"
     },
     {
       "id": "removeStyleElement",
-      "name": "RemoveStyleElement"
+      "name": "Remove Style Element"
     },
     {
       "id": "removeTitle",
-      "name": "RemoveTitle"
+      "name": "Remove Title"
     },
     {
       "id": "removeViewBox",
-      "name": "RemoveViewBox"
+      "name": "Remove viewBox"
     },
     {
       "id": "reusePaths",
-      "name": "ReusePaths"
+      "name": "Reuse Paths"
     },
     {
       "id": "removeXMLNS",
-      "name": "RemoveXMLNS"
+      "name": "Remove XMLNS"
     },
     {
       "id": "removeDoctype",
-      "name": "RemoveDoctype",
+      "name": "Remove Doctype",
       "enabledByDefault": true
     },
     {
       "id": "removeXmlProcInst",
-      "name": "RemoveXMLProcInst",
+      "name": "Remove XMLProcInst",
       "enabledByDefault": true
     },
     {
       "id": "removeComments",
-      "name": "RemoveComments",
+      "name": "Remove Comments",
       "enabledByDefault": true
     },
     {
       "id": "removeDeprecatedAttrs",
-      "name": "RemoveDeprecatedAttrs",
+      "name": "Remove Deprecated Attributes",
       "enabledByDefault": true
     },
     {
       "id": "removeMetadata",
-      "name": "RemoveMetadata",
+      "name": "Remove Metadata",
       "enabledByDefault": true
     },
     {
       "id": "removeEditorsNsData",
-      "name": "RemoveEditorsNSData",
+      "name": "Remove Editor's Namespace Data",
       "enabledByDefault": true
     },
     {
       "id": "cleanupAttributes",
-      "name": "CleanupAttributes",
+      "name": "Cleanup Attributes",
       "enabledByDefault": true
     },
     {
       "id": "mergeStyles",
-      "name": "MergeStyles",
+      "name": "Merge Styles",
       "enabledByDefault": true
     },
     {
       "id": "inlineStyles",
-      "name": "InlineStyles",
+      "name": "Inline Styles",
       "enabledByDefault": true
     },
     {
       "id": "minifyStyles",
-      "name": "MinifyStyles",
+      "name": "Minify Styles",
       "enabledByDefault": true
     },
     {
       "id": "cleanupIds",
-      "name": "CleanupIds",
+      "name": "Cleanup Ids",
       "enabledByDefault": true
     },
     {
       "id": "removeUselessDefs",
-      "name": "RemoveUselessDefs",
+      "name": "Remove Useless Defs",
       "enabledByDefault": true
     },
     {
       "id": "cleanupNumericValues",
-      "name": "CleanupNumericValues",
+      "name": "Cleanup Numeric Values",
       "enabledByDefault": true
     },
     {
       "id": "convertColors",
-      "name": "ConvertColors",
+      "name": "Convert Colors",
       "enabledByDefault": true
     },
     {
       "id": "removeUnknownsAndDefaults",
-      "name": "RemoveUnknownsAndDefaults",
+      "name": "Remove Unknowns And Defaults",
       "enabledByDefault": true
     },
     {
       "id": "removeNonInheritableGroupAttrs",
-      "name": "RemoveNonInheritableGroupAttrs",
+      "name": "Remove Non-Inheritable Group Attributes",
       "enabledByDefault": true
     },
     {
       "id": "removeUselessStrokeAndFill",
-      "name": "RemoveUselessStrokeAndFill",
+      "name": "Remove Useless Stroke And Fill",
       "enabledByDefault": true
     },
     {
       "id": "cleanupEnableBackground",
-      "name": "CleanupEnableBackground",
+      "name": "Cleanup Enable Background",
       "enabledByDefault": true
     },
     {
       "id": "removeHiddenElems",
-      "name": "RemoveHiddenElems",
+      "name": "Remove Hidden Elements",
       "enabledByDefault": true
     },
     {
       "id": "removeEmptyText",
-      "name": "RemoveEmptyText",
+      "name": "Remove Empty Text",
       "enabledByDefault": true
     },
     {
       "id": "convertShapeToPath",
-      "name": "ConvertShapeToPath",
+      "name": "Convert Shape To Path",
       "enabledByDefault": true
     },
     {
       "id": "convertEllipseToCircle",
-      "name": "ConvertEllipseToCircle",
+      "name": "Convert Ellipse To Circle",
       "enabledByDefault": true
     },
     {
       "id": "moveElemsAttrsToGroup",
-      "name": "MoveElemsAttrsToGroup",
+      "name": "Move Elements Attributes To Group",
       "enabledByDefault": true
     },
     {
       "id": "moveGroupAttrsToElems",
-      "name": "MoveGroupAttrsToElems",
+      "name": "Move Group Attributes To Elements",
       "enabledByDefault": true
     },
     {
       "id": "collapseGroups",
-      "name": "CollapseGroups",
+      "name": "Collapse Groups",
       "enabledByDefault": true
     },
     {
       "id": "applyTransforms",
-      "name": "ApplyTransforms",
+      "name": "Apply Transforms",
       "enabledByDefault": true
     },
     {
       "id": "convertPathData",
-      "name": "ConvertPathData",
+      "name": "Convert Path Data",
       "enabledByDefault": true
     },
     {
       "id": "convertTransform",
-      "name": "ConvertTransform",
+      "name": "Convert Transform",
       "enabledByDefault": true
     },
     {
       "id": "removeEmptyAttrs",
-      "name": "RemoveEmptyAttrs",
+      "name": "Remove Empty Attributes",
       "enabledByDefault": true
     },
     {
       "id": "removeEmptyContainers",
-      "name": "RemoveEmptyContainers",
+      "name": "Remove Empty Containers",
       "enabledByDefault": true
     },
     {
       "id": "removeUnusedNS",
-      "name": "RemoveUnusedNS",
+      "name": "Remove Unused Namespaces",
       "enabledByDefault": true
     },
     {
       "id": "mergePaths",
-      "name": "MergePaths",
+      "name": "Merge Paths",
       "enabledByDefault": true
     },
     {
       "id": "sortAttrs",
-      "name": "SortAttrs",
+      "name": "Sort Attrs",
       "enabledByDefault": true
     },
     {
       "id": "sortDefsChildren",
-      "name": "SortDefsChildren",
+      "name": "Sort Defs Children",
       "enabledByDefault": true
     },
     {
       "id": "removeDesc",
-      "name": "RemoveDesc",
+      "name": "Remove Desc",
       "enabledByDefault": true
     },
     {
       "id": "prefixIds",
-      "name": "PrefixIds"
+      "name": "Prefix Ids"
     },
     {
       "id": "removeXlink",
-      "name": "RemoveXlink"
+      "name": "Remove Xlink"
     }
   ],
   "plugins": [

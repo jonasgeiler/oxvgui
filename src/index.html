@@ -145,13 +145,15 @@
             <section class="plugins">
               <h1 class="settings-sub-heading">Features</h1>
               {% for job in jobs %}
-                <label class="setting-item-toggle">
-                  <input type="checkbox"
-                         name="{{ job.id }}"
-                         {% if job.enabledByDefault %}checked{% endif %}>
-                  {% include "_partials/material-switch.html" %}
-                  {{ job.name }}
-                </label>
+                {% if not job.disabled %}
+                  <label class="setting-item-toggle">
+                    <input type="checkbox"
+                           name="{{ job.id }}"
+                           {% if job.enabledByDefault %}checked{% endif %}>
+                    {% include "_partials/material-switch.html" %}
+                    {{ job.name }}
+                  </label>
+                {% endif %}
               {% endfor %}
             </section>
             <div class="setting-reset-row">
