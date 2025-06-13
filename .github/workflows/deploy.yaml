@@ -5,13 +5,13 @@ on:
     tags:
       - 'v*.*.*'
 
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
   deploy:
     name: Deploy
+
+    concurrency:
+      group: pages
+      cancel-in-progress: false
 
     environment:
       name: github-pages
