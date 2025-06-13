@@ -84,6 +84,7 @@ function copy() {
       'src/fonts/*',
       'src/public/*',
       'src/*.json',
+      '!src/config.json', // Not needed in build, only referenced in gulpfile at the moment
     ], {
       encoding: false, // Prevent image and font files from being re-encoded
     })
