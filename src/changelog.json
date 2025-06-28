@@ -2,9 +2,5 @@
   {
     "version": "0.0.5",
     "changes": ["Reworked the logo."]
-  },
-  {
-    "version": "0.0.1",
-    "changes": ["First unstable release."]
   }
 ]
