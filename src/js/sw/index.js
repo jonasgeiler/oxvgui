@@ -20,6 +20,8 @@ addEventListener('install', (event) => {
         'changelog.json',
         'code-latin.woff2',
         'demo.svg',
+        'icon-192.png',
+        'icon-512.png',
         'icon.svg',
         'js/gzip-worker.js',
         'js/oxvg-worker.js',

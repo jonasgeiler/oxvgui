@@ -1,7 +1,11 @@
 [
   {
+    "version": "0.0.7",
+    "changes": ["Further improved offline support."]
+  },
+  {
     "version": "0.0.6",
-    "changes": ["Improve offline support."]
+    "changes": ["Improved offline support."]
   },
   {
     "version": "0.0.5",
