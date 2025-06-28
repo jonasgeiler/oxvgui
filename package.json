@@ -2,7 +2,7 @@
   "name": "oxvgui",
   "description": "Easy & visual compression of SVG images.",
   "private": true,
-  "version": "0.0.5",
+  "version": "0.0.6",
   "license": "MIT",
   "author": "Jonas Geiler",
   "contributors": [
