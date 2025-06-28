@@ -20,6 +20,7 @@ const booleanJobs = [
   'cleanupEnableBackground',
   'collapseGroups',
   'convertEllipseToCircle',
+  'convertOneStopGradients',
   'mergeStyles',
   'moveElemsAttrsToGroup',
   'moveGroupAttrsToElems',
@@ -38,7 +39,7 @@ const booleanJobs = [
   'removeUselessDefs',
   'removeViewBox',
   'removeXMLNS',
-  'removeXmlProcInst',
+  'removeXMLProcInst',
   'reusePaths',
   'sortDefsChildren',
 ];

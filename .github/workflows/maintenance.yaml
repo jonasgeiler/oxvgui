@@ -27,12 +27,11 @@ jobs:
 
       - name: Update oxvg-wasm-bindings version
         id: update-version
-        # TODO: Switch to "latest" tag when it is fixed
         run: |
           IFS=$' \n\t'; set -ux
 
-          # Get the latest version from npm registry (usually we would use "latest", but at the time of writing it is broken, so we use "next")
-          version="$(curl -s -H 'Accept: application/json' "https://registry.npmjs.org/@oxvg/wasm/next" | jq -r '.version')"
+          # Get the latest version from npm registry
+          version="$(curl -s -H 'Accept: application/json' "https://registry.npmjs.org/@oxvg/wasm/latest" | jq -r '.version')"
           echo "version=${version}" >> "${GITHUB_OUTPUT}"
 
           # Replace the version field in Cargo.toml with the latest version

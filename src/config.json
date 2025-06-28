@@ -11,7 +11,7 @@
       "enabledByDefault": true
     },
     {
-      "id": "removeXmlProcInst",
+      "id": "removeXMLProcInst",
       "name": "Remove XML instructions",
       "enabledByDefault": true
     },
@@ -30,12 +30,12 @@
       "name": "Remove xmlns"
     },
     {
-      "id": "removeEditorsNsData",
+      "id": "removeEditorsNSData",
       "name": "Remove editor data",
       "enabledByDefault": true
     },
     {
-      "id": "cleanupAttributes",
+      "id": "cleanupAttrs",
       "name": "Clean up attribute whitespace",
       "enabledByDefault": true
     },
@@ -53,6 +53,10 @@
       "id": "minifyStyles",
       "name": "Minify styles",
       "enabledByDefault": true
+    },
+    {
+      "id": "convertStyleToAttrs",
+      "name": "Style to attributes"
     },
     {
       "id": "cleanupIds",
@@ -211,14 +215,18 @@
       "name": "Remove out-of-bounds paths"
     },
     {
-      "id": "addAttributesToSvgElement",
+      "id": "addAttributesToSVGElement",
       "name": "Add attributes to SVG element",
       "disabled": true
     },
     {
-      "id": "addClassesToSvg",
+      "id": "addClassesToSVGElement",
       "name": "Add classes to SVG",
       "disabled": true
+    },
+    {
+      "id": "convertOneStopGradients",
+      "name": "Convert one-stop gradients"
     },
     {
       "id": "removeAttributesBySelector",

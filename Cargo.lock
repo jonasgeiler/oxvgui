@@ -574,7 +574,7 @@ checksum = "1261fe7e33c73b354eab43b1273a57c8f967d0391e80353e51f764ac02cf6775"
 
 [[package]]
 name = "oxvg-wasm-bindings"
-version = "0.0.3-1"
+version = "0.0.3"
 dependencies = [
  "console_error_panic_hook",
  "getrandom",
@@ -594,8 +594,9 @@ dependencies = [
 
 [[package]]
 name = "oxvg_ast"
-version = "0.0.2"
-source = "git+https://github.com/noahbald/oxvg.git?tag=v0.0.3-1#465ce5338b358b3c3dd53f6783d4fa71b66c30cd"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b42de3ff7a87d68b52fc3bb5770ed1fc4b8342a9fc91306fbf606214fea6df87"
 dependencies = [
  "bitflags",
  "cfg-if",
@@ -618,8 +619,9 @@ dependencies = [
 
 [[package]]
 name = "oxvg_collections"
-version = "0.0.2"
-source = "git+https://github.com/noahbald/oxvg.git?tag=v0.0.3-1#465ce5338b358b3c3dd53f6783d4fa71b66c30cd"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4207f051664cb3aa2af2f4e7123da64a24ea35f74c3bdc983e02f02a45c4168c"
 dependencies = [
  "lazy_static",
  "phf",
@@ -628,8 +630,9 @@ dependencies = [
 
 [[package]]
 name = "oxvg_optimiser"
-version = "0.0.2"
-source = "git+https://github.com/noahbald/oxvg.git?tag=v0.0.3-1#465ce5338b358b3c3dd53f6783d4fa71b66c30cd"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e88baed78d7c4108d87991432aaace1a5de558c42e1a86cbfe9be66f7654175"
 dependencies = [
  "anyhow",
  "derive-where",
@@ -656,8 +659,9 @@ dependencies = [
 
 [[package]]
 name = "oxvg_path"
-version = "0.0.2"
-source = "git+https://github.com/noahbald/oxvg.git?tag=v0.0.3-1#465ce5338b358b3c3dd53f6783d4fa71b66c30cd"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "92e9580aa949ffc3535893e5e8045f2c0b4660e8c35c320ad66c784d548842d6"
 dependencies = [
  "bitflags",
  "lightningcss",

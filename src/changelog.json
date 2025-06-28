@@ -1,7 +1,12 @@
 [
   {
-    "version": "0.0.9",
-    "changes": ["Improved mobile web app capability detection."]
+    "version": "0.1.0",
+    "changes": [
+      "Updated to OXVG v0.0.3!",
+      "Added 'Style to attributes' feature.",
+      "Added 'Convert one-stop gradients' feature.",
+      "Improved mobile web app capability detection."
+    ]
   },
   {
     "version": "0.0.8",
