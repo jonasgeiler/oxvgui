@@ -4,7 +4,7 @@
    version="1.1"
    id="svg4"
    sodipodi:docname="logo.inkscape.svg"
-   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
    width="560"
    height="560"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -29,12 +29,12 @@
      inkscape:deskcolor="#d1d1d1"
      showguides="true"
      inkscape:zoom="1.4142136"
-     inkscape:cx="280.01428"
-     inkscape:cy="279.66072"
-     inkscape:window-width="2560"
-     inkscape:window-height="1369"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:cx="280.72138"
+     inkscape:cy="278.95362"
+     inkscape:window-width="1920"
+     inkscape:window-height="1052"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg4"
      inkscape:clip-to-page="false" />
@@ -60,8 +60,9 @@
   <path
      d="m 214.99999,475 48.75,-146.25 H 117.5 L 345,85 296.25,231.25 H 442.5 Z"
      id="path4"
-     style="stroke-width:1.51869;fill:#ffffff"
-     inkscape:label="lightning" />
+     style="fill:#ffffff;stroke-width:1.51869"
+     inkscape:label="lightning"
+     sodipodi:insensitive="true" />
   <metadata
      id="metadata1">
     <rdf:RDF>
