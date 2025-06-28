@@ -1,5 +1,9 @@
 [
   {
+    "version": "0.0.6",
+    "changes": ["Improve offline support."]
+  },
+  {
     "version": "0.0.5",
     "changes": ["Reworked the logo."]
   }
