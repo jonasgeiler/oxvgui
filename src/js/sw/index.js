@@ -17,15 +17,16 @@ addEventListener('install', (event) => {
       await cache.addAll([
         './',
         'all.css',
-        'demo.svg',
         'changelog.json',
         'code-latin.woff2',
+        'demo.svg',
         'icon.svg',
-        'oxvg_wasm_bindings_bg.wasm',
         'js/gzip-worker.js',
+        'js/oxvg-worker.js',
         'js/page.js',
         'js/prism-worker.js',
-        'js/oxvg-worker.js',
+        'manifest.webmanifest',
+        'oxvg_wasm_bindings_bg.wasm',
       ]);
 
       const activeVersion = await activeVersionPromise;
