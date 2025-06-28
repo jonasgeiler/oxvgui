@@ -1,5 +1,9 @@
 [
   {
+    "version": "0.0.9",
+    "changes": ["Improved mobile web app capability detection."]
+  },
+  {
     "version": "0.0.8",
     "changes": ["Improved paste input accessibility."]
   },
