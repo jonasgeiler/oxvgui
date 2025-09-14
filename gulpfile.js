@@ -121,7 +121,7 @@ async function html() {
         OXVGUI_VERSION: pkg.version,
         OXVG_VERSION: cargoToml.package.version,
         liveBaseUrl: pkg.homepage,
-        title: 'OXVGUI - Quickly optimize and minify SVG images online',
+        title: 'OXVGUI - Free Online SVG Compressor and Optimizer',
         description: pkg.description,
         author: pkg.author,
       }),
