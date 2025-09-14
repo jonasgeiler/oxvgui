@@ -1,6 +1,6 @@
 {
   "name": "oxvgui",
-  "description": "Easy & visual compression of SVG images.",
+  "description": "Free web-based SVG optimizer powered by OXVG. Compress, clean up, and reduce file sizes of SVG graphics with visual feedback and advanced configuration options.",
   "private": true,
   "version": "0.1.2",
   "license": "MIT",
