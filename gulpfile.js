@@ -17,11 +17,9 @@ const rollupCommon = require('@rollup/plugin-commonjs');
 const rollupReplace = require('@rollup/plugin-replace');
 const rollupTerser = require('@rollup/plugin-terser');
 const liveServer = require("live-server");
-const pkg = require('./package.json');
 const TOML = require('smol-toml');
 
 const BUILD_FOLDER = 'build';
-
 const IS_DEV_TASK =
   process.argv.includes('dev') || process.argv.includes('--dev');
 console.log(styleText('green', '--- ' + (IS_DEV_TASK ? 'Development Mode' : 'Production Mode') + ' ---'));
@@ -72,13 +70,16 @@ const buildConfig = {
   },
 };
 
+const readFile = async (filePath) =>
+  await fs.readFile(filePath, 'utf8');
+
 const readJSON = async (filePath) => {
-  const content = await fs.readFile(filePath, 'utf8');
+  const content = await readFile(filePath);
   return JSON.parse(content);
 };
 
 const readTOML = async (filePath) => {
-  const content = await fs.readFile(filePath, 'utf8');
+  const content = await readFile(filePath);
   return TOML.parse(content);
 };
 
@@ -108,34 +109,28 @@ function css() {
 }
 
 async function html() {
-  const [config, headCSS, cargoToml] = await Promise.all([
+  const [config, packageJson, cargoToml, headCSS] = await Promise.all([
     readJSON(path.join(__dirname, 'src', 'config.json')),
-    fs.readFile(path.join(__dirname, BUILD_FOLDER, 'head.css'), 'utf8'),
+    readJSON(path.join(__dirname, 'package.json')),
     readTOML(path.join(__dirname, 'Cargo.toml')),
+    readFile(path.join(__dirname, BUILD_FOLDER, 'head.css')),
   ]);
-
-  // Turn package.json description into title/description for meta tags.
-  // We make use of a convention defined by CommonJS here, which says that the
-  // first sentence should be usable as a title.
-  // See: https://wiki.commonjs.org/wiki/Packages/1.1
-  const titleSep = '. ';
-  const titleEnd = pkg.description.indexOf(titleSep);
-  if (titleEnd === -1) throw new Error('No title in package.json description. By convention, the first sentence (up to the first ". ") should be usable as a title.');
-  const title = pkg.description.substring(0, titleEnd);
-  const description = pkg.description.substring(titleEnd + titleSep.length);
+  const { baseUrl, title, description, author, themeColor, jobs } = config;
 
   return gulp
     .src('src/*.html')
     .pipe(
       gulpNunjucks.compile({
-        jobs: config.jobs,
-        headCSS,
-        OXVGUI_VERSION: pkg.version,
+        OXVGUI_VERSION: packageJson.version,
         OXVG_VERSION: cargoToml.package.version,
-        liveBaseUrl: pkg.homepage,
+        headCSS,
+
+        baseUrl,
         title,
         description,
-        author: pkg.author,
+        author,
+        themeColor,
+        jobs,
       }),
     )
     .pipe(gulpif(!IS_DEV_TASK, gulpHtmlmin(buildConfig.htmlmin)))
@@ -145,6 +140,8 @@ async function html() {
 const rollupCaches = new Map();
 
 async function js(entry, outputPath) {
+  const packageJson = await readJSON(path.join(__dirname, 'package.json'));
+
   const name = path.basename(path.dirname(entry));
   const bundle = await rollup.rollup({
     cache: rollupCaches.get(entry),
@@ -152,7 +149,7 @@ async function js(entry, outputPath) {
     plugins: [
       rollupReplace({
         preventAssignment: true,
-        OXVGUI_VERSION: JSON.stringify(pkg.version),
+        OXVGUI_VERSION: JSON.stringify(packageJson.version),
       }),
       rollupResolve({ browser: true }),
       rollupCommon({ include: /node_modules/ }),
@@ -248,7 +245,7 @@ function watch() {
   gulp.watch(['src/css/**/*.scss'], gulp.series(css, html));
   gulp.watch(['src/js/**/*.js'], allJs);
   gulp.watch(
-    ['src/**/*.{html,svg,woff2}', 'src/*.json', 'Cargo.toml'],
+    ['src/**/*.{html,svg,woff2}', 'src/*.json', 'package.json', 'Cargo.toml'],
     gulp.parallel(html, copy, allJs),
   );
   gulp.watch(

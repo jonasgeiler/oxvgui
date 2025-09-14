@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>{{ title }}</title>
-    <meta name="theme-color" content="#e64a19">
+    <meta name="theme-color" content="{{ themeColor }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="preload" crossorigin as="font" href="code-latin.woff2">
@@ -11,7 +11,7 @@
     <link rel="icon" href="favicon.ico" sizes="32x32">
     <link rel="icon" href="icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="canonical" href="{{ liveBaseUrl }}">
+    <link rel="canonical" href="{{ baseUrl }}">
 
     <meta name="application-name" content="OXVGUI">
     <meta name="description" content="{{ description }}">
@@ -20,11 +20,11 @@
     <meta name="twitter:card" content="summary">
 
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ liveBaseUrl }}">
+    <meta property="og:url" content="{{ baseUrl }}">
     <meta property="og:site_name" content="{{ author }}">
     <meta property="og:title" content="{{ title }}">
     <meta property="og:description" content="{{ description }}">
-    <meta property="og:image" content="{{ liveBaseUrl }}opengraph.png">
+    <meta property="og:image" content="{{ baseUrl }}opengraph.png">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">

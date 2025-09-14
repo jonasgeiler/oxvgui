@@ -1,17 +1,14 @@
 {
   "name": "oxvgui",
-  "description": "OXVGUI - Free Online SVG Compressor and Optimizer. Fast, web-based OXVG interface to compress, optimize, and minify SVG images. Reduce file size, clean graphics, and preview changes instantly!",
   "private": true,
   "version": "0.1.3",
   "license": "MIT",
+  "repository": "github:jonasgeiler/oxvgui",
   "author": "Jonas Geiler",
   "contributors": [
     "XhmikosR <xhmikosr@gmail.com>",
     "Jake Archibald"
   ],
-  "homepage": "https://oxvgui.jonasgeiler.com/",
-  "bugs": "https://github.com/jonasgeiler/oxvgui/issues",
-  "repository": "github:jonasgeiler/oxvgui",
   "scripts": {
     "dev": "gulp dev",
     "start": "pnpm run dev",
