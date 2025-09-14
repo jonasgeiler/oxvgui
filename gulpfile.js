@@ -20,6 +20,8 @@ const liveServer = require("live-server");
 const pkg = require('./package.json');
 const TOML = require('smol-toml');
 
+const BUILD_FOLDER = 'build';
+
 const IS_DEV_TASK =
   process.argv.includes('dev') || process.argv.includes('--dev');
 console.log(styleText('green', '--- ' + (IS_DEV_TASK ? 'Development Mode' : 'Production Mode') + ' ---'));
@@ -94,7 +96,7 @@ function copy() {
     ], {
       encoding: false, // Prevent image and font files from being re-encoded
     })
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest(BUILD_FOLDER));
 }
 
 function css() {
@@ -102,15 +104,25 @@ function css() {
     .src('src/css/*.scss', { sourcemaps: true })
     .pipe(gulpSass.sync(buildConfig.sass).on('error', gulpSass.logError))
     .pipe(gulpif(!IS_DEV_TASK, minifyCss))
-    .pipe(gulp.dest('build/', { sourcemaps: '.' }));
+    .pipe(gulp.dest(BUILD_FOLDER, { sourcemaps: '.' }));
 }
 
 async function html() {
   const [config, headCSS, cargoToml] = await Promise.all([
     readJSON(path.join(__dirname, 'src', 'config.json')),
-    fs.readFile(path.join(__dirname, 'build', 'head.css'), 'utf8'),
+    fs.readFile(path.join(__dirname, BUILD_FOLDER, 'head.css'), 'utf8'),
     readTOML(path.join(__dirname, 'Cargo.toml')),
   ]);
+
+  // Turn package.json description into title/description for meta tags.
+  // We make use of a convention defined by CommonJS here, which says that the
+  // first sentence should be usable as a title.
+  // See: https://wiki.commonjs.org/wiki/Packages/1.1
+  const titleSep = '. ';
+  const titleEnd = pkg.description.indexOf(titleSep);
+  if (titleEnd === -1) throw new Error('No title in package.json description. By convention, the first sentence (up to the first ". ") should be usable as a title.');
+  const title = pkg.description.substring(0, titleEnd);
+  const description = pkg.description.substring(titleEnd + titleSep.length);
 
   return gulp
     .src('src/*.html')
@@ -121,13 +133,13 @@ async function html() {
         OXVGUI_VERSION: pkg.version,
         OXVG_VERSION: cargoToml.package.version,
         liveBaseUrl: pkg.homepage,
-        title: 'OXVGUI - Free Online SVG Compressor and Optimizer',
-        description: pkg.description,
+        title,
+        description,
         author: pkg.author,
       }),
     )
     .pipe(gulpif(!IS_DEV_TASK, gulpHtmlmin(buildConfig.htmlmin)))
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest(BUILD_FOLDER));
 }
 
 const rollupCaches = new Map();
@@ -168,14 +180,14 @@ async function js(entry, outputPath) {
     sourcemap: true,
     format: 'iife',
     generatedCode: 'es2015',
-    file: `build/${outputPath}/${name}.js`,
+    file: path.join(BUILD_FOLDER, outputPath, `${name}.js`),
   });
 }
 
 async function rust() {
   await new Promise((resolve, reject) => {
     const wasmPack = childProcess.spawn('wasm-pack', [
-      'build',
+      BUILD_FOLDER,
       IS_DEV_TASK ? '--dev' : '--release',
       '--target=web',
       '--no-pack', // Don't create package.json
@@ -204,11 +216,11 @@ async function rust() {
     .src(['src/rust/dist/oxvg_wasm_bindings_bg.wasm'], {
       encoding: false, // Prevent file from being re-encoded
     })
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest(BUILD_FOLDER));
 }
 
 function clean() {
-  return fs.rm('build', { force: true, recursive: true });
+  return fs.rm(BUILD_FOLDER, { force: true, recursive: true });
 }
 
 const oxvgWorker = js.bind(null, 'js/oxvg-worker/index.js', 'js/');
@@ -247,7 +259,7 @@ function watch() {
 
 function serve() {
   liveServer.start({
-    root: 'build',
+    root: BUILD_FOLDER,
     host: 'localhost',
     logLevel: 0,
     open: false,
