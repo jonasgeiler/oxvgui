@@ -3,7 +3,7 @@ import Ripple from './ripple.js';
 
 export default class FloatingActionButton {
   constructor({ title, href, iconSvg, major = false }) {
-    // prettier-ignore
+    // biome-ignore format: More readable
     this.container = strToEl(
       (href ? '<a>' : '<button class="unbutton" type="button">') +
         iconSvg +

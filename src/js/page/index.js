@@ -1,5 +1,5 @@
-import { trackFocusMethod } from './utils.js';
 import MainController from './main-controller.js';
+import { trackFocusMethod } from './utils.js';
 
 trackFocusMethod();
-new MainController(); // eslint-disable-line no-new
+new MainController();

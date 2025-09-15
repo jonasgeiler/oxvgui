@@ -10,9 +10,7 @@ export default class Settings {
 
     domReady.then(() => {
       this.container = document.querySelector('.settings');
-      this._jobInputs = [
-        ...this.container.querySelectorAll('.jobs input'),
-      ];
+      this._jobInputs = [...this.container.querySelectorAll('.jobs input')];
       this._globalInputs = [
         ...this.container.querySelectorAll('.global input'),
       ];

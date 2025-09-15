@@ -1,5 +1,5 @@
 // This needs to be an import so it executes before Prism
-import './prism-config.js'; // eslint-disable-line import/no-unassigned-import
+import './prism-config.js';
 import { highlight, languages } from 'prismjs';
 
 self.addEventListener('message', (event) => {

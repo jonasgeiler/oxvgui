@@ -2,7 +2,7 @@ import { strToEl } from '../utils.js';
 
 export default class Spinner {
   constructor() {
-    // prettier-ignore
+    // biome-ignore format: More readable
     this.container = strToEl(
       '<div class="spinner">' +
         '<div class="spinner-container">' +

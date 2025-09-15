@@ -16,7 +16,7 @@ const { nodeResolve: rollupResolve } = require('@rollup/plugin-node-resolve');
 const rollupCommon = require('@rollup/plugin-commonjs');
 const rollupReplace = require('@rollup/plugin-replace');
 const rollupTerser = require('@rollup/plugin-terser');
-const liveServer = require("live-server");
+const liveServer = require('live-server');
 const TOML = require('smol-toml');
 const source = require('vinyl-source-stream');
 const YAML = require('yaml');
@@ -24,7 +24,12 @@ const YAML = require('yaml');
 const BUILD_FOLDER = 'build';
 const IS_DEV_TASK =
   process.argv.includes('dev') || process.argv.includes('--dev');
-console.log(styleText('green', '--- ' + (IS_DEV_TASK ? 'Development Mode' : 'Production Mode') + ' ---'));
+console.log(
+  styleText(
+    'green',
+    `--- ${IS_DEV_TASK ? 'Development Mode' : 'Production Mode'} ---`,
+  ),
+);
 
 const buildConfig = {
   cleancss: {
@@ -72,8 +77,7 @@ const buildConfig = {
   },
 };
 
-const readFile = async (filePath) =>
-  await fs.readFile(filePath, 'utf8');
+const readFile = async (filePath) => await fs.readFile(filePath, 'utf8');
 
 const readJSON = async (filePath) => {
   const content = await readFile(filePath);
@@ -96,11 +100,7 @@ const minifyCss = vinylMap((buffer) => {
 
 function copy() {
   return gulp
-    .src([
-      'src/fonts/*',
-      'src/public/*',
-      'src/changelog.json',
-    ], {
+    .src(['src/fonts/*', 'src/public/*', 'src/changelog.json'], {
       encoding: false, // Prevent image and font files from being re-encoded
     })
     .pipe(gulp.dest(BUILD_FOLDER));
@@ -204,7 +204,9 @@ async function rust() {
     wasmPack.stderr.pipe(process.stderr);
 
     wasmPack.on('error', (err) => {
-      const wrapErr = new Error(`Failed to spawn '${err.path} ${err.spawnargs.join(' ')}' (${err.code})`);
+      const wrapErr = new Error(
+        `Failed to spawn '${err.path} ${err.spawnargs.join(' ')}' (${err.code})`,
+      );
       wrapErr.cause = err;
       reject(wrapErr);
     });
@@ -227,19 +229,30 @@ async function rust() {
 
 async function manifest() {
   const config = await readYAML(path.join(__dirname, 'src', 'config.yaml'));
-  const { name, longName, description, themeColor, appBackgroundColor, appDisplay, appStartUrl, appIcons } = config;
+  const {
+    name,
+    longName,
+    description,
+    themeColor,
+    appBackgroundColor,
+    appDisplay,
+    appStartUrl,
+    appIcons,
+  } = config;
 
   const stream = source('manifest.webmanifest');
-  stream.end(JSON.stringify({
-    short_name: name,
-    name: longName,
-    description,
-    theme_color: themeColor,
-    background_color: appBackgroundColor,
-    display: appDisplay,
-    start_url: appStartUrl,
-    icons: appIcons
-  }));
+  stream.end(
+    JSON.stringify({
+      short_name: name,
+      name: longName,
+      description,
+      theme_color: themeColor,
+      background_color: appBackgroundColor,
+      display: appDisplay,
+      start_url: appStartUrl,
+      icons: appIcons,
+    }),
+  );
   stream.pipe(gulp.dest(BUILD_FOLDER));
 }
 
@@ -254,17 +267,11 @@ const allJsExceptOxvgWorker = gulp.parallel(
   js.bind(null, 'js/sw/index.js', ''),
   js.bind(null, 'js/page/index.js', 'js/'),
 );
-const allJs = gulp.parallel(
-  oxvgWorker,
-  allJsExceptOxvgWorker,
-);
+const allJs = gulp.parallel(oxvgWorker, allJsExceptOxvgWorker);
 
 const mainBuild = gulp.parallel(
   gulp.series(css, html),
-  gulp.parallel(
-    gulp.series(rust, oxvgWorker),
-    allJsExceptOxvgWorker,
-  ),
+  gulp.parallel(gulp.series(rust, oxvgWorker), allJsExceptOxvgWorker),
   manifest,
   copy,
 );
@@ -273,7 +280,13 @@ function watch() {
   gulp.watch(['src/css/**/*.scss'], gulp.series(css, html));
   gulp.watch(['src/js/**/*.js'], allJs);
   gulp.watch(
-    ['src/**/*.{html,svg,woff2}', 'src/changelog.json', 'src/config.yaml', 'package.json', 'Cargo.toml'],
+    [
+      'src/**/*.{html,svg,woff2}',
+      'src/changelog.json',
+      'src/config.yaml',
+      'package.json',
+      'Cargo.toml',
+    ],
     gulp.parallel(html, copy, allJs, manifest),
   );
   gulp.watch(

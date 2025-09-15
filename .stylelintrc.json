@@ -1,7 +1,5 @@
 {
-  "extends": [
-    "stylelint-config-twbs-bootstrap"
-  ],
+  "extends": ["stylelint-config-twbs-bootstrap"],
   "reportInvalidScopeDisables": true,
   "reportNeedlessDisables": true,
   "overrides": [

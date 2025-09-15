@@ -11,7 +11,7 @@ function humanSize(bytes) {
 
 export default class Results {
   constructor() {
-    // prettier-ignore
+    // biome-ignore format: More readable
     this.container = strToEl(
       '<div class="results">' +
         '<span class="size"></span> ' +

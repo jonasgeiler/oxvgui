@@ -7,7 +7,7 @@ export default class Ripple {
 
   animate() {
     this.container.classList.remove('animate');
-    this.container.offsetLeft; // eslint-disable-line no-unused-expressions
+    this.container.offsetLeft;
     this.container.classList.add('animate');
   }
 }

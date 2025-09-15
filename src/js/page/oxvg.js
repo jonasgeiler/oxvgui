@@ -1,5 +1,5 @@
-import WorkerMessenger from './worker-messenger.js';
 import SvgFile from './svg-file.js';
+import WorkerMessenger from './worker-messenger.js';
 
 export default class Oxvg extends WorkerMessenger {
   constructor() {

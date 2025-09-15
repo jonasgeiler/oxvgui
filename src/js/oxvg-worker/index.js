@@ -64,13 +64,14 @@ function compress(svgInput, settings) {
     jobs[name] = booleanJobs.includes(name)
       ? true
       : {
-        // 0 almost always breaks images when used on `cleanupNumericValues` and others.
-        // Better to allow 0 for everything else, but switch to 1 for this job.
-        floatPrecision: floatPrecision === 0 && floatPrecisionNonZeroJobs.includes(name)
-          ? 1
-          : floatPrecision,
-        transformPrecision,
-      };
+          // 0 almost always breaks images when used on `cleanupNumericValues` and others.
+          // Better to allow 0 for everything else, but switch to 1 for this job.
+          floatPrecision:
+            floatPrecision === 0 && floatPrecisionNonZeroJobs.includes(name)
+              ? 1
+              : floatPrecision,
+          transformPrecision,
+        };
 
     if (name === 'prefixIds') {
       // TODO: Maybe let user customize prefix in the future?
@@ -104,10 +105,14 @@ function compress(svgInput, settings) {
   }
    */
 
-  return optimise(svgInput, {
-    precheck: {}, // Always run precheck with default settings
-    ...jobs,
-  }, settings.pretty);
+  return optimise(
+    svgInput,
+    {
+      precheck: {}, // Always run precheck with default settings
+      ...jobs,
+    },
+    settings.pretty,
+  );
 }
 
 const actions = {
@@ -122,15 +127,17 @@ const actions = {
 self.addEventListener('message', (event) => {
   // If the WASM file is already loaded/initiated this will resolve immediately,
   // otherwise it will wait for the WASM file to finish loading/initiating.
-  initPromise.then(() => {
-    self.postMessage({
-      id: event.data.id,
-      result: actions[event.data.action](event.data),
+  initPromise
+    .then(() => {
+      self.postMessage({
+        id: event.data.id,
+        result: actions[event.data.action](event.data),
+      });
+    })
+    .catch((error) => {
+      self.postMessage({
+        id: event.data.id,
+        error: error.message,
+      });
     });
-  }).catch((error) => {
-    self.postMessage({
-      id: event.data.id,
-      error: error.message,
-    });
-  });
 });

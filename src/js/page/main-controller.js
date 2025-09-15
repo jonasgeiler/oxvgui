@@ -1,21 +1,21 @@
 import { idbKeyval as storage } from '../utils/storage.js';
 import Oxvg from './oxvg.js';
-import { domReady } from './utils.js';
-import Output from './ui/output.js';
-import DownloadButton from './ui/download-button.js';
-import CopyButton from './ui/copy-button.js';
-import BgFillButton from './ui/bg-fill-button.js';
-import Results from './ui/results.js';
-import Settings from './ui/settings.js';
-import MainMenu from './ui/main-menu.js';
-import Toasts from './ui/toasts.js';
-import FileDrop from './ui/file-drop.js';
-import Preloader from './ui/preloader.js';
-import Changelog from './ui/changelog.js';
-import ResultsContainer from './ui/results-container.js';
-import ViewToggler from './ui/view-toggler.js';
 import ResultsCache from './results-cache.js';
+import BgFillButton from './ui/bg-fill-button.js';
+import Changelog from './ui/changelog.js';
+import CopyButton from './ui/copy-button.js';
+import DownloadButton from './ui/download-button.js';
+import FileDrop from './ui/file-drop.js';
+import MainMenu from './ui/main-menu.js';
 import MainUi from './ui/main-ui.js';
+import Output from './ui/output.js';
+import Preloader from './ui/preloader.js';
+import Results from './ui/results.js';
+import ResultsContainer from './ui/results-container.js';
+import Settings from './ui/settings.js';
+import Toasts from './ui/toasts.js';
+import ViewToggler from './ui/view-toggler.js';
+import { domReady } from './utils.js';
 
 const oxvg = new Oxvg();
 
@@ -118,13 +118,13 @@ export default class MainController {
         this._toastsUi.show('Ready now!', { duration: 3000 });
       }
 
-      // for testing
-      // eslint-disable-next-line no-constant-condition
+      // biome-ignore lint/correctness/noConstantCondition: Used for testing
       if (false) {
         (async () => {
           const filename = 'demo.svg';
-          const data = await fetch(filename)
-            .then((response) => response.text());
+          const data = await fetch(filename).then((response) =>
+            response.text(),
+          );
           this._onInputChange({ data, filename });
         })();
       }
@@ -255,12 +255,13 @@ export default class MainController {
   }
 
   _saveSettings(settings) {
-    // doesn't make sense to retain the "show original" option
+    // biome-ignore lint/correctness/noUnusedVariables: Doesn't make sense to retain the "show original" option
     const { original, ...settingsToKeep } = settings;
     storage.set('settings', settingsToKeep);
   }
 
   async _compressSvg(settings) {
+    // biome-ignore lint/suspicious/noAssignInExpressions: It's fine here.
     const thisJobId = (this._latestCompressJobId = Math.random());
 
     await oxvg.abort();

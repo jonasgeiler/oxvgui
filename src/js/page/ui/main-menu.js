@@ -1,9 +1,9 @@
 import { createNanoEvents } from 'nanoevents';
 import {
   domReady,
+  readFileAsText,
   transitionFromClass,
   transitionToClass,
-  readFileAsText,
 } from '../utils.js';
 import Spinner from './spinner.js';
 
@@ -126,8 +126,7 @@ export default class MainMenu {
 
     try {
       const filename = 'demo.svg';
-      const data = await fetch(filename)
-        .then((response) => response.text());
+      const data = await fetch(filename).then((response) => response.text());
       this.emitter.emit('svgDataLoad', { data, filename });
     } catch {
       this.stopSpinner();

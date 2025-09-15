@@ -1,10 +1,10 @@
 import { createNanoEvents } from 'nanoevents';
 import {
-  strToEl,
   domReady,
-  transitionToClass,
-  transitionFromClass,
   readFileAsText,
+  strToEl,
+  transitionFromClass,
+  transitionToClass,
 } from '../utils.js';
 
 export default class FileDrop {

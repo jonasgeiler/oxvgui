@@ -2,7 +2,7 @@ import { strToEl } from '../utils.js';
 
 export default class MaterialSlider {
   constructor(rangeElement) {
-    // prettier-ignore
+    // biome-ignore format: More readable
     this.container = strToEl(
       '<div class="material-slider">' +
         '<div class="track">' +

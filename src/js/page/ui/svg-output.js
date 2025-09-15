@@ -3,7 +3,7 @@ import PanZoom from './pan-zoom.js';
 
 export default class SvgOutput {
   constructor() {
-    // prettier-ignore
+    // biome-ignore format: More readable
     this.container = strToEl(
       '<div class="svg-output">' +
         '<div class="svg-container">' +

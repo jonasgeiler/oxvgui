@@ -1,8 +1,8 @@
 import {
-  strToEl,
-  escapeHtmlTag,
-  transitionToClass,
   domReady,
+  escapeHtmlTag,
+  strToEl,
+  transitionToClass,
 } from '../utils.js';
 
 export default class Changelog {
@@ -32,7 +32,6 @@ export default class Changelog {
     const changeList = changelog
       .slice(startIndex, endIndex)
       // TODO: remove `reduce`
-      // eslint-disable-next-line unicorn/no-array-reduce
       .reduce((array, entry) => array.concat(entry.changes), [])
       .map((change) => escapeHtmlTag`<li>${change}</li>`);
 

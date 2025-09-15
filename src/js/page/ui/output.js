@@ -1,6 +1,6 @@
-import { strToEl, transitionToClass, transitionFromClass } from '../utils.js';
-import SvgOutput from './svg-output.js';
+import { strToEl, transitionFromClass, transitionToClass } from '../utils.js';
 import CodeOutput from './code-output.js';
+import SvgOutput from './svg-output.js';
 
 export default class Output {
   constructor() {
