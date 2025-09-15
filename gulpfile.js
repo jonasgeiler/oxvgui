@@ -364,8 +364,6 @@ exports.changelog = changelog;
 exports.sitemap = sitemap;
 exports['robots-txt'] = robotsTxt;
 exports.copy = copy;
-exports.build = mainBuild;
 
-exports['clean-build'] = gulp.series(clean, mainBuild);
-
+exports.build = gulp.series(clean, mainBuild);
 exports.dev = gulp.series(clean, mainBuild, gulp.parallel(watch, serve));

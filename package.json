@@ -18,7 +18,7 @@
     "check:stylelint": "stylelint src/css/",
     "fix": "biome check --fix && stylelint --fix src/css/",
     "unsafe-fix": "biome check --unsafe --fix",
-    "build": "gulp clean-build",
+    "build": "gulp build",
     "preview": "live-server --verbose --no-browser --wait=15000 build",
     "size": "size-limit"
   },
