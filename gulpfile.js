@@ -77,20 +77,21 @@ const buildConfig = {
   },
 };
 
-const readFile = async (filePath) => await fs.readFile(filePath, 'utf8');
+const readFile = async (...paths) =>
+  await fs.readFile(path.join(__dirname, ...paths), 'utf8');
 
-const readJSON = async (filePath) => {
-  const content = await readFile(filePath);
+const readJSON = async (...paths) => {
+  const content = await readFile(...paths);
   return JSON.parse(content);
 };
 
-const readTOML = async (filePath) => {
-  const content = await readFile(filePath);
+const readTOML = async (...paths) => {
+  const content = await readFile(...paths);
   return TOML.parse(content);
 };
 
-const readYAML = async (filePath) => {
-  const content = await readFile(filePath);
+const readYAML = async (...paths) => {
+  const content = await readFile(...paths);
   return YAML.parse(content);
 };
 
@@ -118,10 +119,10 @@ async function html() {
   const [config, packageJson, cargoToml, headCSS] =
     /** @type {[any, typeof import('./package.json'), any, string]} */
     await Promise.all([
-      readYAML(path.join(__dirname, 'src', 'config.yaml')),
-      readJSON(path.join(__dirname, 'package.json')),
-      readTOML(path.join(__dirname, 'Cargo.toml')),
-      readFile(path.join(__dirname, BUILD_FOLDER, 'head.css')),
+      readYAML('src', 'config.yaml'),
+      readJSON('package.json'),
+      readTOML('Cargo.toml'),
+      readFile(BUILD_FOLDER, 'head.css'),
     ]);
   const { baseUrl, title, description, author, themeColor, jobs } = config;
 
@@ -149,7 +150,7 @@ const rollupCaches = new Map();
 
 async function js(entry, outputPath) {
   /** @type {typeof import('./package.json')} */
-  const packageJson = await readJSON(path.join(__dirname, 'package.json'));
+  const packageJson = await readJSON('package.json');
 
   const name = path.basename(path.dirname(entry));
   const bundle = await rollup.rollup({
@@ -228,7 +229,7 @@ async function rust() {
 }
 
 async function manifest() {
-  const config = await readYAML(path.join(__dirname, 'src', 'config.yaml'));
+  const config = await readYAML('src', 'config.yaml');
   const {
     name,
     longName,
@@ -257,9 +258,7 @@ async function manifest() {
 }
 
 async function changelog() {
-  const changelog = await readYAML(
-    path.join(__dirname, 'src', 'changelog.yaml'),
-  );
+  const changelog = await readYAML('src', 'changelog.yaml');
 
   const stream = source('changelog.json');
   stream.end(JSON.stringify(changelog));
@@ -267,7 +266,7 @@ async function changelog() {
 }
 
 async function sitemap() {
-  const config = await readYAML(path.join(__dirname, 'src', 'config.yaml'));
+  const config = await readYAML('src', 'config.yaml');
   const { baseUrl } = config;
 
   // Allow reproducible builds by setting the sitemap's `lastmod` date
@@ -292,7 +291,7 @@ async function sitemap() {
 }
 
 async function robotsTxt() {
-  const config = await readYAML(path.join(__dirname, 'src', 'config.yaml'));
+  const config = await readYAML('src', 'config.yaml');
   const { baseUrl } = config;
 
   const stream = source('robots.txt');
