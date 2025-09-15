@@ -148,7 +148,7 @@ async function html() {
 
 const rollupCaches = new Map();
 
-async function js(entry, outputPath) {
+async function jsEntry(entry, outputPath) {
   /** @type {typeof import('./package.json')} */
   const packageJson = await readJSON('package.json');
 
@@ -306,7 +306,7 @@ async function robotsTxt() {
     [
       'User-agent: *',
       'Disallow: /cdn-cgi/',
-      '', // Looks nicer with an empty line
+      '',
       `Sitemap: ${baseUrl}sitemap.xml`,
     ].join('\n'),
   );
@@ -315,38 +315,6 @@ async function robotsTxt() {
 
 function clean() {
   return fs.rm(BUILD_FOLDER, { force: true, recursive: true });
-}
-
-const oxvgWorker = js.bind(null, 'js/oxvg-worker/index.js', 'js/');
-const allJsExceptOxvgWorker = gulp.parallel(
-  js.bind(null, 'js/prism-worker/index.js', 'js/'),
-  js.bind(null, 'js/gzip-worker/index.js', 'js/'),
-  js.bind(null, 'js/sw/index.js', ''),
-  js.bind(null, 'js/page/index.js', 'js/'),
-);
-const allJs = gulp.parallel(oxvgWorker, allJsExceptOxvgWorker);
-
-const mainBuild = gulp.parallel(
-  gulp.series(css, html),
-  gulp.parallel(gulp.series(rust, oxvgWorker), allJsExceptOxvgWorker),
-  manifest,
-  changelog,
-  sitemap,
-  robotsTxt,
-  copy,
-);
-
-function watch() {
-  gulp.watch(['src/css/**/*.scss'], gulp.series(css, html));
-  gulp.watch(['src/js/**/*.js'], allJs);
-  gulp.watch(
-    ['src/**/*.{html,svg,woff2}', 'src/*.yaml', 'package.json', 'Cargo.toml'],
-    gulp.parallel(html, copy, allJs, manifest, changelog, sitemap, robotsTxt),
-  );
-  gulp.watch(
-    ['src/rust/**/*.rs', 'Cargo.toml', 'Cargo.lock'],
-    gulp.series(rust, oxvgWorker),
-  );
 }
 
 function serve() {
@@ -360,8 +328,51 @@ function serve() {
   console.log(styleText('green', '---\nServing at http://localhost:8080\n---'));
 }
 
+// --- SETUP --- //
+
+const cssAndHtml = gulp.series(css, html);
+
+const jsOnlyOxvgWorker = jsEntry.bind(null, 'js/oxvg-worker/index.js', 'js/');
+const jsExceptOxvgWorker = gulp.parallel(
+  jsEntry.bind(null, 'js/prism-worker/index.js', 'js/'),
+  jsEntry.bind(null, 'js/gzip-worker/index.js', 'js/'),
+  jsEntry.bind(null, 'js/sw/index.js', ''),
+  jsEntry.bind(null, 'js/page/index.js', 'js/'),
+);
+const js = gulp.parallel(jsOnlyOxvgWorker, jsExceptOxvgWorker);
+
+const rustAndOxvgWorker = gulp.series(rust, jsOnlyOxvgWorker);
+
+const build = gulp.parallel(
+  cssAndHtml,
+  rustAndOxvgWorker,
+  jsExceptOxvgWorker,
+  manifest,
+  changelog,
+  sitemap,
+  robotsTxt,
+  copy,
+);
+
+function watch() {
+  gulp.watch(['Cargo.toml'], gulp.parallel(html, rustAndOxvgWorker));
+  gulp.watch(['package.json'], gulp.parallel(html, js));
+  gulp.watch(['pnpm-lock.yaml'], build);
+  gulp.watch(
+    ['src/config.yaml'],
+    gulp.parallel(html, manifest, sitemap, robotsTxt),
+  );
+  gulp.watch(['src/changelog.yaml'], changelog);
+
+  gulp.watch(['src/*.html', 'src/_partials/**/*.{html,svg}'], html);
+  gulp.watch(['src/css/**/*.scss'], cssAndHtml);
+  gulp.watch(['src/js/**/*.js'], js);
+  gulp.watch(['src/fonts/*', 'src/public/*'], copy);
+  gulp.watch(['src/rust/**/*.rs', 'Cargo.lock'], rustAndOxvgWorker);
+}
+
 exports.clean = clean;
-exports.js = allJs;
+exports.js = js;
 exports.css = css;
 exports.html = html;
 exports.rust = rust;
@@ -371,5 +382,5 @@ exports.sitemap = sitemap;
 exports['robots-txt'] = robotsTxt;
 exports.copy = copy;
 
-exports.build = gulp.series(clean, mainBuild);
-exports.dev = gulp.series(clean, mainBuild, gulp.parallel(watch, serve));
+exports.build = gulp.series(clean, build);
+exports.dev = gulp.series(clean, build, gulp.parallel(watch, serve));
