@@ -39,6 +39,7 @@
     "@types/node": "22.15.18",
     "@types/pako": "2.0.3",
     "@types/prismjs": "1.26.5",
+    "@types/vinyl-source-stream": "0.0.34",
     "clean-css": "5.3.3",
     "gulp": "5.0.0",
     "gulp-htmlmin": "5.0.1",
@@ -56,6 +57,7 @@
     "stylelint": "14.16.1",
     "stylelint-config-twbs-bootstrap": "7.0.0",
     "vinyl-map": "1.0.2",
+    "vinyl-source-stream": "2.0.0",
     "wasm-pack": "0.13.1",
     "xo": "0.53.1"
   },

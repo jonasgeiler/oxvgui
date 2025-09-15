@@ -18,6 +18,7 @@ const rollupReplace = require('@rollup/plugin-replace');
 const rollupTerser = require('@rollup/plugin-terser');
 const liveServer = require("live-server");
 const TOML = require('smol-toml');
+const source = require('vinyl-source-stream');
 
 const BUILD_FOLDER = 'build';
 const IS_DEV_TASK =
@@ -109,12 +110,14 @@ function css() {
 }
 
 async function html() {
-  const [config, packageJson, cargoToml, headCSS] = await Promise.all([
-    readJSON(path.join(__dirname, 'src', 'config.json')),
-    readJSON(path.join(__dirname, 'package.json')),
-    readTOML(path.join(__dirname, 'Cargo.toml')),
-    readFile(path.join(__dirname, BUILD_FOLDER, 'head.css')),
-  ]);
+  const [config, packageJson, cargoToml, headCSS] =
+    /** @type {[typeof import('./src/config.json'), typeof import('./package.json'), any, string]} */
+    await Promise.all([
+      readJSON(path.join(__dirname, 'src', 'config.json')),
+      readJSON(path.join(__dirname, 'package.json')),
+      readTOML(path.join(__dirname, 'Cargo.toml')),
+      readFile(path.join(__dirname, BUILD_FOLDER, 'head.css')),
+    ]);
   const { baseUrl, title, description, author, themeColor, jobs } = config;
 
   return gulp
@@ -140,6 +143,7 @@ async function html() {
 const rollupCaches = new Map();
 
 async function js(entry, outputPath) {
+  /** @type {typeof import('./package.json')} */
   const packageJson = await readJSON(path.join(__dirname, 'package.json'));
 
   const name = path.basename(path.dirname(entry));
@@ -216,6 +220,25 @@ async function rust() {
     .pipe(gulp.dest(BUILD_FOLDER));
 }
 
+async function manifest() {
+  /** @type {typeof import('./src/config.json')} */
+  const config = await readJSON(path.join(__dirname, 'src', 'config.json'));
+  const { name, longName, description, themeColor, appBackgroundColor, appDisplay, appStartUrl, appIcons } = config;
+
+  const stream = source('manifest.webmanifest');
+  stream.end(JSON.stringify({
+    short_name: name,
+    name: longName,
+    description,
+    theme_color: themeColor,
+    background_color: appBackgroundColor,
+    display: appDisplay,
+    start_url: appStartUrl,
+    icons: appIcons
+  }));
+  stream.pipe(gulp.dest(BUILD_FOLDER));
+}
+
 function clean() {
   return fs.rm(BUILD_FOLDER, { force: true, recursive: true });
 }
@@ -238,6 +261,7 @@ const mainBuild = gulp.parallel(
     gulp.series(rust, oxvgWorker),
     allJsExceptOxvgWorker,
   ),
+  manifest,
   copy,
 );
 
@@ -246,7 +270,7 @@ function watch() {
   gulp.watch(['src/js/**/*.js'], allJs);
   gulp.watch(
     ['src/**/*.{html,svg,woff2}', 'src/*.json', 'package.json', 'Cargo.toml'],
-    gulp.parallel(html, copy, allJs),
+    gulp.parallel(html, copy, allJs, manifest),
   );
   gulp.watch(
     ['src/rust/**/*.rs', 'Cargo.toml', 'Cargo.lock'],
@@ -270,6 +294,7 @@ exports.js = allJs;
 exports.css = css;
 exports.html = html;
 exports.rust = rust;
+exports.manifest = manifest;
 exports.copy = copy;
 exports.build = mainBuild;
 

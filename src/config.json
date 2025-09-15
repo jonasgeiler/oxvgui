@@ -6,7 +6,16 @@
   "description": "Fast, web-based OXVG interface to compress, optimize, and minify SVG images. Reduce file size, clean graphics, and preview changes instantly!",
   "author": "Jonas Geiler",
   "themeColor": "#e64a19",
-  "backgroundColor": "#f2f2f2",
+
+  "// These": "are only used for generating the web application manifest at the moment",
+  "appBackgroundColor": "#f2f2f2",
+  "appDisplay": "standalone",
+  "appStartUrl": "./",
+  "appIcons": [
+    { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ],
 
   "// Based on": "https://github.com/noahbald/oxvg/blob/94b2abbc1126ca4056d4bb4d14b3ad24f376db15/crates/oxvg_optimiser/src/jobs/mod.rs",
   "// but": "the 'enabledByDefault' ones are basically the 'safe' ones",
