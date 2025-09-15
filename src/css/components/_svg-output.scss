@@ -1,4 +1,4 @@
-@use "../mixins";
+@use '../mixins';
 
 .svg-output {
   @include mixins.user-select(none);

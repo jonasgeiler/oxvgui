@@ -13,6 +13,7 @@
         "property-no-vendor-prefix": null,
         "scss/dollar-variable-pattern": null,
         "scss/selector-no-union-class-name": true,
+        "scss/at-function-named-arguments": null,
         "string-quotes": "single"
       }
     }

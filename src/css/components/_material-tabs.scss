@@ -1,5 +1,5 @@
-@use "sass:color";
-@use "../mixins";
+@use 'sass:color';
+@use '../mixins';
 
 .material-tabs {
   @include mixins.user-select(none);

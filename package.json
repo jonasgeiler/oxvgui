@@ -16,7 +16,7 @@
     "check": "pnpm run '/^check:.*/'",
     "check:biome": "biome check",
     "check:stylelint": "stylelint src/css/",
-    "fix": "biome check --fix",
+    "fix": "biome check --fix && stylelint --fix src/css/",
     "unsafe-fix": "biome check --unsafe --fix",
     "build": "gulp clean-build",
     "preview": "live-server --verbose --no-browser --wait=15000 build",
