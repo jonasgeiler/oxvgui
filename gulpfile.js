@@ -100,7 +100,7 @@ const minifyCss = vinylMap((buffer) => {
 
 function copy() {
   return gulp
-    .src(['src/fonts/*', 'src/public/*', 'src/changelog.json'], {
+    .src(['src/fonts/*', 'src/public/*'], {
       encoding: false, // Prevent image and font files from being re-encoded
     })
     .pipe(gulp.dest(BUILD_FOLDER));
@@ -256,6 +256,16 @@ async function manifest() {
   stream.pipe(gulp.dest(BUILD_FOLDER));
 }
 
+async function changelog() {
+  const changelog = await readYAML(
+    path.join(__dirname, 'src', 'changelog.yaml'),
+  );
+
+  const stream = source('changelog.json');
+  stream.end(JSON.stringify(changelog));
+  stream.pipe(gulp.dest(BUILD_FOLDER));
+}
+
 function clean() {
   return fs.rm(BUILD_FOLDER, { force: true, recursive: true });
 }
@@ -273,6 +283,7 @@ const mainBuild = gulp.parallel(
   gulp.series(css, html),
   gulp.parallel(gulp.series(rust, oxvgWorker), allJsExceptOxvgWorker),
   manifest,
+  changelog,
   copy,
 );
 
@@ -280,14 +291,8 @@ function watch() {
   gulp.watch(['src/css/**/*.scss'], gulp.series(css, html));
   gulp.watch(['src/js/**/*.js'], allJs);
   gulp.watch(
-    [
-      'src/**/*.{html,svg,woff2}',
-      'src/changelog.json',
-      'src/config.yaml',
-      'package.json',
-      'Cargo.toml',
-    ],
-    gulp.parallel(html, copy, allJs, manifest),
+    ['src/**/*.{html,svg,woff2}', 'src/*.yaml', 'package.json', 'Cargo.toml'],
+    gulp.parallel(html, copy, allJs, manifest, changelog),
   );
   gulp.watch(
     ['src/rust/**/*.rs', 'Cargo.toml', 'Cargo.lock'],
@@ -312,6 +317,7 @@ exports.css = css;
 exports.html = html;
 exports.rust = rust;
 exports.manifest = manifest;
+exports.changelog = changelog;
 exports.copy = copy;
 exports.build = mainBuild;
 
