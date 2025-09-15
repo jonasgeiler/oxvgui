@@ -266,6 +266,31 @@ async function changelog() {
   stream.pipe(gulp.dest(BUILD_FOLDER));
 }
 
+async function sitemap() {
+  const config = await readYAML(path.join(__dirname, 'src', 'config.yaml'));
+  const { baseUrl } = config;
+
+  // Allow reproducible builds by setting the sitemap's `lastmod` date
+  // based on the `SOURCE_DATE_EPOCH` env variable, if present.
+  // For more info, see: https://reproducible-builds.org/docs/source-date-epoch/
+  const epoch = Number(process.env.SOURCE_DATE_EPOCH);
+  const date = Number.isInteger(epoch) ? new Date(epoch * 1000) : new Date();
+  const lastmod = date.toISOString().split('T', 1)[0];
+
+  const stream = source('sitemap.xml');
+  stream.end(
+    // biome-ignore format: More readable
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
+      '<url>' +
+        `<loc>${baseUrl}</loc>` +
+        `<lastmod>${lastmod}</lastmod>` +
+        '<priority>1.00</priority>' +
+      '</url>' +
+    '</urlset>',
+  );
+  stream.pipe(gulp.dest(BUILD_FOLDER));
+}
+
 function clean() {
   return fs.rm(BUILD_FOLDER, { force: true, recursive: true });
 }
@@ -284,6 +309,7 @@ const mainBuild = gulp.parallel(
   gulp.parallel(gulp.series(rust, oxvgWorker), allJsExceptOxvgWorker),
   manifest,
   changelog,
+  sitemap,
   copy,
 );
 
@@ -292,7 +318,7 @@ function watch() {
   gulp.watch(['src/js/**/*.js'], allJs);
   gulp.watch(
     ['src/**/*.{html,svg,woff2}', 'src/*.yaml', 'package.json', 'Cargo.toml'],
-    gulp.parallel(html, copy, allJs, manifest, changelog),
+    gulp.parallel(html, copy, allJs, manifest, changelog, sitemap),
   );
   gulp.watch(
     ['src/rust/**/*.rs', 'Cargo.toml', 'Cargo.lock'],
@@ -318,6 +344,7 @@ exports.html = html;
 exports.rust = rust;
 exports.manifest = manifest;
 exports.changelog = changelog;
+exports.sitemap = sitemap;
 exports.copy = copy;
 exports.build = mainBuild;
 
