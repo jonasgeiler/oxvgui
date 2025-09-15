@@ -291,6 +291,22 @@ async function sitemap() {
   stream.pipe(gulp.dest(BUILD_FOLDER));
 }
 
+async function robotsTxt() {
+  const config = await readYAML(path.join(__dirname, 'src', 'config.yaml'));
+  const { baseUrl } = config;
+
+  const stream = source('robots.txt');
+  stream.end(
+    [
+      'User-agent: *',
+      'Disallow: /cdn-cgi/',
+      '', // Looks nicer with an empty line
+      `Sitemap: ${baseUrl}sitemap.xml`,
+    ].join('\n'),
+  );
+  stream.pipe(gulp.dest(BUILD_FOLDER));
+}
+
 function clean() {
   return fs.rm(BUILD_FOLDER, { force: true, recursive: true });
 }
@@ -310,6 +326,7 @@ const mainBuild = gulp.parallel(
   manifest,
   changelog,
   sitemap,
+  robotsTxt,
   copy,
 );
 
@@ -318,7 +335,7 @@ function watch() {
   gulp.watch(['src/js/**/*.js'], allJs);
   gulp.watch(
     ['src/**/*.{html,svg,woff2}', 'src/*.yaml', 'package.json', 'Cargo.toml'],
-    gulp.parallel(html, copy, allJs, manifest, changelog, sitemap),
+    gulp.parallel(html, copy, allJs, manifest, changelog, sitemap, robotsTxt),
   );
   gulp.watch(
     ['src/rust/**/*.rs', 'Cargo.toml', 'Cargo.lock'],
@@ -345,6 +362,7 @@ exports.rust = rust;
 exports.manifest = manifest;
 exports.changelog = changelog;
 exports.sitemap = sitemap;
+exports['robots-txt'] = robotsTxt;
 exports.copy = copy;
 exports.build = mainBuild;
 
