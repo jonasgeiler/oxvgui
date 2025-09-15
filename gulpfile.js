@@ -23,7 +23,7 @@ const YAML = require('yaml');
 
 const BUILD_FOLDER = 'build';
 const IS_DEV_TASK =
-  process.argv.includes('dev') || process.argv.includes('--dev');
+  process.argv.indexOf('dev') !== -1 || process.argv.indexOf('--dev') !== -1;
 console.log(
   styleText(
     'green',
