@@ -10,21 +10,24 @@
     "Jake Archibald"
   ],
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks",
     "dev": "gulp dev",
     "start": "pnpm run dev",
+    "check": "pnpm run '/^check:.*/'",
+    "check:biome": "biome check",
+    "check:stylelint": "stylelint src/css/",
+    "fix": "biome check --fix",
+    "unsafe-fix": "biome check --unsafe --fix",
     "build": "gulp clean-build",
     "preview": "live-server --verbose --no-browser --wait=15000 build",
-    "check": "pnpm run '/^check:.*/'",
-    "check:xo": "xo",
-    "check:stylelint": "stylelint src/css/",
-    "check:build-and-size-limit": "pnpm run build && size-limit",
-    "fix": "xo --fix"
+    "size": "size-limit"
   },
   "engines": {
     "node": ">=20"
   },
   "packageManager": "pnpm@10.12.4+sha512.5ea8b0deed94ed68691c9bad4c955492705c5eeb8a87ef86bc62c74a26b037b08ff9570f108b2e4dbd1dd1a9186fea925e527f141c648e85af45631074680184",
   "devDependencies": {
+    "@biomejs/biome": "2.2.4",
     "@rollup/plugin-commonjs": "24.1.0",
     "@rollup/plugin-node-resolve": "15.0.1",
     "@rollup/plugin-replace": "5.0.7",
@@ -59,33 +62,7 @@
     "vinyl-map": "1.0.2",
     "vinyl-source-stream": "2.0.0",
     "wasm-pack": "0.13.1",
-    "xo": "0.53.1",
     "yaml": "2.8.1"
-  },
-  "prettier": {
-    "bracketSpacing": true,
-    "printWidth": 80,
-    "singleQuote": true,
-    "trailingComma": "all"
-  },
-  "xo": {
-    "space": true,
-    "prettier": true,
-    "envs": [
-      "browser"
-    ],
-    "rules": {
-      "capitalized-comments": "off",
-      "no-multi-assign": "off",
-      "no-negated-condition": "off",
-      "no-shadow": "error",
-      "prefer-template": "error",
-      "spaced-comment": "off",
-      "unicorn/explicit-length-check": "off",
-      "unicorn/no-unused-properties": "error",
-      "unicorn/prefer-module": "off",
-      "unicorn/prevent-abbreviations": "off"
-    }
   },
   "size-limit": [
     {
