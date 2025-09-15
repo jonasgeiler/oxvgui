@@ -243,16 +243,20 @@ async function manifest() {
 
   const stream = source('manifest.webmanifest');
   stream.end(
-    JSON.stringify({
-      short_name: name,
-      name: longName,
-      description,
-      theme_color: themeColor,
-      background_color: appBackgroundColor,
-      display: appDisplay,
-      start_url: appStartUrl,
-      icons: appIcons,
-    }),
+    JSON.stringify(
+      {
+        short_name: name,
+        name: longName,
+        description,
+        theme_color: themeColor,
+        background_color: appBackgroundColor,
+        display: appDisplay,
+        start_url: appStartUrl,
+        icons: appIcons,
+      },
+      undefined,
+      IS_DEV_TASK ? 2 : 0,
+    ),
   );
   stream.pipe(gulp.dest(BUILD_FOLDER));
 }
@@ -261,7 +265,7 @@ async function changelog() {
   const changelog = await readYAML('src', 'changelog.yaml');
 
   const stream = source('changelog.json');
-  stream.end(JSON.stringify(changelog));
+  stream.end(JSON.stringify(changelog, undefined, IS_DEV_TASK ? 2 : 0));
   stream.pipe(gulp.dest(BUILD_FOLDER));
 }
 
@@ -278,14 +282,17 @@ async function sitemap() {
 
   const stream = source('sitemap.xml');
   stream.end(
-    // biome-ignore format: More readable
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
-      '<url>' +
-        `<loc>${baseUrl}</loc>` +
-        `<lastmod>${lastmod}</lastmod>` +
-        '<priority>1.00</priority>' +
-      '</url>' +
-    '</urlset>',
+    [
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+      '  <url>',
+      `    <loc>${baseUrl}</loc>`,
+      `    <lastmod>${lastmod}</lastmod>`,
+      '    <priority>1.00</priority>',
+      '  </url>',
+      '</urlset>',
+    ]
+      .map(IS_DEV_TASK ? (l) => l : (l) => l.trim())
+      .join(IS_DEV_TASK ? '\n' : ''),
   );
   stream.pipe(gulp.dest(BUILD_FOLDER));
 }
