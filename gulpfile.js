@@ -19,6 +19,7 @@ const rollupTerser = require('@rollup/plugin-terser');
 const liveServer = require("live-server");
 const TOML = require('smol-toml');
 const source = require('vinyl-source-stream');
+const YAML = require('yaml');
 
 const BUILD_FOLDER = 'build';
 const IS_DEV_TASK =
@@ -84,6 +85,11 @@ const readTOML = async (filePath) => {
   return TOML.parse(content);
 };
 
+const readYAML = async (filePath) => {
+  const content = await readFile(filePath);
+  return YAML.parse(content);
+};
+
 const minifyCss = vinylMap((buffer) => {
   return new CleanCSS(buildConfig.cleancss).minify(buffer.toString()).styles;
 });
@@ -93,8 +99,7 @@ function copy() {
     .src([
       'src/fonts/*',
       'src/public/*',
-      'src/*.json',
-      '!src/config.json', // Not needed in build, only referenced in gulpfile at the moment
+      'src/changelog.json',
     ], {
       encoding: false, // Prevent image and font files from being re-encoded
     })
@@ -111,9 +116,9 @@ function css() {
 
 async function html() {
   const [config, packageJson, cargoToml, headCSS] =
-    /** @type {[typeof import('./src/config.json'), typeof import('./package.json'), any, string]} */
+    /** @type {[any, typeof import('./package.json'), any, string]} */
     await Promise.all([
-      readJSON(path.join(__dirname, 'src', 'config.json')),
+      readYAML(path.join(__dirname, 'src', 'config.yaml')),
       readJSON(path.join(__dirname, 'package.json')),
       readTOML(path.join(__dirname, 'Cargo.toml')),
       readFile(path.join(__dirname, BUILD_FOLDER, 'head.css')),
@@ -221,8 +226,7 @@ async function rust() {
 }
 
 async function manifest() {
-  /** @type {typeof import('./src/config.json')} */
-  const config = await readJSON(path.join(__dirname, 'src', 'config.json'));
+  const config = await readYAML(path.join(__dirname, 'src', 'config.yaml'));
   const { name, longName, description, themeColor, appBackgroundColor, appDisplay, appStartUrl, appIcons } = config;
 
   const stream = source('manifest.webmanifest');
@@ -269,7 +273,7 @@ function watch() {
   gulp.watch(['src/css/**/*.scss'], gulp.series(css, html));
   gulp.watch(['src/js/**/*.js'], allJs);
   gulp.watch(
-    ['src/**/*.{html,svg,woff2}', 'src/*.json', 'package.json', 'Cargo.toml'],
+    ['src/**/*.{html,svg,woff2}', 'src/changelog.json', 'src/config.yaml', 'package.json', 'Cargo.toml'],
     gulp.parallel(html, copy, allJs, manifest),
   );
   gulp.watch(
