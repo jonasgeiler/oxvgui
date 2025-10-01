@@ -7,3 +7,4 @@ set -o errexit -o xtrace -o nounset     #
 #########################################
 
 pnpm run check
+cargo fmt --check
