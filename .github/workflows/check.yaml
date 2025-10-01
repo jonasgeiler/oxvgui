@@ -1,0 +1,231 @@
+name: Check
+
+on:
+  push:
+    branches:
+      - main
+      - renovate/**
+    paths:
+      # "pnpm" group:
+      - '**.js'
+      - '**.scss'
+      - .editorconfig
+      - .stylelintrc.json
+      - biome.json
+      - package.json
+      - pnpm-lock.ya?ml
+
+      # "cargo" group:
+      - '**.rs'
+      - Cargo.toml
+      - Cargo.lock
+
+      # "actionlint" group:
+      - .github/workflows/*.ya?ml
+
+      # "shellcheck" group:
+      - '**.sh'
+      - '**.bash'
+      - '**.mksh'
+      - '**.bats'
+      - '**.zsh'
+      - .githooks/*
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      # "pnpm" group:
+      - '**.js'
+      - '**.scss'
+      - .editorconfig
+      - .stylelintrc.json
+      - biome.json
+      - package.json
+      - pnpm-lock.ya?ml
+
+      # "cargo" group:
+      - '**.rs'
+      - Cargo.toml
+      - Cargo.lock
+
+      # "actionlint" group:
+      - .github/workflows/*.ya?ml
+
+      # "shellcheck" group:
+      - '**.sh'
+      - '**.bash'
+      - '**.mksh'
+      - '**.bats'
+      - '**.zsh'
+      - .githooks/*
+
+  workflow_dispatch:
+
+  workflow_call:
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: ${{ github.event_name == 'push' && '0' || '1' }}
+
+      - name: Get changed files
+        id: changed-files
+        if: github.event_name != 'workflow_dispatch'
+        uses: tj-actions/changed-files@a284dc1814e3fd07f2e34267fc8f81227ed29fb8 # v45.0.9
+        with:
+          files_yaml: |
+            pnpm:
+              - '**/*.{js,scss}'
+              - .editorconfig
+              - .stylelintrc.json
+              - biome.json
+              - package.json
+              - pnpm-lock.{yml,yaml}
+
+            cargo:
+              - '**/*.rs'
+              - Cargo.toml
+              - Cargo.lock
+
+            actionlint:
+              - .github/workflows/*.{yml,yaml}
+
+            shellcheck:
+              - '**/*.{sh,bash,mksh,bats,zsh}'
+              - .githooks/*
+
+      - name: Check GitHub Actions workflows using actionlint
+        if: |
+          github.event_name == 'workflow_dispatch' ||
+          steps.changed-files.outputs.actionlint_any_changed == 'true'
+        env:
+          # renovate: datasource=github-releases depName=rhysd/actionlint
+          ACTIONLINT_VERSION: v1.7.7
+          ACTIONLINT_ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.actionlint_all_changed_files }}
+        run: |
+          IFS=$' \n\t'; set -ux
+
+          if [[ "${GITHUB_EVENT_NAME}" == 'workflow_dispatch' ]]; then
+            # Get files using globs.
+            shopt -s nullglob globstar
+            files=(.github/workflows/*.{yml,yaml})
+            shopt -u nullglob globstar
+
+            # Check if files were found.
+            if [[ "${#files[@]}" -eq 0 ]]; then
+              : "No files found"
+              exit 1
+            fi
+          else
+            # Get files using changed files output.
+            files=()
+            for file in ${ACTIONLINT_ALL_CHANGED_FILES}; do
+              files+=("${file}")
+            done
+          fi
+          : "Files to lint: ${files[*]}"
+
+          # Download, extract and setup actionlint.
+          wget -q "https://github.com/rhysd/actionlint/releases/download/${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION#v}_linux_amd64.tar.gz" \
+            -O actionlint.tar.gz
+          tar -xzf actionlint.tar.gz
+          chmod +x actionlint
+
+          # Download and setup problem matcher for actionlint.
+          wget -q "https://raw.githubusercontent.com/rhysd/actionlint/${ACTIONLINT_VERSION}/.github/actionlint-matcher.json" \
+            -O actionlint-problem-matcher.json
+          echo "::add-matcher::actionlint-problem-matcher.json"
+
+          # Run actionlint.
+          ./actionlint -verbose -color "${files[@]}"
+
+      - name: Check shell scripts and git hooks using shellcheck
+        if: |
+          github.event_name == 'workflow_dispatch' ||
+          steps.changed-files.outputs.shellcheck_any_changed == 'true'
+        env:
+          # renovate: datasource=github-releases depName=koalaman/shellcheck
+          SHELLCHECK_VERSION: v0.10.0
+          SHELLCHECK_ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.shellcheck_all_changed_files }}
+          # renovate: datasource=github-releases depName=lumaxis/shellcheck-problem-matchers
+          SHELLCHECK_PROBLEM_MATCHERS_VERSION: v2.1.0
+        run: |
+          IFS=$' \n\t'; set -ux
+
+          if [[ "${GITHUB_EVENT_NAME}" == 'workflow_dispatch' ]]; then
+            # Get files using globs.
+            shopt -s nullglob globstar
+            files=(**/*.{sh,bash,mksh,bats,zsh} .githooks/*)
+            shopt -u nullglob globstar
+
+            # Check if files were found.
+            if [[ "${#files[@]}" -eq 0 ]]; then
+              : "No files found"
+              exit 1
+            fi
+          else
+            # Get files using changed files output.
+            files=()
+            for file in ${SHELLCHECK_ALL_CHANGED_FILES}; do
+              files+=("${file}")
+            done
+          fi
+          : "Files to lint: ${files[*]}"
+
+          # Download, extract and setup shellcheck.
+          wget -q "https://github.com/koalaman/shellcheck/releases/download/${SHELLCHECK_VERSION}/shellcheck-${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" \
+            -O shellcheck.tar.xz
+          tar -xf shellcheck.tar.xz
+          mv "shellcheck-${SHELLCHECK_VERSION}/shellcheck" shellcheck
+          chmod +x shellcheck
+
+          # Download and setup problem matcher for shellcheck.
+          wget -q "https://raw.githubusercontent.com/lumaxis/shellcheck-problem-matchers/${SHELLCHECK_PROBLEM_MATCHERS_VERSION}/.github/shellcheck-gcc.json" \
+            -O shellcheck-problem-matcher.json
+          echo "::add-matcher::shellcheck-problem-matcher.json"
+
+          # Run shellcheck.
+          ./shellcheck --norc --enable=all --format=gcc --color=never "${files[@]}"
+
+      - name: Check Rust code using cargo
+        if: |
+          github.event_name == 'workflow_dispatch' ||
+          steps.changed-files.outputs.cargo_any_changed == 'true'
+        run: cargo fmt --verbose --check
+
+      - name: Set up pnpm
+        if: |
+          github.event_name == 'workflow_dispatch' ||
+          steps.changed-files.outputs.pnpm_any_changed == 'true'
+        uses: pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d # v3.0.0
+
+      - name: Set up Node.js
+        if: |
+          github.event_name == 'workflow_dispatch' ||
+          steps.changed-files.outputs.pnpm_any_changed == 'true'
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies using pnpm
+        if: |
+          github.event_name == 'workflow_dispatch' ||
+          steps.changed-files.outputs.pnpm_any_changed == 'true'
+        run: pnpm install
+
+      - name: Check JavaScript/TypeScript scripts, CSS stylesheets and JSON files using pnpm
+        if: |
+          github.event_name == 'workflow_dispatch' ||
+          steps.changed-files.outputs.pnpm_any_changed == 'true'
+        run: pnpm run check
