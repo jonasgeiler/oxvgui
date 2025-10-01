@@ -41,9 +41,17 @@ impl std::error::Error for Error {}
 
 impl CustomJobs {
     ///   Runs each custom job, returning the number of non-skipped jobs
-    fn run_jobs<'arena, E: Element<'arena>>(&self, element: &mut E, info: &Info<'arena, E>) -> Result<usize, String> {
+    fn run_jobs<'arena, E: Element<'arena>>(
+        &self,
+        element: &mut E,
+        info: &Info<'arena, E>,
+    ) -> Result<usize, String> {
         let mut count = 0;
-        if !self.extract_dimensions.start(element, info, None)?.contains(PrepareOutcome::skip) {
+        if !self
+            .extract_dimensions
+            .start(element, info, None)?
+            .contains(PrepareOutcome::skip)
+        {
             count += 1;
         }
         Ok(count)

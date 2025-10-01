@@ -6,8 +6,8 @@ extern crate console_error_panic_hook;
 #[macro_use]
 extern crate lazy_static;
 
-mod extract_dimensions;
 mod custom_jobs;
+mod extract_dimensions;
 
 use oxvg_ast::{
     implementations::{roxmltree::parse, shared::Element},
@@ -77,7 +77,11 @@ pub struct OptimiseResult {
 ///
 /// const result = optimise(`<svg />`, undefined, true);
 /// ```
-pub fn optimise(svg: &str, config: Option<Jobs>, prettify: Option<bool>) -> Result<OptimiseResult, String> {
+pub fn optimise(
+    svg: &str,
+    config: Option<Jobs>,
+    prettify: Option<bool>,
+) -> Result<OptimiseResult, String> {
     console_error_panic_hook::set_once();
 
     let arena = typed_arena::Arena::new();
@@ -89,18 +93,19 @@ pub fn optimise(svg: &str, config: Option<Jobs>, prettify: Option<bool>) -> Resu
 
     let custom_jobs = CustomJobs::default();
     custom_jobs
-    .run(&dom, &Info::<Element>::new(&arena))
-    .map_err(|err| err.to_string())?;
+        .run(&dom, &Info::<Element>::new(&arena))
+        .map_err(|err| err.to_string())?;
 
-    let data = dom.serialize_with_options(Options {
-        indent: if prettify.unwrap_or(false) {
-            serialize::Indent::Spaces(2)
-        } else {
-            serialize::Indent::None
-        },
-        ..Default::default()
-    })
-    .map_err(|err| err.to_string())?;
+    let data = dom
+        .serialize_with_options(Options {
+            indent: if prettify.unwrap_or(false) {
+                serialize::Indent::Spaces(2)
+            } else {
+                serialize::Indent::None
+            },
+            ..Default::default()
+        })
+        .map_err(|err| err.to_string())?;
 
     Ok(OptimiseResult {
         data,

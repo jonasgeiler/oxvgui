@@ -1,6 +1,6 @@
 use oxvg_ast::{
     element::Element as ElementTrait,
-    visitor::{Context, Visitor}
+    visitor::{Context, Visitor},
 };
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
@@ -70,10 +70,7 @@ impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
             let mut nums = Vec::with_capacity(4);
             nums.extend(SEPARATOR.split(view_box_attr.as_ref()));
             if nums.len() == 4 {
-                if let (Ok(width), Ok(height)) = (
-                    nums[2].parse::<f64>(),
-                    nums[3].parse::<f64>(),
-                ) {
+                if let (Ok(width), Ok(height)) = (nums[2].parse::<f64>(), nums[3].parse::<f64>()) {
                     *self.0.borrow_mut() = Dimensions {
                         width: Some(width),
                         height: Some(height),
