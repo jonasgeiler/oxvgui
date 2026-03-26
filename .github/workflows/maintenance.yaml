@@ -10,10 +10,10 @@ jobs:
   update-oxvg-wasm-bindings:
     name: Update oxvg-wasm-bindings
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     defaults:
       run:
-        shell: bash
+        shell: bash --noprofile --norc -euxo pipefail {0}
 
     permissions:
       contents: write
@@ -28,8 +28,6 @@ jobs:
       - name: Update oxvg-wasm-bindings version
         id: update-version
         run: |
-          IFS=$' \n\t'; set -ux
-
           # Get the latest version from npm registry
           version="$(curl -s -H 'Accept: application/json' "https://registry.npmjs.org/@oxvg/wasm/latest" | jq -r '.version')"
           echo "version=${version}" >> "${GITHUB_OUTPUT}"

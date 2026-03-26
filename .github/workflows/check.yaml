@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash
+        shell: bash --noprofile --norc -euxo pipefail {0}
 
     steps:
       - name: Checkout
@@ -113,8 +113,6 @@ jobs:
           ACTIONLINT_VERSION: v1.7.7
           ACTIONLINT_ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.actionlint_all_changed_files }}
         run: |
-          IFS=$' \n\t'; set -ux
-
           if [[ "${GITHUB_EVENT_NAME}" == 'workflow_dispatch' ]]; then
             # Get files using globs.
             shopt -s nullglob globstar
@@ -160,8 +158,6 @@ jobs:
           # renovate: datasource=github-releases depName=lumaxis/shellcheck-problem-matchers
           SHELLCHECK_PROBLEM_MATCHERS_VERSION: v2.1.0
         run: |
-          IFS=$' \n\t'; set -ux
-
           if [[ "${GITHUB_EVENT_NAME}" == 'workflow_dispatch' ]]; then
             # Get files using globs.
             shopt -s nullglob globstar
