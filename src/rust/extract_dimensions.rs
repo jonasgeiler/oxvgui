@@ -1,88 +1,33 @@
+use lightningcss::values::percentage::DimensionPercentage;
 use oxvg_ast::{
-    element::Element as ElementTrait,
+    element::Element,
+    get_attribute, is_element, node,
     visitor::{Context, Visitor},
 };
+use oxvg_collections::attribute::presentation::LengthPercentage;
+use oxvg_optimiser::error::JobsError;
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use tsify::Tsify;
+
+// Based on:
+// - https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/crates/oxvg_optimiser/src/jobs/remove_view_box.rs
+// - https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
 
 #[derive(Tsify, Deserialize, Serialize, Clone, Debug)]
 #[tsify(from_wasm_abi, into_wasm_abi)]
 /// Dimensions of the SVG document
 pub struct Dimensions {
     /// Width of the SVG document
-    pub width: Option<f64>,
+    pub width: Option<f32>,
     /// Height of the SVG document
-    pub height: Option<f64>,
+    pub height: Option<f32>,
 }
 
 #[derive(Tsify, Deserialize, Serialize, Debug, Clone)]
 #[serde(transparent)]
 /// Extracts the SVG's width and height from the `width`/`height` or `viewBox` attribute on `<svg>`.
-/// Based on:
-/// - https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_view_box.rs
-/// - https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
 pub struct ExtractDimensions(pub RefCell<Dimensions>);
-
-impl<'arena, E: ElementTrait<'arena>> Visitor<'arena, E> for ExtractDimensions {
-    type Error = String;
-
-    fn element(
-        &self,
-        element: &mut E,
-        _context: &mut Context<'arena, '_, '_, E>,
-    ) -> Result<(), Self::Error> {
-        // TODO: Traverse the tree and find the root <svg> element, then extract the width and height from the attributes.
-        //       See: https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_view_box.rs
-        //       See: https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
-
-        // Already extracted
-        let dimensions = self.0.borrow();
-        if dimensions.width.is_some() && dimensions.height.is_some() {
-            return Ok(());
-        }
-        drop(dimensions);
-
-        // TODO: Check if root
-        if element.prefix().is_some() || element.local_name().as_ref() != "svg" {
-            return Ok(());
-        }
-
-        // TODO: Check if units are supported in SVGs and parse them
-        if let (Some(width_attr), Some(height_attr)) = (
-            element.get_attribute_local(&"width".into()),
-            element.get_attribute_local(&"height".into()),
-        ) {
-            if let (Ok(width), Ok(height)) = (
-                width_attr.as_ref().parse::<f64>(),
-                height_attr.as_ref().parse::<f64>(),
-            ) {
-                *self.0.borrow_mut() = Dimensions {
-                    width: Some(width),
-                    height: Some(height),
-                };
-                return Ok(());
-            }
-        }
-
-        // TODO: Check if units are supported in SVGs and parse them
-        if let Some(view_box_attr) = element.get_attribute_local(&"viewBox".into()) {
-            let mut nums = Vec::with_capacity(4);
-            nums.extend(SEPARATOR.split(view_box_attr.as_ref()));
-            if nums.len() == 4 {
-                if let (Ok(width), Ok(height)) = (nums[2].parse::<f64>(), nums[3].parse::<f64>()) {
-                    *self.0.borrow_mut() = Dimensions {
-                        width: Some(width),
-                        height: Some(height),
-                    };
-                    return Ok(());
-                }
-            }
-        };
-
-        Ok(())
-    }
-}
 
 impl Default for ExtractDimensions {
     fn default() -> Self {
@@ -93,6 +38,57 @@ impl Default for ExtractDimensions {
     }
 }
 
-lazy_static! {
-    pub static ref SEPARATOR: regex::Regex = regex::Regex::new(r"[ ,]+").unwrap();
+impl<'input, 'arena> Visitor<'input, 'arena> for ExtractDimensions {
+    type Error = JobsError<'input>;
+
+    fn element(
+        &self,
+        element: &Element<'input, 'arena>,
+        _context: &mut Context<'input, 'arena, '_>,
+    ) -> Result<(), Self::Error> {
+        // Return if already extracted
+        let dimensions = self.0.borrow();
+        if dimensions.width.is_some() && dimensions.height.is_some() {
+            return Ok(());
+        }
+        drop(dimensions);
+
+        // Make sure it's the root <svg> element
+        if !is_element!(element, Svg)
+            || !element
+                .parent_node()
+                .is_some_and(|n| n.node_type() == node::Type::Document)
+        {
+            return Ok(());
+        }
+
+        // Use width/height attributes if present and valid
+        let width_attr = get_attribute!(element, WidthSvg);
+        let height_attr = get_attribute!(element, HeightSvg);
+        if let (
+            Some(LengthPercentage(DimensionPercentage::Dimension(width))),
+            Some(LengthPercentage(DimensionPercentage::Dimension(height))),
+        ) = (width_attr.as_deref(), height_attr.as_deref())
+        {
+            if let (Some(width), Some(height)) = (width.to_px(), height.to_px()) {
+                *self.0.borrow_mut() = Dimensions {
+                    width: Some(width),
+                    height: Some(height),
+                };
+                return Ok(());
+            }
+        }
+        drop((width_attr, height_attr));
+
+        // Use viewBox attribute if present and valid, as fallback to the above
+        if let Some(view_box) = get_attribute!(element, ViewBox) {
+            *self.0.borrow_mut() = Dimensions {
+                width: Some(view_box.width),
+                height: Some(view_box.height),
+            };
+            return Ok(());
+        };
+
+        Ok(())
+    }
 }

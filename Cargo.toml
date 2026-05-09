@@ -1,4 +1,6 @@
-# Based on https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/Cargo.toml
+# Based on https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/Cargo.toml
+# and https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/packages/wasm/Cargo.toml
+# and one line from https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/crates/oxvg_optimiser/Cargo.toml#L47
 
 [package]
 name = "oxvg-wasm-bindings"
@@ -18,33 +20,41 @@ missing_docs = { level = "warn" }
 
 [lints.clippy]
 pedantic = { level = "warn", priority = -1 }
-# Too noisy and not really an issue
-must_use_candidate = "allow"
-return_self_not_must_use = "allow"
+# Willing to accept lossy conversions
+cast_lossless = "allow"
+# Willing to accept lossy conversions
+cast_possible_truncation = "allow"
+# dbg should only be used for debugging
+dbg_macro = "warn"
 # Not a priority for svgo parity
 float_cmp = "allow"
-dbg_macro = "warn"
+# Too noisy and not really an issue
+must_use_candidate = "allow"
 
 [lib]
 path = "src/rust/oxvg_wasm_bindings.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-oxvg_optimiser = { version = "0.0.3", features = ["wasm"] }
-oxvg_ast = { version = "0.0.3" }
+oxvg_optimiser = { version = "0.0.5", features = ["wasm"] }
+oxvg_ast = { version = "0.0.5", features = ["roxmltree", "serialize"] }
+oxvg_collections = { version = "0.0.5" }
 
 console_error_panic_hook = "0.1.7"
 getrandom = { version = "0.2", features = ["js"] }
+roxmltree = "0.20"
 serde_json = "1.0"
 serde-wasm-bindgen = "0.6"
 typed-arena = "2.0"
 wasm-bindgen = "=0.2.100"
 tsify = { version = "0.5", default-features = false, features = ["js"] }
-lazy_static = "1.5"
-regex = "1.11"
+lightningcss = { version = "1.0.0-alpha.63", default-features = false, features = [
+  "grid",
+  "visitor",
+] }
 serde = { version = "1.0", features = ["derive"] }
-log = "0.4"
-serde_with = "3.12"
-# web-sys = { version = "=0.3.70", features = ['console'] }
+log = { version = "0.4", features = ["release_max_level_off"] }
+serde_with = "3.15"
+#web-sys = { version = "0.3", features = ["console"] }
 
 [dev-dependencies]

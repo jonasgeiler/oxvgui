@@ -1,6 +1,11 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
+ * Returns the dimensions of the SVG document.
+ * Basically does the same as `optimise`, but doesn't run any optimisations.
+ */
+export function getDimensions(svg: string): Dimensions;
+/**
  * Optimise an SVG document using the provided config
  *
  * # Errors
@@ -48,29 +53,18 @@
  */
 export function optimise(svg: string, config?: Jobs | null, prettify?: boolean | null): OptimiseResult;
 /**
- * Returns the dimensions of the SVG document.
- * Basically does the same as `optimise`, but doesn't run any optimisations.
+ * Result of the optimisation
  */
-export function getDimensions(svg: string): Dimensions;
-/**
- * Custom implementation of Jobs.
- * Based on:
- * - https://github.com/noahbald/oxvg/blob/94b2abbc1126ca4056d4bb4d14b3ad24f376db15/crates/oxvg_optimiser/src/jobs/mod.rs
- */
-export interface CustomJobs {
+export interface OptimiseResult {
     /**
-     *
+     * Optimised SVG document
      */
-    extractDimensions: ExtractDimensions;
+    data: string;
+    /**
+     * Dimensions of the SVG document
+     */
+    dimensions: Dimensions;
 }
-
-/**
- * Extracts the SVG\'s width and height from the `width`/`height` or `viewBox` attribute on `<svg>`.
- * Based on:
- * - https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_view_box.rs
- * - https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
- */
-export type ExtractDimensions = Dimensions;
 
 /**
  * Dimensions of the SVG document
@@ -87,56 +81,30 @@ export interface Dimensions {
 }
 
 /**
- * Result of the optimisation
+ * Extracts the SVG\'s width and height from the `width`/`height` or `viewBox` attribute on `<svg>`.
  */
-export interface OptimiseResult {
+export type ExtractDimensions = Dimensions;
+
+/**
+ * Custom implementation of `Jobs` that only runs my `extract_dimensions` job.
+ */
+export interface CustomJobs {
     /**
-     * Optimised SVG document
+     *
      */
-    data: string;
-    /**
-     * Dimensions of the SVG document
-     */
-    dimensions: Dimensions;
+    extractDimensions: ExtractDimensions;
 }
 
 /**
- * Adds attributes to SVG elements in the document. This is not an optimisation
- * and will increase the size of SVG documents.
+ * Removes `width` and `height` from the `<svg>` and replaces it with `viewBox` if missing.
  *
- * # Differences to SVGO
- *
- * It\'s not possible to set a *none* value to an attribute. Elements like
- * `<svg data-icon />` are valid in HTML but not XML, so it\'s only possible to create
- * an attribute like `<svg data-icon=\"\" />`.
- *
- * It\'s also not possible to create React-like syntax. In SVGO it\'s possible to define
- * an attribute as `{ \"key={value}\": undefined }` to produce an attribute like
- * `<svg key={value} />`, however in OXVG you have to provide a string value, so it\'s
- * output would look like `<svg key={value}=\"\" />`.
- *
- * # Examples
- *
- * Add an attribute with a prefix
- *
- * ```ignore
- * use std::collections::BTreeMap;
- * use oxvg_optimiser::{Jobs, AddAttributesToSVGElement};
- *
- * let jobs = Jobs {
- *   add_attributes_to_s_v_g_element: Some(AddAttributesToSVGElement {
- *     attributes: BTreeMap::from([(String::from(\"prefix:local\"), String::from(\"value\"))]),
- *   }),
- *   ..Jobs::none()
- * };
- * ```
+ * This job is the opposite of [`super::RemoveViewBox`] and should be disabled before
+ * using this one.
  *
  * # Correctness
  *
- * This job may visually change documents if the attribute is a presentation attribute
- * or selected via CSS.
- *
- * No validation is applied to provided attribute and may produce incorrect or invalid documents.
+ * This job may affect the appearance of the document if the width/height does not match
+ * the view-box.
  *
  * # Errors
  *
@@ -144,111 +112,10 @@ export interface OptimiseResult {
  *
  * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
  */
-export interface AddAttributesToSVGElement {
-    /**
-     * Pairs of qualified names and attribute values that are assigned to the `svg`
-     */
-    attributes: Record<string, string>;
-}
+export type RemoveDimensions = boolean;
 
 /**
- * Rounds number and removes default `px` unit in attributes specified with number lists.
- *
- * # Correctness
- *
- * Rounding errors may cause slight changes in visual appearance.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface CleanupListOfValues {
-    /**
-     * Number of decimal places to round floating point numbers to.
-     */
-    floatPrecision?: number;
-    /**
-     * Whether to trim leading zeros.
-     */
-    leadingZero?: boolean;
-    /**
-     * Whether to remove `px` from a number\'s unit.
-     */
-    defaultPx?: boolean;
-    /**
-     * Whether to convert absolute units like `cm` and `in` to `px`.
-     */
-    convertToPx?: boolean;
-}
-
-/**
- * Converts presentation attributes in element styles to the equivalent XML attribute.
- *
- * Presentation attributes can be used in both attributes and styles, but in most cases it\'ll take fewer
- * bytes to use attributes. Consider the following:
- *
- * ```xml
- * <rect width=\"100\" height=\"100\" style=\"fill:red\"/>
- * <!-- vs -->
- * <rect width=\"100\" height=\"100\" fill=\"red\"/>
- * ```
- *
- * However, because the `style` attribute doesn\'t require quotes between values, given enough
- * presentation attributes, it can increase the size of the document.
- *
- * ```xml
- * <rect width=\"100\" height=\"100\" style=\"fill:red;opacity:.5;stroke-dasharray:1;stroke:blue;stroke-opacity:.5\"/>
- * <!-- vs -->
- * <rect width=\"100\" height=\"100\" fill=\"red\" opacity=\".5\" stroke-dasharray=\"1\" stroke=\"blue\" stroke-opacity=\".5\"/>
- * ```
- *
- * # Differences to SVGO
- *
- * Unlike SVGO this job doesn\'t attempt to cleanup broken style attributes.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface ConvertStyleToAttrs {
-    /**
-     * Whether to always keep `!important` styles.
-     */
-    keepImportant?: boolean;
-}
-
-/**
- * Remove elements by ID or classname
- *
- * # Correctness
- *
- * Removing arbitrary elements may affect the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface RemoveElementsByAttr {
-    /**
-     * Ids of elements to be removed
-     */
-    id?: string[];
-    /**
-     * Class-names of elements to be removed
-     */
-    class?: string[];
-}
-
-/**
- * For SVGs with a `viewBox` attribute, removes `<path>` element outside of it\'s bounds.
- *
- * Elements with `transform` are ignored, as they may be affected by animations.
+ * Removes `xmlns` prefixed elements that are never referenced by a qualified name.
  *
  * # Correctness
  *
@@ -260,86 +127,15 @@ export interface RemoveElementsByAttr {
  *
  * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
  */
-export type RemoveOffCanvasPaths = boolean;
-
-/**
- * Removes `<script>` elements, event attributes, and javascript `href`s from the document.
- *
- * This can help remove the risk of Cross-site scripting (XSS) attacks.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * It\'s likely to break interactive documents.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type RemoveScripts = boolean;
-
-/**
- * Removes all `<style>` elements from the document.
- *
- * # Correctness
- *
- * This job is likely to visually affect documents with style elements in them.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type RemoveStyleElement = boolean;
-
-/**
- * Removes unused ids and minifies used ids.
- *
- * # Correctness
- *
- * By default documents with scripts or style elements are skipped, so the ids aren\'t selected
- * and can\'t affect the document\'s appearance or behaviour.
- *
- * When inlined there\'s a good chance that existing id selectors will no longer match the ids.
- * Additionally, when inlining multiple SVGs it\'s likely ids will overlap.
- *
- * You can choose to disable `minify` or use the `prefixIds` job to help with workarounds.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface CleanupIds {
-    /**
-     * Whether to remove unreferenced ids.
-     */
-    remove?: boolean;
-    /**
-     * Whether to minify ids
-     */
-    minify?: boolean;
-    /**
-     * Skips ids that match an item in the list
-     */
-    preserve?: string[];
-    /**
-     * Skips ids that start with a string matching a prefix in the list
-     */
-    preservePrefixes?: string[];
-    /**
-     * Whether to run despite `<script>` or `<style>`
-     */
-    force?: boolean;
-}
+export type RemoveUnusedNS = boolean;
 
 /**
  * Removes unreferenced `<defs>` elements
+ *
+ * # Differences to SVGO
+ *
+ * Defs with a class attribute will be retained, as only useful ones should remain
+ * after running `inline_styles`.
  *
  * # Correctness
  *
@@ -354,9 +150,108 @@ export interface CleanupIds {
 export type RemoveUselessDefs = boolean;
 
 /**
- * Filters `<g>` elements that have no effect.
+ * Removes the xml declaration from the document.
  *
- * For removing empty groups, see [`super::RemoveEmptyContainers`].
+ * # Correctness
+ *
+ * This job may affect clients which expect XML (not SVG) and can\'t detect the MIME-type
+ * as `image/svg+xml`
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type RemoveXMLProcInst = boolean;
+
+/**
+ * Cleans up `enable-background` attributes and styles. It will only remove it if
+ * - The document has no `<filter>` element; and
+ * - The value matches the document\'s width and height; or
+ * - Replace `new` when it matches the width and height of a `<mask>` or `<pattern>`
+ *
+ * This job will:
+ * - Drop `enable-background` on `<svg>` node, if it matches the node\'s width and height
+ * - Set `enable-background` to `\"new\"` on `<mask>` or `<pattern>` nodes, if it matches the
+ *   node\'s width and height
+ *
+ * # Correctness
+ *
+ * This attribute is deprecated and won\'t visually affect documents in most renderers. For outdated
+ * renderers that still support it, there may be a visual change.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type CleanupEnableBackground = boolean;
+
+/**
+ * Adds to the `class` attribute of the root `<svg>` element, omitting duplicates
+ *
+ * # Differences to SVGO
+ *
+ * The order of CSS classes may not be applied in the order given.
+ *
+ * # Examples
+ *
+ * Use with a list of classes
+ *
+ * ```
+ * use oxvg_optimiser::{Jobs, AddClassesToSVGElement};
+ *
+ * let jobs = Jobs {
+ *   add_classes_to_s_v_g_element: Some(AddClassesToSVGElement {
+ *     class_names: Some(vec![String::from(\"foo\"), String::from(\"bar\")]),
+ *     ..AddClassesToSVGElement::default()
+ *   }),
+ *   ..Jobs::none()
+ * };
+ * ```
+ *
+ * Use with a class string
+ *
+ * ```
+ * use oxvg_optimiser::{Jobs, AddClassesToSVGElement};
+ *
+ * let jobs = Jobs {
+ *   add_classes_to_s_v_g_element: Some(AddClassesToSVGElement {
+ *     class_name: Some(String::from(\"foo bar\")),
+ *     ..AddClassesToSVGElement::default()
+ *   }),
+ *   ..Jobs::none()
+ * };
+ * ```
+ *
+ *
+ * # Correctness
+ *
+ * This job may visually change documents if an added classname causes it to be
+ * selected by CSS.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export interface AddClassesToSVGElement {
+    /**
+     * Adds each class to the `class` attribute.
+     */
+    classNames?: string[];
+    /**
+     * Adds the classes to the `class` attribute, removing any whitespace between each. This option
+     * is ignored if `class_names` is provided.
+     */
+    className?: string;
+}
+
+/**
+ * Removes useless `stroke` and `fill` attributes
  *
  * # Correctness
  *
@@ -368,40 +263,19 @@ export type RemoveUselessDefs = boolean;
  *
  * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
  */
-export type CollapseGroups = boolean;
-
-/**
- * Apply transformations of a `transform` attribute to the path data, removing the `transform`
- * in the process.
- *
- * # Differences to SVGO
- *
- * In SVGO this job cannot be enabled individually; it always runs with `convertPathData`.
- *
- * # Correctness
- *
- * By default this job should never visually change the document.
- *
- * When specifying a precision there may be rounding errors affecting the accuracy of documents.
- *
- * When specifying to apply to apply transforms to a stroked path the stroke may be visually
- * warped when compared to the original.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface ApplyTransforms {
+export interface RemoveUselessStrokeAndFill {
     /**
-     * The level of precising at which to round transforms applied to the path data.
+     * Whether to remove redundant strokes
      */
-    transformPrecision?: number;
+    stroke?: boolean;
     /**
-     * Whether or not to apply transforms to paths with a stroke.
+     * Whether to remove redundant fills
      */
-    applyTransformsStroked?: boolean;
+    fill?: boolean;
+    /**
+     * Whether to remove elements with no stroke or fill
+     */
+    removeNone?: boolean;
 }
 
 /**
@@ -631,142 +505,14 @@ export interface Jobs {
 }
 
 /**
- * A selector and set of attributes to remove.
+ * A preset which the specified jobs can overwrite
  */
-export interface Selector {
-    /**
-     * A CSS selector.
-     */
-    selector: string;
-    /**
-     * A list of qualified attribute names.
-     */
-    attributes: string[];
-}
-
-/**
- * Removes attributes from elements that match a selector.
- *
- * # Correctness
- *
- * Removing attributes may visually change the document if they\'re
- * presentation attributes or selected with CSS.
- *
- * # Errors
- *
- * If the selector fails to parse.
- */
-export type RemoveAttributesBySelector = Selector[];
-
-/**
- * Removes doctype definitions from the document.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type RemoveDoctype = boolean;
-
-/**
- * Removes all xml namespaces associated with editing software.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * Editor namespaces may be used by the editor and contain data that might be
- * lost if you try to edit the file after optimising.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface RemoveEditorsNSData {
-    /**
-     * A list of additional namespaces URIs you may want to remove.
-     */
-    additionalNamespaces?: string[];
-}
-
-/**
- * Merges styles from a `<style>` element to the `style` attribute of matching elements.
- *
- * # Differences to SVGO
- *
- * Styles are minified via lightningcss when merged.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface InlineStyles {
-    /**
-     * If to only inline styles if the selector matches one element.
-     */
-    onlyMatchedOnce?: boolean;
-    /**
-     * If to remove the selector and styles from the stylesheet while inlining the styles. This
-     * does not remove the selectors that did not match any elements.
-     */
-    removeMatchedSelectors?: boolean;
-    /**
-     * An array of media query conditions to use, such as `screen`. An empty string signifies all
-     * selectors outside of a media query.
-     * Using `[\"*\"]` will match all media-queries
-     */
-    useMqs?: string[];
-    /**
-     * What pseudo-classes and pseudo-elements to use. An empty string signifies all non-pseudo
-     * classes and non-pseudo elements.
-     * Using `[\"*\"]` will match all pseudo-elements and pseudo-classes.
-     */
-    usePseudos?: string[];
-}
-
-/**
- * Minify `<style>` elements with lightningcss
- *
- * # Differences to SVGO
- *
- * Unlike SVGO we don\'t use CSSO for optimisation, instead using lightningcss.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface MinifyStyles {
-    /**
-     * Whether to remove styles with no matching elements.
-     */
-    removeUnused?: boolean | "force";
-}
-
-export type ConvertCase = "Upper" | "Lower";
+export type Extends = "none" | "default" | "safe";
 
 /**
  * How the type will be converted.
  */
-export type Method = "lightning" | "currentColor" | { value: { names_2_hex: boolean; rgb_2_hex: boolean; convert_case: ConvertCase | undefined; short_hex: boolean; short_name: boolean } };
+export type Method = "lightning" | "currentColor";
 
 /**
  * Converts color references to their shortest equivalent.
@@ -796,8 +542,7 @@ export interface ConvertColors {
 }
 
 /**
- * Removes empty `<text>` and `<tspan>` elements. Removes `<tref>` elements that don\'t
- * reference anything within the document.
+ * Removes empty attributes from elements when safe to do so.
  *
  * # Correctness
  *
@@ -809,156 +554,7 @@ export interface ConvertColors {
  *
  * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
  */
-export interface RemoveEmptyText {
-    /**
-     * Whether to remove empty text elements.
-     */
-    text?: boolean;
-    /**
-     * Whether to remove empty tspan elements.
-     */
-    tspan?: boolean;
-    /**
-     * Whether to remove useless tref elements.
-     *
-     * `tref` is deprecated and generally unsupported by browsers.
-     */
-    tref?: boolean;
-}
-
-/**
- * Sorts the children of `<defs>` into a predictable order.
- *
- * This doesn\'t affect the size of a document but will likely improve readability
- * and compression of the document.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type SortDefsChildren = boolean;
-
-/**
- * A preset which the specified jobs can overwrite
- */
-export type Extends = "none" | "default" | "safe";
-
-/**
- * Removes the `viewBox` attribute when it matches the `width` and `height`.
- *
- * # Correctness
- *
- * This job should never visually change the document but may affect how the document
- * scales in applications.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type RemoveViewBox = boolean;
-
-/**
- * Removes the xml declaration from the document.
- *
- * # Correctness
- *
- * This job may affect clients which expect XML (not SVG) and can\'t detect the MIME-type
- * as `image/svg+xml`
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type RemoveXMLProcInst = boolean;
-
-/**
- * Removes elements and attributes that are not expected in an SVG document. Removes
- * attributes that are not expected on a given element. Removes attributes that are
- * the default for a given element. Removes elements that are not expected as a child
- * for a given element.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface RemoveUnknownsAndDefaults {
-    /**
-     * Whether to remove elements that are unknown or unknown for it\'s parent element.
-     */
-    unknownContent?: boolean;
-    /**
-     * Whether to remove attributes that are unknown or unknown for it\'s element.
-     */
-    unknownAttrs?: boolean;
-    /**
-     * Whether to remove attributes that are equivalent to the default for it\'s element.
-     */
-    defaultAttrs?: boolean;
-    /**
-     * Whether to remove xml declarations equivalent to the default.
-     */
-    defaultMarkupDeclarations?: boolean;
-    /**
-     * Whether to remove attributes equivalent to it\'s inherited value.
-     */
-    uselessOverrides?: boolean;
-    /**
-     * Whether to keep attributes prefixed with `data-`
-     */
-    keepDataAttrs?: boolean;
-    /**
-     * Whether to keep attributes prefixed with `aria-`
-     */
-    keepAriaAttrs?: boolean;
-    /**
-     * Whether to keep the `role` attribute
-     */
-    keepRoleAttr?: boolean;
-}
-
-/**
- * Removes useless `stroke` and `fill` attributes
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface RemoveUselessStrokeAndFill {
-    /**
-     * Whether to remove redundant strokes
-     */
-    stroke?: boolean;
-    /**
-     * Whether to remove redundant fills
-     */
-    fill?: boolean;
-    /**
-     * Whether to remove elements with no stroke or fill
-     */
-    removeNone?: boolean;
-}
+export type RemoveEmptyAttrs = boolean;
 
 /**
  * Removes hidden or invisible elements from the document.
@@ -1039,109 +635,16 @@ export interface RemoveHiddenElems {
 }
 
 /**
- * Moves some of a group\'s attributes to the contained elements.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type MoveGroupAttrsToElems = boolean;
-
-/**
- * Removes `xmlns` prefixed elements that are never referenced by a qualified name.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type RemoveUnusedNS = boolean;
-
-/**
- * The method for ordering xmlns attributes
- */
-export type XMLNSOrder = "alphabetical" | "front";
-
-/**
- * Sorts attributes into a predictable order.
- *
- * This doesn\'t affect the size of a document but will likely improve readability
- * and compression of the document.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface SortAttrs {
-    /**
-     * A list of attributes in a given order.
-     */
-    order?: string[];
-    /**
-     * The method for ordering xmlns attributes
-     */
-    xmlnsOrder?: XMLNSOrder;
-}
-
-/**
- * Adds to the `class` attribute of the root `<svg>` element, omitting duplicates
+ * Converts basic shapes to `<path>` elements
  *
  * # Differences to SVGO
  *
- * The order of CSS classes may not be applied in the order given.
- *
- * # Examples
- *
- * Use with a list of classes
- *
- * ```ignore
- * use oxvg_optimiser::{Jobs, AddClassesToSVG};
- *
- * let jobs = Jobs {
- *   add_classes_to_svg: Some(AddClassesToSVG {
- *     class_names: Some(vec![String::from(\"foo\"), String::from(\"bar\")]),
- *     ..AddClassesToSVG::default()
- *   }),
- *   ..Jobs::none()
- * };
- * ```
- *
- * Use with a class string
- *
- * ```ignore
- * use oxvg_optimiser::{Jobs, AddClassesToSVG};
- *
- * let jobs = Jobs {
- *   add_classes_to_svg: Some(AddClassesToSVG {
- *     class_name: Some(String::from(\"foo bar\")),
- *     ..AddClassesToSVG::default()
- *   }),
- *   ..Jobs::none()
- * };
- * ```
- *
+ * OXVG will avoid converting shapes which may be referenced by local-name
+ * in stylesheets.
  *
  * # Correctness
  *
- * This job may visually change documents if an added classname causes it to be
- * selected by CSS.
+ * Rounding errors may cause slight changes in visual appearance.
  *
  * # Errors
  *
@@ -1149,17 +652,33 @@ export interface SortAttrs {
  *
  * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
  */
-export interface AddClassesToSVGElement {
+export interface ConvertShapeToPath {
     /**
-     * Adds each class to the `class` attribute.
+     * Whether to convert `<circle>` and `<ellipses>` to paths.
      */
-    classNames?: string[];
+    convertArcs?: boolean;
     /**
-     * Adds the classes to the `class` attribute, removing any whitespace between each. This option
-     * is ignored if `class_names` is provided.
+     * The number of decimal places to round to
      */
-    className?: string;
+    floatPrecision?: null | false | number;
 }
+
+/**
+ * For SVGs with a `viewBox` attribute, removes `<path>` element outside of it\'s bounds.
+ *
+ * Elements with `transform` are ignored, as they may be affected by animations.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type RemoveOffCanvasPaths = boolean;
 
 /**
  * Converts `linearGradient` and `radialGradient` nodes that are a solid colour
@@ -1174,64 +693,42 @@ export interface AddClassesToSVGElement {
 export type ConvertOneStopGradients = boolean;
 
 /**
- * Remove attributes based on whether it matches a pattern.
+ * Adds attributes to SVG elements in the document. This is not an optimisation
+ * and will increase the size of SVG documents.
  *
- * The patterns syntax is `[ element* : attribute* : value* ]`; where
+ * # Differences to SVGO
  *
- * - A regular expression matching an element\'s name. An asterisk or omission matches all.
- * - A regular expression matching an attribute\'s name.
- * - A regular expression matching an attribute\'s value. An asterisk or omission matches all.
+ * It\'s not possible to set a *none* value to an attribute. Elements like
+ * `<svg data-icon />` are valid in HTML but not XML, so it\'s only possible to create
+ * an attribute like `<svg data-icon=\"\" />`.
  *
- * # Example
+ * It\'s also not possible to create React-like syntax. In SVGO it\'s possible to define
+ * an attribute as `{ \"key={value}\": undefined }` to produce an attribute like
+ * `<svg key={value} />`, however in OXVG you have to provide a string value, so it\'s
+ * output would look like `<svg key={value}=\"\" />`.
  *
- * Match `fill` attribute in `<path>` elements
+ * # Examples
  *
- * ```ignore
- * use oxvg_optimiser::{Jobs, RemoveAttrs};
+ * Add an attribute with a prefix
  *
- * let mut remove_attrs = RemoveAttrs::default();
- * remove_attrs.attrs = vec![String::from(\"path:fill\")];
+ * ```
+ * use std::collections::BTreeMap;
+ * use oxvg_optimiser::{Jobs, AddAttributesToSVGElement};
+ *
  * let jobs = Jobs {
- *   remove_attrs: Some(remove_attrs),
+ *   add_attributes_to_s_v_g_element: Some(AddAttributesToSVGElement {
+ *     attributes: BTreeMap::from([(String::from(\"prefix:local\"), String::from(\"value\"))]),
+ *   }),
  *   ..Jobs::none()
  * };
  * ```
- * # Correctness
- *
- * Removing attributes may visually change the document if they\'re
- * presentation attributes or selected with CSS.
- *
- * # Errors
- *
- * If the regex fails to parse.
- */
-export interface RemoveAttrs {
-    /**
-     * A list of patterns that match attributes.
-     */
-    attrs: string[];
-    /**
-     * The seperator for different parts of the pattern. By default this is `\":\"`.
-     *
-     * You may need to use this if you need to match attributes with a `:` (i.e. prefixed attributes).
-     */
-    elemSeparator?: string;
-    /**
-     * Whether to ignore attributes set to `currentColor`
-     */
-    preserveCurrentColor?: boolean;
-}
-
-/**
- * Removes `width` and `height` from the `<svg>` and replaces it with `viewBox` if missing.
- *
- * This job is the opposite of [`super::RemoveViewBox`] and should be disabled before
- * using this one.
  *
  * # Correctness
  *
- * This job may affect the appearance of the document if the width/height does not match
- * the view-box.
+ * This job may visually change documents if the attribute is a presentation attribute
+ * or selected via CSS.
+ *
+ * No validation is applied to provided attribute and may produce incorrect or invalid documents.
  *
  * # Errors
  *
@@ -1239,310 +736,11 @@ export interface RemoveAttrs {
  *
  * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
  */
-export type RemoveDimensions = boolean;
-
-/**
- * Removes inline JPEGs, PNGs, and GIFs from the document.
- *
- * # Correctness
- *
- * This job may visually change documents with images inlined in them.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type RemoveRasterImages = boolean;
-
-/**
- * Removes the `xmlns` attribute from `<svg>`.
- *
- * This can be useful for SVGs that will be inlined.
- *
- * # Correctness
- *
- * This job may break document when used outside of HTML.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type RemoveXMLNS = boolean;
-
-/**
- * Removes XML comments from the document.
- *
- * By default this job ignores comments starting with `<!--!` which is often used
- * for legal information, such as copyright, licensing, or attribution.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * Scripts which target comments, or conditional comments such as `<!--[if IE 8]>`
- * may be affected.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface RemoveComments {
+export interface AddAttributesToSVGElement {
     /**
-     * A list of regex patters to match against comments, where matching comments will
-     * not be removed from the document.
+     * Pairs of qualified names and attribute values that are assigned to the `svg`
      */
-    preservePatterns?: { regex: string };
-}
-
-/**
- * Removes deprecated attributes from elements.
- *
- * # Correctnesss
- *
- * By default this job should never visually change the document.
- *
- * Specifying `remove_unsafe` may remove attributes which visually change
- * the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface RemoveDeprecatedAttrs {
-    /**
-     * Whether to remove deprecated presentation attributes
-     */
-    removeUnsafe?: boolean;
-}
-
-/**
- * Removes `<metadata>` from the document.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type RemoveMetadata = boolean;
-
-/**
- * Merge multiple `<style>` elements into one
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type MergeStyles = boolean;
-
-/**
- * Remove attributes on groups that won\'t be inherited by it\'s children.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type RemoveNonInheritableGroupAttrs = boolean;
-
-/**
- * Cleans up `enable-background` attributes and styles. It will only remove it if
- * - The document has no `<filter>` element; and
- * - The value matches the document\'s width and height; or
- * - Replace `new` when it matches the width and height of a `<mask>` or `<pattern>`
- *
- * This job will:
- * - Drop `enable-background` on `<svg>` node, if it matches the node\'s width and height
- * - Set `enable-background` to `\"new\"` on `<mask>` or `<pattern>` nodes, if it matches the
- *   node\'s width and height
- *
- * # Correctness
- *
- * This attribute is deprecated and won\'t visually affect documents in most renderers. For outdated
- * renderers that still support it, there may be a visual change.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type CleanupEnableBackground = boolean;
-
-/**
- * Converts non-eccentric `<ellipse>` to `<circle>` elements.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type ConvertEllipseToCircle = boolean;
-
-/**
- * Move an element\'s attributes to it\'s enclosing group.
- *
- * # Correctness
- *
- * This job should never visually change the document.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type MoveElemsAttrsToGroup = boolean;
-
-/**
- * Merge transforms and convert to shortest form.
- *
- * # Correctness
- *
- * Rounding errors may cause slight changes in visual appearance.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface ConvertTransform {
-    /**
-     * Whether to convert transforms to their shorthand alternative.
-     */
-    convertToShorts?: boolean;
-    /**
-     * Number of decimal places to round degrees to, for `rotate` and `skew`.
-     *
-     * Some of the precision may also be lost during serialization.
-     */
-    degPrecision?: number | undefined;
-    /**
-     * Number of decimal places to round to, for `rotate`\'s origin and `translate`.
-     */
-    floatPrecision?: number;
-    /**
-     * Number of decimal places to round to, for `scale`.
-     */
-    transformPrecision?: number;
-    /**
-     * Whether to convert matrices into transforms.
-     */
-    matrixToTransform?: boolean;
-    /**
-     * Whether to remove redundant arguments from `translate` (e.g. `translate(10 0)` -> `transflate(10)`).
-     */
-    shortRotate?: boolean;
-    /**
-     * Whether to remove redundant transforms (e.g. `translate(0)`).
-     */
-    removeUseless?: boolean;
-    /**
-     * Whether to merge transforms.
-     */
-    collapseIntoOne?: boolean;
-}
-
-/**
- * Removes container elements with no functional children or meaningful attributes.
- *
- * # Correctness
- *
- * This job shouldn\'t visually change the document. Removing whitespace may have
- * an effect on `inline` or `inline-block` elements.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export type RemoveEmptyContainers = boolean;
-
-/**
- * Removes the `<desc>` element from the document when empty or only contains editor attribution.
- *
- * # Correctness
- *
- * By default this job should never functionally change the document.
- *
- * By using `remove_any` you may deteriotate the accessibility of the document for some users.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface RemoveDesc {
-    /**
-     * Whether to remove all `<desc>` elements
-     */
-    removeAny?: boolean;
-}
-
-/**
- * Prefix element ids and classnames with the filename or provided string. This
- * is useful for reducing the likelihood of conflicts when inlining SVGs.
- *
- * See [`super::CleanupIds`] for more details.
- *
- * # Correctness
- *
- * Prefixing ids on inlined SVGs may affect scripting and CSS.
- *
- * # Errors
- *
- * Never.
- *
- * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
- */
-export interface PrefixIds {
-    /**
-     * Content to insert between the prefix and original value.
-     */
-    delim?: string;
-    /**
-     * A string or generator that resolves to a string
-     */
-    prefix?: string | boolean | null;
-    /**
-     * Whether to prefix ids
-     */
-    prefixIds?: boolean;
-    /**
-     * Whether to prefix classnames
-     */
-    prefixClassNames?: boolean;
+    attributes: Record<string, string>;
 }
 
 /**
@@ -1567,14 +765,21 @@ export interface Precheck {
 }
 
 /**
- * Removes the `<title>` element from the document.
+ * Removes unused ids and minifies used ids.
  *
- * This may affect the accessibility of documents, where the title is used
- * to describe a non-decorative SVG.
+ * # Differences to SVGO
+ *
+ * The generated ids may be different to those produced by SVGO
  *
  * # Correctness
  *
- * This job may visually change documents with images inlined in them.
+ * By default documents with scripts or style elements are skipped, so the ids aren\'t selected
+ * and can\'t affect the document\'s appearance or behaviour.
+ *
+ * When inlined there\'s a good chance that existing id selectors will no longer match the ids.
+ * Additionally, when inlining multiple SVGs it\'s likely ids will overlap.
+ *
+ * You can choose to disable `minify` or use the `prefixIds` job to help with workarounds.
  *
  * # Errors
  *
@@ -1582,7 +787,28 @@ export interface Precheck {
  *
  * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
  */
-export type RemoveTitle = boolean;
+export interface CleanupIds {
+    /**
+     * Whether to remove unreferenced ids.
+     */
+    remove?: boolean;
+    /**
+     * Whether to minify ids
+     */
+    minify?: boolean;
+    /**
+     * Skips ids that match an item in the list
+     */
+    preserve?: string[];
+    /**
+     * Skips ids that start with a string matching a prefix in the list
+     */
+    preservePrefixes?: string[];
+    /**
+     * Whether to run despite `<script>` or `<style>`
+     */
+    force?: boolean;
+}
 
 /**
  * For duplicate `<path>` elements, replaces it with a `<use>` that references a single
@@ -1633,11 +859,15 @@ export interface CleanupAttrs {
 }
 
 /**
- * Rounds number and removes default `px` unit in attributes specified with a number number.
+ * Merges styles from a `<style>` element to the `style` attribute of matching elements.
+ *
+ * # Differences to SVGO
+ *
+ * Styles are minified via lightningcss when merged.
  *
  * # Correctness
  *
- * Rounding errors may cause slight changes in visual appearance.
+ * This job should never visually change the document.
  *
  * # Errors
  *
@@ -1645,31 +875,39 @@ export interface CleanupAttrs {
  *
  * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
  */
-export interface CleanupNumericValues {
+export interface InlineStyles {
     /**
-     * The number of decimal places to round to
+     * If to only inline styles if the selector matches one element.
      */
-    floatPrecision?: number;
+    onlyMatchedOnce?: boolean;
     /**
-     * Whether to trim leading zeros
+     * If to remove the selector and styles from the stylesheet while inlining the styles. This
+     * does not remove the selectors that did not match any elements.
      */
-    leadingZero?: boolean;
+    removeMatchedSelectors?: boolean;
     /**
-     * Whether to remove `\"px\"` from the units
+     * An array of media query conditions to use, such as `screen`. An empty string signifies all
+     * selectors outside of a media query.
+     * Using `[\"*\"]` will match all media-queries
      */
-    defaultPx?: boolean;
+    useMqs?: string[];
     /**
-     * Whether to convert absolute units to `\"px\"`
+     * What pseudo-classes and pseudo-elements to use. An empty string signifies all non-pseudo
+     * classes and non-pseudo elements.
+     * Using `[\"*\"]` will match all pseudo-elements and pseudo-classes.
      */
-    convertToPx?: boolean;
+    usePseudos?: string[];
 }
 
 /**
- * Converts basic shapes to `<path>` elements
+ * Removes deprecated attributes from elements.
  *
- * # Correctness
+ * # Correctnesss
  *
- * Rounding errors may cause slight changes in visual appearance.
+ * By default this job should never visually change the document.
+ *
+ * Specifying `remove_unsafe` may remove attributes which visually change
+ * the document.
  *
  * # Errors
  *
@@ -1677,16 +915,166 @@ export interface CleanupNumericValues {
  *
  * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
  */
-export interface ConvertShapeToPath {
+export interface RemoveDeprecatedAttrs {
     /**
-     * Whether to convert `<circle>` and `<ellipses>` to paths.
+     * Whether to remove deprecated presentation attributes
      */
-    convertArcs?: boolean;
-    /**
-     * The number of decimal places to round to
-     */
-    floatPrecision?: null | false | number;
+    removeUnsafe?: boolean;
 }
+
+/**
+ * Converts non-eccentric `<ellipse>` to `<circle>` elements.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type ConvertEllipseToCircle = boolean;
+
+/**
+ * A selector and set of attributes to remove.
+ */
+export interface Selector {
+    /**
+     * A CSS selector.
+     */
+    selector: string;
+    /**
+     * A list of qualified attribute names.
+     */
+    attributes: string[];
+}
+
+/**
+ * Removes attributes from elements that match a selector.
+ *
+ * # Correctness
+ *
+ * Removing attributes may visually change the document if they\'re
+ * presentation attributes or selected with CSS.
+ *
+ * # Errors
+ *
+ * If the selector fails to parse.
+ */
+export type RemoveAttributesBySelector = Selector[];
+
+/**
+ * Remove attributes on groups that won\'t be inherited by it\'s children.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type RemoveNonInheritableGroupAttrs = boolean;
+
+/**
+ * Prefix element ids and classnames with the filename or provided string. This
+ * is useful for reducing the likelihood of conflicts when inlining SVGs.
+ *
+ * See [`super::CleanupIds`] for more details.
+ *
+ * # Differences to SVGO
+ *
+ * Custom generator functions are not supported.
+ *
+ * # Correctness
+ *
+ * Prefixing ids on inlined SVGs may affect scripting and CSS.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export interface PrefixIds {
+    /**
+     * Content to insert between the prefix and original value.
+     */
+    delim?: string;
+    /**
+     * A string or generator that resolves to a string
+     */
+    prefix?: string | boolean | null;
+    /**
+     * Whether to prefix ids
+     */
+    prefixIds?: boolean;
+    /**
+     * Whether to prefix classnames
+     */
+    prefixClassNames?: boolean;
+}
+
+/**
+ * Removes the `<desc>` element from the document when empty or only contains editor attribution.
+ *
+ * # Correctness
+ *
+ * By default this job should never functionally change the document.
+ *
+ * By using `remove_any` you may deteriotate the accessibility of the document for some users.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export interface RemoveDesc {
+    /**
+     * Whether to remove all `<desc>` elements
+     */
+    removeAny?: boolean;
+}
+
+/**
+ * Removes the `viewBox` attribute when it matches the `width` and `height`.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document but may affect how the document
+ * scales in applications.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type RemoveViewBox = boolean;
+
+/**
+ * Removes the `xmlns` attribute from `<svg>`.
+ *
+ * This can be useful for SVGs that will be inlined.
+ *
+ * # Correctness
+ *
+ * This job may break document when used outside of HTML.
+ *
+ * This may cause issues if the XMLNS doesn\'t reference the SVG namespace.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type RemoveXMLNS = boolean;
 
 /**
  * Converts paths found in `<path>`, `<glyph>`, and `<missing-glyph>` elements. Path
@@ -1771,7 +1159,28 @@ export interface ConvertPathData {
 }
 
 /**
- * Removes empty attributes from elements when safe to do so.
+ * Sorts the children of `<defs>` into a predictable order.
+ *
+ * This doesn\'t affect the size of a document but will likely improve readability
+ * and compression of the document.
+ *
+ * # Correctness
+ *
+ * This job may affect the document if selectors or scripts depend on ordering.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type SortDefsChildren = boolean;
+
+/**
+ * Sorts attributes into a predictable order.
+ *
+ * This doesn\'t affect the size of a document but will likely improve readability
+ * and compression of the document.
  *
  * # Correctness
  *
@@ -1783,10 +1192,546 @@ export interface ConvertPathData {
  *
  * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
  */
-export type RemoveEmptyAttrs = boolean;
+export interface SortAttrs {
+    /**
+     * A list of attributes in a given order.
+     */
+    order?: string[];
+    /**
+     * The method for ordering xmlns attributes
+     */
+    xmlnsOrder?: XMLNSOrder;
+}
 
 /**
- * Merge multipe paths into one
+ * The method for ordering xmlns attributes
+ */
+export type XMLNSOrder = "alphabetical" | "front";
+
+/**
+ * Remove attributes based on whether it matches a pattern.
+ *
+ * The patterns syntax is `[ element* : attribute* : value* ]`; where
+ *
+ * - A regular expression matching an element\'s name. An asterisk or omission matches all.
+ * - A regular expression matching an attribute\'s name.
+ * - A regular expression matching an attribute\'s value. An asterisk or omission matches all.
+ *
+ * # Example
+ *
+ * Match `fill` attribute in `<path>` elements
+ *
+ * ```
+ * use oxvg_optimiser::{Jobs, RemoveAttrs};
+ *
+ * let mut remove_attrs = RemoveAttrs::default();
+ * remove_attrs.attrs = vec![String::from(\"path:fill\")];
+ * let jobs = Jobs {
+ *   remove_attrs: Some(remove_attrs),
+ *   ..Jobs::none()
+ * };
+ * ```
+ * # Correctness
+ *
+ * Removing attributes may visually change the document if they\'re
+ * presentation attributes or selected with CSS.
+ *
+ * # Errors
+ *
+ * If the regex fails to parse.
+ */
+export interface RemoveAttrs {
+    /**
+     * A list of patterns that match attributes.
+     */
+    attrs: string[];
+    /**
+     * The separator for different parts of the pattern. By default this is `\":\"`.
+     *
+     * You may need to use this if you need to match attributes with a `:` (i.e. prefixed attributes).
+     */
+    elemSeparator?: string;
+    /**
+     * Whether to ignore attributes set to `currentColor`
+     */
+    preserveCurrentColor?: boolean;
+}
+
+/**
+ * Removes doctype definitions from the document.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type RemoveDoctype = boolean;
+
+/**
+ * Merge transforms and convert to shortest form.
+ *
+ * # Correctness
+ *
+ * Rounding errors may cause slight changes in visual appearance.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export interface ConvertTransform {
+    /**
+     * Whether to convert transforms to their shorthand alternative.
+     */
+    convertToShorts?: boolean;
+    /**
+     * Number of decimal places to round degrees to, for `rotate` and `skew`.
+     *
+     * Some of the precision may also be lost during serialization.
+     */
+    degPrecision?: number | undefined;
+    /**
+     * Number of decimal places to round to, for `rotate`\'s origin and `translate`.
+     */
+    floatPrecision?: number;
+    /**
+     * Number of decimal places to round to, for `scale`.
+     */
+    transformPrecision?: number;
+    /**
+     * Whether to convert matrices into transforms.
+     */
+    matrixToTransform?: boolean;
+    /**
+     * Whether to remove redundant arguments from `translate` (e.g. `translate(10 0)` -> `transflate(10)`).
+     */
+    shortRotate?: boolean;
+    /**
+     * Whether to remove redundant transforms (e.g. `translate(0)`).
+     */
+    removeUseless?: boolean;
+    /**
+     * Whether to merge transforms.
+     */
+    collapseIntoOne?: boolean;
+}
+
+/**
+ * Removes empty `<text>` and `<tspan>` elements. Removes `<tref>` elements that don\'t
+ * reference anything within the document.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export interface RemoveEmptyText {
+    /**
+     * Whether to remove empty text elements.
+     */
+    text?: boolean;
+    /**
+     * Whether to remove empty tspan elements.
+     */
+    tspan?: boolean;
+    /**
+     * Whether to remove useless tref elements.
+     *
+     * `tref` is deprecated and generally unsupported by browsers.
+     */
+    tref?: boolean;
+}
+
+/**
+ * Converts presentation attributes in element styles to the equivalent XML attribute.
+ *
+ * Presentation attributes can be used in both attributes and styles, but in most cases it\'ll take fewer
+ * bytes to use attributes. Consider the following:
+ *
+ * ```xml
+ * <rect width=\"100\" height=\"100\" style=\"fill:red\"/>
+ * <!-- vs -->
+ * <rect width=\"100\" height=\"100\" fill=\"red\"/>
+ * ```
+ *
+ * However, because the `style` attribute doesn\'t require quotes between values, given enough
+ * presentation attributes, it can increase the size of the document.
+ *
+ * ```xml
+ * <rect width=\"100\" height=\"100\" style=\"fill:red;opacity:.5;stroke-dasharray:1;stroke:blue;stroke-opacity:.5\"/>
+ * <!-- vs -->
+ * <rect width=\"100\" height=\"100\" fill=\"red\" opacity=\".5\" stroke-dasharray=\"1\" stroke=\"blue\" stroke-opacity=\".5\"/>
+ * ```
+ *
+ * # Differences to SVGO
+ *
+ * Unlike SVGO this job doesn\'t attempt to cleanup broken style attributes.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export interface ConvertStyleToAttrs {
+    /**
+     * Whether to always keep `!important` styles.
+     */
+    keepImportant?: boolean;
+}
+
+/**
+ * Removes container elements with no functional children or meaningful attributes.
+ *
+ * # Correctness
+ *
+ * This job shouldn\'t visually change the document. Removing whitespace may have
+ * an effect on `inline` or `inline-block` elements.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type RemoveEmptyContainers = boolean;
+
+/**
+ * Minify `<style>` elements with lightningcss
+ *
+ * # Differences to SVGO
+ *
+ * Unlike SVGO we don\'t use CSSO for optimisation, instead using lightningcss.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export interface MinifyStyles {
+    /**
+     * Whether to remove styles with no matching elements.
+     */
+    removeUnused?: boolean | "force";
+}
+
+/**
+ * Filters `<g>` elements that have no effect.
+ *
+ * For removing empty groups, see [`super::RemoveEmptyContainers`].
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type CollapseGroups = boolean;
+
+/**
+ * Removes `<metadata>` from the document.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type RemoveMetadata = boolean;
+
+/**
+ * Removes all `<style>` elements from the document.
+ *
+ * # Correctness
+ *
+ * This job is likely to visually affect documents with style elements in them.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type RemoveStyleElement = boolean;
+
+/**
+ * Rounds number and removes default `px` unit in attributes specified with a number number.
+ *
+ * # Correctness
+ *
+ * Rounding errors may cause slight changes in visual appearance.
+ *
+ * # Errors
+ *
+ * When a float-precision greater than the maximum is given.
+ */
+export interface CleanupNumericValues {
+    /**
+     * Number of decimal places to round floating point numbers to, to a maximum of 5.
+     */
+    floatPrecision?: number;
+    /**
+     * Whether to trim leading zeros.
+     */
+    leadingZero?: boolean;
+    /**
+     * Whether to remove `px` from a number\'s unit.
+     */
+    defaultPx?: boolean;
+    /**
+     * Whether to convert absolute units like `cm` and `in` to `px`.
+     */
+    convertToPx?: boolean;
+}
+
+/**
+ * Remove elements by ID or classname
+ *
+ * # Correctness
+ *
+ * Removing arbitrary elements may affect the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export interface RemoveElementsByAttr {
+    /**
+     * Ids of elements to be removed
+     */
+    id?: string[];
+    /**
+     * Class-names of elements to be removed
+     */
+    class?: string[];
+}
+
+/**
+ * Moves some of a group\'s attributes to the contained elements.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type MoveGroupAttrsToElems = boolean;
+
+/**
+ * Removes the `<title>` element from the document.
+ *
+ * This may affect the accessibility of documents, where the title is used
+ * to describe a non-decorative SVG.
+ *
+ * # Correctness
+ *
+ * This job may visually change documents with images inlined in them.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type RemoveTitle = boolean;
+
+/**
+ * Removes XML comments from the document.
+ *
+ * By default this job ignores comments starting with `<!--!` which is often used
+ * for legal information, such as copyright, licensing, or attribution.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * Scripts which target comments, or conditional comments such as `<!--[if IE 8]>`
+ * may be affected.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export interface RemoveComments {
+    /**
+     * A list of regex patters to match against comments, where matching comments will
+     * not be removed from the document.
+     */
+    preservePatterns?: { regex: string };
+}
+
+/**
+ * Removes inline JPEGs, PNGs, and GIFs from the document.
+ *
+ * # Correctness
+ *
+ * This job may visually change documents with images inlined in them.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type RemoveRasterImages = boolean;
+
+/**
+ * Rounds number and removes default `px` unit in attributes specified with number lists.
+ *
+ * # Correctness
+ *
+ * Rounding errors may cause slight changes in visual appearance.
+ *
+ * # Errors
+ *
+ * When a float-precision greater than the maximum is given.
+ */
+export interface CleanupListOfValues {
+    /**
+     * Number of decimal places to round floating point numbers to, to a maximum of 5.
+     */
+    floatPrecision?: number;
+    /**
+     * Whether to trim leading zeros.
+     */
+    leadingZero?: boolean;
+    /**
+     * Whether to remove `px` from a number\'s unit.
+     */
+    defaultPx?: boolean;
+    /**
+     * Whether to convert absolute units like `cm` and `in` to `px`.
+     */
+    convertToPx?: boolean;
+}
+
+/**
+ * Removes all xml namespaces associated with editing software.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * Editor namespaces may be used by the editor and contain data that might be
+ * lost if you try to edit the file after optimising.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export interface RemoveEditorsNSData {
+    /**
+     * A list of additional namespaces URIs you may want to remove.
+     */
+    additionalNamespaces?: string[];
+}
+
+/**
+ * Move an element\'s attributes to it\'s enclosing group.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type MoveElemsAttrsToGroup = boolean;
+
+/**
+ * Removes elements and attributes that are not expected in an SVG document. Removes
+ * attributes that are not expected on a given element. Removes attributes that are
+ * the default for a given element. Removes elements that are not expected as a child
+ * for a given element.
+ *
+ * # Differences to SVGO
+ *
+ * SVGO will avoid removing `<tspan>` from `<a>`, whereas we will remove it.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export interface RemoveUnknownsAndDefaults {
+    /**
+     * Whether to remove elements that are unknown or unknown for it\'s parent element.
+     */
+    unknownContent?: boolean;
+    /**
+     * Whether to remove attributes that are unknown or unknown for it\'s element.
+     */
+    unknownAttrs?: boolean;
+    /**
+     * Whether to remove attributes that are equivalent to the default for it\'s element.
+     */
+    defaultAttrs?: boolean;
+    /**
+     * Whether to remove xml declarations equivalent to the default.
+     */
+    defaultMarkupDeclarations?: boolean;
+    /**
+     * Whether to remove attributes equivalent to it\'s inherited value.
+     */
+    uselessOverrides?: boolean;
+    /**
+     * Whether to keep attributes prefixed with `data-`
+     */
+    keepDataAttrs?: boolean;
+    /**
+     * Whether to keep attributes prefixed with `aria-`
+     */
+    keepAriaAttrs?: boolean;
+    /**
+     * Whether to keep the `role` attribute
+     */
+    keepRoleAttr?: boolean;
+}
+
+/**
+ * Merge multiple paths into one
  *
  * # Differences to SVGO
  *
@@ -1812,6 +1757,21 @@ export interface MergePaths {
 }
 
 /**
+ * Merge multiple `<style>` elements into one
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type MergeStyles = boolean;
+
+/**
  * Replaces `xlink` prefixed attributes to the native SVG equivalent.
  *
  * # Correctness
@@ -1835,6 +1795,59 @@ export interface RemoveXlink {
 }
 
 /**
+ * Removes `<script>` elements, event attributes, and javascript `href`s from the document.
+ *
+ * This can help remove the risk of Cross-site scripting (XSS) attacks.
+ *
+ * # Correctness
+ *
+ * This job should never visually change the document.
+ *
+ * It\'s likely to break interactive documents.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export type RemoveScripts = boolean;
+
+/**
+ * Apply transformations of a `transform` attribute to the path data, removing the `transform`
+ * in the process.
+ *
+ * # Differences to SVGO
+ *
+ * In SVGO this job cannot be enabled individually; it always runs with `convertPathData`.
+ *
+ * # Correctness
+ *
+ * By default this job should never visually change the document.
+ *
+ * When specifying a precision there may be rounding errors affecting the accuracy of documents.
+ *
+ * When specifying to apply to apply transforms to a stroked path the stroke may be visually
+ * warped when compared to the original.
+ *
+ * # Errors
+ *
+ * Never.
+ *
+ * If this job produces an error or panic, please raise an [issue](https://github.com/noahbald/oxvg/issues)
+ */
+export interface ApplyTransforms {
+    /**
+     * The level of precising at which to round transforms applied to the path data.
+     */
+    transformPrecision?: number;
+    /**
+     * Whether or not to apply transforms to paths with a stroke.
+     */
+    applyTransformsStroked?: boolean;
+}
+
+/**
  * When running calculations against arcs, the level of error tolerated
  */
 export interface MakeArcs {
@@ -1853,8 +1866,8 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly optimise: (a: number, b: number, c: number, d: number) => [number, number, number];
   readonly getDimensions: (a: number, b: number) => [number, number, number];
+  readonly optimise: (a: number, b: number, c: number, d: number) => [number, number, number];
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_exn_store: (a: number) => void;
