@@ -1,0 +1,61 @@
+name: Check GitHub Actions Workflows
+
+on:
+  push:
+    branches:
+      - main
+      - 'renovate/**'
+    paths:
+      - '.github/workflows/*.ya?ml'
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/*.ya?ml'
+
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  code-quality: ################################################################
+    name: Code Quality
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash --noprofile --norc -euxo pipefail {0}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up actionlint
+        env:
+          # renovate: datasource=github-releases depName=rhysd/actionlint
+          ACTIONLINT_VERSION: v1.7.12
+          # renovate: datasource=github-releases depName=koalaman/shellcheck
+          SHELLCHECK_VERSION: v0.11.0
+        run: |
+          # Download and extract shellcheck, which is used by actionlint.
+          wget -q "https://github.com/koalaman/shellcheck/releases/download/${SHELLCHECK_VERSION}/shellcheck-${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" \
+            -O shellcheck.tar.xz
+          tar -xf shellcheck.tar.xz
+          mv "shellcheck-${SHELLCHECK_VERSION}/shellcheck" shellcheck
+          chmod +x shellcheck
+
+          # Download and extract actionlint.
+          wget -q "https://github.com/rhysd/actionlint/releases/download/${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION#v}_linux_amd64.tar.gz" \
+            -O actionlint.tar.gz
+          tar -xzf actionlint.tar.gz
+          chmod +x actionlint
+
+          # Download and register problem matcher for actionlint.
+          wget -q "https://raw.githubusercontent.com/rhysd/actionlint/${ACTIONLINT_VERSION}/.github/actionlint-matcher.json" \
+            -O actionlint-problem-matcher.json
+          echo "::add-matcher::actionlint-problem-matcher.json"
+
+      - name: Run actionlint
+        run: ./actionlint -verbose -color -shellcheck=./shellcheck

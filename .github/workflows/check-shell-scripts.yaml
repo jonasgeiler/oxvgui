@@ -1,0 +1,78 @@
+name: Check Shell Scripts
+
+on:
+  push:
+    branches:
+      - main
+      - 'renovate/**'
+    paths:
+      - '**.ash'
+      - '**.bash'
+      - '**.bats'
+      - '**.dash'
+      - '**.ksh'
+      - '**.sh'
+      - '.githooks/*'
+
+      - .github/workflows/check-shell-scripts.yaml
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**.ash'
+      - '**.bash'
+      - '**.bats'
+      - '**.dash'
+      - '**.ksh'
+      - '**.sh'
+      - '.githooks/*'
+
+      - .github/workflows/check-shell-scripts.yaml
+
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  code-quality: ################################################################
+    name: Code Quality
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash --noprofile --norc -euxo pipefail {0}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up shellcheck
+        env:
+          # renovate: datasource=github-releases depName=koalaman/shellcheck
+          SHELLCHECK_VERSION: v0.11.0
+          # renovate: datasource=github-releases depName=lumaxis/shellcheck-problem-matchers
+          SHELLCHECK_PROBLEM_MATCHERS_VERSION: v2.1.0
+        run: |
+          # Download and extract shellcheck.
+          wget -q "https://github.com/koalaman/shellcheck/releases/download/${SHELLCHECK_VERSION}/shellcheck-${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" \
+            -O shellcheck.tar.xz
+          tar -xf shellcheck.tar.xz
+          mv "shellcheck-${SHELLCHECK_VERSION}/shellcheck" shellcheck
+          chmod +x shellcheck
+
+          # Download and register problem matcher for shellcheck.
+          wget -q "https://raw.githubusercontent.com/lumaxis/shellcheck-problem-matchers/${SHELLCHECK_PROBLEM_MATCHERS_VERSION}/.github/shellcheck-gcc.json" \
+            -O shellcheck-problem-matcher.json
+          echo "::add-matcher::shellcheck-problem-matcher.json"
+
+      - name: Run shellcheck
+        run: |
+          # Support advanced globbing patterns.
+          shopt -s dotglob globstar nullglob
+
+          # We have to use gcc format and disable colors for the problem matcher.
+          ./shellcheck --norc --enable=all --format=gcc --color=never \
+            ./**/*.{ash,bash,bats,dash,ksh,sh} \
+            .githooks/*
