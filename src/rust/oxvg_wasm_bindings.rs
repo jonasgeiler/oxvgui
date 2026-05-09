@@ -1,5 +1,5 @@
 //! WebAssembly bindings for OXVG based on
-//! https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/packages/wasm/src/lib.rs,
+//! https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/packages/wasm/src/lib.rs,
 //! but customized for OXVGUI (returns SVG dimensions and allows prettifying).
 
 extern crate console_error_panic_hook;
