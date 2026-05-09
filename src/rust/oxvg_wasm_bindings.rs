@@ -1,17 +1,17 @@
 //! WebAssembly bindings for OXVG based on
-//! https://github.com/noahbald/oxvg/blob/d8fc238617d043969dc2af4395c8a53298e65c42/packages/wasm/src/lib.rs,
+//! https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/packages/wasm/src/lib.rs,
 //! but customized for OXVGUI (returns SVG dimensions and allows prettifying).
 
 extern crate console_error_panic_hook;
-#[macro_use]
-extern crate lazy_static;
 
 mod custom_jobs;
 mod extract_dimensions;
 
 use oxvg_ast::{
-    implementations::{roxmltree::parse, shared::Element},
-    serialize::{self, Node as _, Options},
+    parse::roxmltree::{parse_with_options, ParsingOptions},
+    serialize,
+    serialize::Node as _,
+    serialize::Options,
     visitor::Info,
 };
 use oxvg_optimiser::Jobs;
@@ -84,28 +84,31 @@ pub fn optimise(
 ) -> Result<OptimiseResult, String> {
     console_error_panic_hook::set_once();
 
-    let arena = typed_arena::Arena::new();
-    let dom = parse(svg, &arena).map_err(|e| e.to_string())?;
-    config
-        .unwrap_or_default()
-        .run(&dom, &Info::<Element>::new(&arena))
-        .map_err(|err| err.to_string())?;
-
+    let config = config.unwrap_or_default();
     let custom_jobs = CustomJobs::default();
-    custom_jobs
-        .run(&dom, &Info::<Element>::new(&arena))
-        .map_err(|err| err.to_string())?;
+    let data = parse_with_options(
+        svg,
+        ParsingOptions {
+            allow_dtd: true,
+            ..ParsingOptions::default()
+        },
+        |dom, allocator| {
+            let info = Info::new(allocator);
+            config.run(dom, &info).map_err(|e| e.to_string())?;
+            custom_jobs.run(dom, &info).map_err(|e| e.to_string())?;
 
-    let data = dom
-        .serialize_with_options(Options {
-            indent: if prettify.unwrap_or(false) {
-                serialize::Indent::Spaces(2)
-            } else {
-                serialize::Indent::None
-            },
-            ..Default::default()
-        })
-        .map_err(|err| err.to_string())?;
+            dom.serialize_with_options(Options {
+                indent: if prettify.unwrap_or(false) {
+                    serialize::Indent::Spaces(2)
+                } else {
+                    serialize::Indent::None
+                },
+                ..Default::default()
+            })
+            .map_err(|e| e.to_string())
+        },
+    )
+    .map_err(|e| e.to_string())??;
 
     Ok(OptimiseResult {
         data,
@@ -113,9 +116,9 @@ pub fn optimise(
     })
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
-// NOTE: Cut out `convert_svgo_config` since I don't need it and there was an error //
-//////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+// NOTE: Cut out `convert_svgo_config` since I don't need it //
+///////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////
 // NOTE: Cut out `extend` since I don't need it //
@@ -127,13 +130,20 @@ pub fn optimise(
 pub fn get_dimensions(svg: &str) -> Result<Dimensions, String> {
     console_error_panic_hook::set_once();
 
-    let arena = typed_arena::Arena::new();
-    let dom = parse(svg, &arena).map_err(|e| e.to_string())?;
-
     let custom_jobs = CustomJobs::default();
-    custom_jobs
-        .run(&dom, &Info::<Element>::new(&arena))
-        .map_err(|err| err.to_string())?;
+    parse_with_options(
+        svg,
+        ParsingOptions {
+            allow_dtd: true,
+            ..ParsingOptions::default()
+        },
+        |dom, allocator| {
+            custom_jobs
+                .run(dom, &Info::new(allocator))
+                .map_err(|e| e.to_string())
+        },
+    )
+    .map_err(|e| e.to_string())??;
 
     Ok(custom_jobs.extract_dimensions.0.into_inner())
 }
