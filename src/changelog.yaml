@@ -1,6 +1,11 @@
 # OXVGUI changelog file
 # TODO: Schema
 
+- version: 0.2.0
+  changes:
+    - Updated to OXVG v0.0.4!
+    - Rewrote WASM bindings for new parser API.
+
 - version: 0.1.0
   changes:
     - Updated to OXVG v0.0.3!
