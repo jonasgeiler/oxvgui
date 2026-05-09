@@ -1,9 +1,9 @@
 # OXVGUI
-> Fast, web-based OXVG interface to compress, optimize, and minify SVG images. Reduce file size, clean graphics, and preview changes instantly!
+> Fast, web-based [OXVG][] interface to compress, optimize, and minify SVG images. Reduce file size, clean graphics, and preview changes instantly!
 
-[OXVGUI](https://oxvgui.jonasgeiler.com/) is an **[OXVG](https://github.com/noahbald/oxvg)** **U**ser **I**nterface, aiming to expose the majority, if not all the configuration options of OXVG.
+[OXVGUI][] is an **[OXVG][]** **U**ser **I**nterface, aiming to expose the majority, if not all the configuration options of OXVG.
 
-This is a fork of [SVGOMG](https://jakearchibald.github.io/svgomg/) using OXVG instead of SVGO, which aims to be faster and more accurate than SVGO written in Rust.
+This is a fork of [SVGOMG][] using [OXVG][] instead of [SVGO][], which aims to be faster and more accurate than SVGO and is written in Rust.
 
 ## Screenshot
 
@@ -26,3 +26,8 @@ Run development server:
 ```sh
 pnpm run dev
 ```
+
+[OXVGUI]: https://oxvgui.jonasgeiler.com/
+[OXVG]: https://github.com/noahbald/oxvg
+[SVGOMG]: https://jakearchibald.github.io/svgomg/
+[SVGO]: https://svgo.dev/
