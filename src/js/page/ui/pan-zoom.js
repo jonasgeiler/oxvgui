@@ -126,7 +126,8 @@ export default class PanZoom {
     // stop mouse wheel producing huge values
     delta = Math.max(Math.min(delta, 60), -60);
 
-    const scaleDiff = delta / 300 + 1;
+    // negate delta to make it more intuitive (scroll up to zoom in, down to zoom out)
+    const scaleDiff = -delta / 300 + 1;
 
     // avoid to-small values
     if (this._scale * scaleDiff < 0.05) return;

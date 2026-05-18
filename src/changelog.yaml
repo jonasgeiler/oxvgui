@@ -1,6 +1,10 @@
 # OXVGUI changelog file
 # TODO: Schema
 
+- version: 0.2.4
+  changes:
+    - Invert scroll direction for zooming in/out.
+
 - version: 0.2.3
   changes:
     - Fix changelog display algorithm.
