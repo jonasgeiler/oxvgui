@@ -1,6 +1,10 @@
 # OXVGUI changelog file
 # TODO: Schema
 
+- version: 0.2.5
+  changes:
+    - Start publishing GitHub Releases.
+
 - version: 0.2.4
   changes:
     - Invert scroll direction for zooming in/out.

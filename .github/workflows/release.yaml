@@ -1,4 +1,4 @@
-name: Deploy
+name: Release
 
 on:
   push:
@@ -9,13 +9,13 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  check:
-    name: Check
+  pre-check:
+    name: Pre-Check
     uses: ./.github/workflows/check.yaml
 
-  deploy:
-    name: Deploy
-    needs: check
+  release:
+    name: Release
+    needs: pre-check
 
     concurrency:
       group: pages
@@ -31,7 +31,7 @@ jobs:
         shell: bash --noprofile --norc -euxo pipefail {0}
 
     permissions:
-      contents: read
+      contents: write
       pages: write
       id-token: write
 
@@ -79,3 +79,17 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5.0.0
+
+      - name: Generate release notes
+        run: |
+          jq --arg version "${GITHUB_REF_NAME#v}" --raw-output '
+            .[]
+            | select(.version == $version)
+            | "## Changes\n"
+            + (.changes | map("* " + .) | join("\n"))
+          ' build/changelog.json > RELEASE_NOTES.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3.0.0
+        with:
+          body_path: RELEASE_NOTES.md
