@@ -137,7 +137,7 @@ self.addEventListener('message', (event) => {
     .catch((error) => {
       self.postMessage({
         id: event.data.id,
-        error: error.message,
+        error: String(error),
       });
     });
 });

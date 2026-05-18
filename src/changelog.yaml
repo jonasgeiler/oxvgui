@@ -1,9 +1,13 @@
 # OXVGUI changelog file
 # TODO: Schema
 
+- version: 0.2.2
+  changes:
+    - Fix getting error messages from OXVG.
+
 - version: 0.2.1
   changes:
-    - Limit number precision to 5
+    - Limit number precision to 5.
 
 - version: 0.2.0
   changes:
