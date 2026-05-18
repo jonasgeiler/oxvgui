@@ -13,27 +13,35 @@ export default class Changelog {
 
   async showLogFrom(lastLoadedVersion) {
     if (lastLoadedVersion === this._loadedVersion) return;
+
+    /** @type {{version: string, changes: string[]}[]} */
     const changelog = await fetch('changelog.json').then((response) =>
       response.json(),
     );
-    let startIndex = 0;
-    let endIndex = 0;
 
-    for (const [i, entry] of Object.entries(changelog)) {
-      if (entry.version === this._loadedVersion) {
-        startIndex = i;
-      } else if (entry.version === lastLoadedVersion) {
+    const changeList = [];
+    let foundLoadedVersion = false;
+    let foundLastLoadedVersion = false;
+    for (const release of changelog) {
+      if (release.version === this._loadedVersion) {
+        foundLoadedVersion = true;
+      } else if (release.version === lastLoadedVersion) {
+        foundLastLoadedVersion = true;
         break;
       }
 
-      endIndex = i + 1;
+      if (foundLoadedVersion) {
+        for (const change of release.changes) {
+          changeList.push(escapeHtmlTag`<li>${change}</li>`);
+        }
+      }
     }
-
-    const changeList = changelog
-      .slice(startIndex, endIndex)
-      // TODO: remove `reduce`
-      .reduce((array, entry) => array.concat(entry.changes), [])
-      .map((change) => escapeHtmlTag`<li>${change}</li>`);
+    if (!foundLoadedVersion || !foundLastLoadedVersion) {
+      // If one of the version was not found in the changelog, it would
+      // list ALL the changes since the first version, or no changes at all.
+      // So we just skip showing the changelog in this case.
+      return;
+    }
 
     this.container.append(
       strToEl('<h1>Updated!</h1>'),

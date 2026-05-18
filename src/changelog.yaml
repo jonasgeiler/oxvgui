@@ -1,6 +1,10 @@
 # OXVGUI changelog file
 # TODO: Schema
 
+- version: 0.2.3
+  changes:
+    - Fix changelog display algorithm.
+
 - version: 0.2.2
   changes:
     - Fix getting error messages from OXVG.
