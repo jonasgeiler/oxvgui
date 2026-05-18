@@ -129,7 +129,7 @@
           <div class="results-container-mobile"></div>
           <div class="settings-scroller">
             <section class="global">
-              <h1 class="settings-sub-heading">Global settings</h1>
+              <h2 class="settings-sub-heading">Global settings</h2>
               <label class="setting-item-toggle">
                 <input type="checkbox" name="original">
                 {% include "_partials/material-switch.html" %}
@@ -162,7 +162,7 @@
               </label>
             </section>
             <section class="jobs">
-              <h1 class="settings-sub-heading">Features</h1>
+              <h2 class="settings-sub-heading">Features</h2>
               {% for job in jobs %}
                 {% if not job.disabled %}
                   <label class="setting-item-toggle">

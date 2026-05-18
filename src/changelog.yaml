@@ -1,6 +1,11 @@
 # OXVGUI changelog file
 # TODO: Schema
 
+- version: 0.2.6
+  changes:
+    - Improve changelog title.
+    - Improve title hierarchy.
+
 - version: 0.2.5
   changes:
     - Start publishing GitHub Releases.

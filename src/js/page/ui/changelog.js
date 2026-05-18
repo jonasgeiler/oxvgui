@@ -44,7 +44,7 @@ export default class Changelog {
     }
 
     this.container.append(
-      strToEl('<h1>Updated! Changes:</h1>'),
+      strToEl('<h2>Updated! Changes:</h2>'),
       strToEl(`<ul>${changeList.join('')}</ul>`),
     );
 
