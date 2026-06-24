@@ -172,6 +172,17 @@
                     {% include "_partials/material-switch.html" %}
                     {{ job.name }}
                   </label>
+                  {% if job.options %}
+                    {% for option in job.options %}
+                      <label class="setting-item-toggle nested">
+                        <input type="checkbox"
+                               name="{{ option.id }}"
+                               data-parent-job="{{ job.id }}">
+                        {% include "_partials/material-switch.html" %}
+                        {{ option.name }}
+                      </label>
+                    {% endfor %}
+                  {% endif %}
                 {% endif %}
               {% endfor %}
             </section>

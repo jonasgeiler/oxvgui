@@ -17,12 +17,17 @@
 .setting-item-toggle {
   position: relative;
   cursor: pointer;
-  padding: 0 16px;
-  height: 51px;
+  padding: 4px 16px;
+  min-height: 43px;
   display: grid;
   grid-template-columns: max-content 1fr;
   align-items: center;
   gap: 19px;
+
+  &.nested {
+    padding-left: 72px; /* gap + x-padding + material-switch-width */
+    padding-top: 0;
+  }
 
   // stylelint-disable-next-line selector-no-qualifying-type
   input[type='checkbox'] {
@@ -35,11 +40,18 @@
 
   input:focus + .material-switch {
     .handle {
-      width: 25px;
-      height: 25px;
-      top: -5px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 0 0 2px #ff5722;
+      outline: #ff5722 solid 2px;
     }
+  }
+  input:checked:focus + .material-switch {
+    .handle {
+      outline-color: #446117;
+    }
+  }
+
+  &:has(input:disabled) {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 }
 

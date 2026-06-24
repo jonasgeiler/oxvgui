@@ -230,6 +230,9 @@ jobs:
   - id: removeDeprecatedAttrs
     name: Remove deprecated attributes
     enabledByDefault: true
+    options:
+      - id: removeUnsafe
+        name: Including unsafe to remove
 
   - id: applyTransforms
     name: Apply transforms

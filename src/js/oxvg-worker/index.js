@@ -57,9 +57,12 @@ function compress(svgInput, settings) {
   // Setup job list
   const floatPrecision = Number(settings.floatPrecision);
   const transformPrecision = Number(settings.transformPrecision);
+  const jobOptions = settings.jobOptions ?? {};
   const jobs = {};
   for (const [name, enabled] of Object.entries(settings.jobs)) {
     if (!enabled) continue;
+
+    const options = jobOptions[name] ?? {};
 
     jobs[name] = booleanJobs.includes(name)
       ? true
@@ -71,6 +74,7 @@ function compress(svgInput, settings) {
               ? 1
               : floatPrecision,
           transformPrecision,
+          ...options,
         };
 
     if (name === 'prefixIds') {
