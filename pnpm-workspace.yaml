@@ -1,2 +1,4 @@
 onlyBuiltDependencies:
   - unrs-resolver
+  - '@parcel/watcher'
+  - wasm-pack

@@ -1,6 +1,10 @@
 # OXVGUI changelog file
 # TODO: Schema
 
+- version: 0.2.8
+  changes:
+    - Fix migration of stored settings.
+
 - version: 0.2.7
   changes:
     - Add "Include unsafe removals" sub-option.

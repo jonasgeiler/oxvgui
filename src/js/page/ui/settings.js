@@ -129,7 +129,10 @@ export default class Settings {
 
     for (const inputEl of this._jobInputs) {
       if (!(inputEl.name in settings.jobs)) continue;
-      inputEl.checked = settings.jobs[inputEl.name].enabled;
+      inputEl.checked =
+        typeof settings.jobs[inputEl.name] === 'boolean'
+          ? settings.jobs[inputEl.name] // Legacy, kept for migration
+          : settings.jobs[inputEl.name].enabled;
 
       if (settings.jobs[inputEl.name].options) {
         const optionInputs = this._parentJobOptionInputsMap.get(inputEl.name);
