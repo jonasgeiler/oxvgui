@@ -21,7 +21,8 @@
     "unsafe-fix": "biome check --unsafe --fix",
     "build": "gulp build",
     "preview": "live-server --verbose --no-browser --wait=15000 build",
-    "size": "size-limit"
+    "size": "size-limit",
+    "preversion": "node --eval='const f=`src/changelog.yaml`,v=process.env.npm_new_version;if(!require(`fs`).readFileSync(f,`utf8`).includes(v)){console.error(`No entry in ${f} for version ${v}\\n`);process.exit(1)}'"
   },
   "engines": {
     "node": ">=22"
