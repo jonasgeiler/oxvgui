@@ -1,6 +1,12 @@
 # OXVGUI changelog file
 # TODO: Schema
 
+- version: 0.2.7
+  changes:
+    - Add "Include unsafe removals" sub-option.
+    - Improve responsiveness.
+    - Improve accessibility slightly.
+
 - version: 0.2.6
   changes:
     - Improve changelog title.
