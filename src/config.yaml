@@ -232,7 +232,7 @@ jobs:
     enabledByDefault: true
     options:
       - id: removeUnsafe
-        name: Including unsafe to remove
+        name: Include unsafe removals
 
   - id: applyTransforms
     name: Apply transforms
