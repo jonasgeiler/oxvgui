@@ -177,7 +177,8 @@
                       <label class="setting-item-toggle nested">
                         <input type="checkbox"
                                name="{{ option.id }}"
-                               data-parent-job="{{ job.id }}">
+                               data-parent-job="{{ job.id }}"
+                               {% if not job.enabledByDefault %}disabled{% endif %}>
                         {% include "_partials/material-switch.html" %}
                         {{ option.name }}
                       </label>

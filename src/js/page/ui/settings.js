@@ -12,7 +12,7 @@ export default class Settings {
       this.container = document.querySelector('.settings');
       this._jobInputs = [
         ...this.container.querySelectorAll(
-          '.jobs .setting-item-toggle > input[type=checkbox]:not([data-parent-job])',
+          '.jobs input:not([data-parent-job])',
         ),
       ];
       this._jobOptionInputs = [
@@ -21,9 +21,6 @@ export default class Settings {
       this._globalInputs = [
         ...this.container.querySelectorAll('.global input'),
       ];
-      this._jobInputMap = new Map(
-        this._jobInputs.map((inputEl) => [inputEl.name, inputEl]),
-      );
 
       const scroller = this.container.querySelector('.settings-scroller');
       const resetBtn = this.container.querySelector('.setting-reset');
@@ -32,19 +29,29 @@ export default class Settings {
       this._resetRipple = new Ripple();
       resetBtn.append(this._resetRipple.container);
 
-      // map real range elements to Slider instances
+      // Map real range elements to Slider instances.
       this._sliderMap = new WeakMap();
-
-      // enhance ranges
       for (const range of ranges) {
         this._sliderMap.set(range, new MaterialSlider(range));
+      }
+
+      // Map parent jobs to job option input elements.
+      this._parentJobOptionInputsMap = new Map();
+      for (const jobOptionInput of this._jobOptionInputs) {
+        const parentJob = jobOptionInput.dataset.parentJob;
+        const existingOptionInputs =
+          this._parentJobOptionInputsMap.get(parentJob);
+        if (existingOptionInputs) {
+          existingOptionInputs.push(jobOptionInput);
+        } else {
+          this._parentJobOptionInputsMap.set(parentJob, [jobOptionInput]);
+        }
       }
 
       this.container.addEventListener('input', (event) =>
         this._onChange(event),
       );
       resetBtn.addEventListener('click', () => this._onReset());
-      this._syncDependentInputs();
 
       // TODO: revisit this
       // Stop double-tap text selection.
@@ -60,10 +67,6 @@ export default class Settings {
   _onChange(event) {
     clearTimeout(this._throttleTimeout);
 
-    if (event.target.type === 'checkbox') {
-      this._syncDependentInputs();
-    }
-
     // throttle range
     if (event.target.type === 'range') {
       this._throttleTimeout = setTimeout(
@@ -71,6 +74,15 @@ export default class Settings {
         150,
       );
     } else {
+      const optionInputs = this._parentJobOptionInputsMap.get(
+        event.target.name,
+      );
+      if (optionInputs) {
+        for (const optionInput of optionInputs) {
+          optionInput.disabled = !event.target.checked;
+        }
+      }
+
       this.emitter.emit('change');
     }
   }
@@ -90,17 +102,21 @@ export default class Settings {
 
     for (const inputEl of this._jobInputs) {
       inputEl.checked = inputEl.hasAttribute('checked');
-    }
 
-    this._syncDependentInputs();
+      const optionInputs = this._parentJobOptionInputsMap.get(inputEl.name);
+      if (optionInputs) {
+        for (const optionInput of optionInputs) {
+          optionInput.checked = optionInput.hasAttribute('checked');
+          optionInput.disabled = !inputEl.checked;
+        }
+      }
+    }
 
     this.emitter.emit('reset', oldSettings);
     this.emitter.emit('change');
   }
 
   setSettings(settings) {
-    const jobOptions = settings.jobOptions ?? {};
-
     for (const inputEl of this._globalInputs) {
       if (!(inputEl.name in settings)) continue;
 
@@ -113,23 +129,21 @@ export default class Settings {
 
     for (const inputEl of this._jobInputs) {
       if (!(inputEl.name in settings.jobs)) continue;
-      inputEl.checked = settings.jobs[inputEl.name];
-    }
+      inputEl.checked = settings.jobs[inputEl.name].enabled;
 
-    for (const inputEl of this._jobOptionInputs) {
-      const parentJob = inputEl.dataset.parentJob;
-      const parentOptions = jobOptions[parentJob] ?? settings.jobs[parentJob];
-
-      if (
-        parentOptions &&
-        typeof parentOptions === 'object' &&
-        inputEl.name in parentOptions
-      ) {
-        inputEl.checked = parentOptions[inputEl.name];
+      if (settings.jobs[inputEl.name].options) {
+        const optionInputs = this._parentJobOptionInputsMap.get(inputEl.name);
+        if (optionInputs) {
+          for (const optionInput of optionInputs) {
+            if (optionInput.name in settings.jobs[inputEl.name].options) {
+              optionInput.checked =
+                settings.jobs[inputEl.name].options[optionInput.name];
+            }
+            optionInput.disabled = !inputEl.checked;
+          }
+        }
       }
     }
-
-    this._syncDependentInputs();
   }
 
   getSettings() {
@@ -137,7 +151,6 @@ export default class Settings {
     const fingerprint = [];
     const output = {
       jobs: {},
-      jobOptions: {},
     };
 
     for (const inputEl of this._globalInputs) {
@@ -155,37 +168,21 @@ export default class Settings {
 
     for (const inputEl of this._jobInputs) {
       fingerprint.push(Number(inputEl.checked));
-      output.jobs[inputEl.name] = inputEl.checked;
-    }
+      output.jobs[inputEl.name] = { enabled: inputEl.checked };
 
-    for (const inputEl of this._jobOptionInputs) {
-      const parentJob = inputEl.dataset.parentJob;
-      const parentInput = this._jobInputMap.get(parentJob);
-
-      if (!output.jobOptions[parentJob]) {
-        output.jobOptions[parentJob] = {};
-      }
-
-      output.jobOptions[parentJob][inputEl.name] = inputEl.checked;
-
-      if (parentInput?.checked) {
-        fingerprint.push(
-          `${parentJob}:${inputEl.name}:${Number(inputEl.checked)}`,
-        );
+      const optionInputs = this._parentJobOptionInputsMap.get(inputEl.name);
+      if (optionInputs) {
+        output.jobs[inputEl.name].options = {};
+        for (const optionInput of optionInputs) {
+          fingerprint.push(`{${Number(optionInput.checked)}}`);
+          output.jobs[inputEl.name].options[optionInput.name] =
+            optionInput.checked;
+        }
       }
     }
 
     output.fingerprint = fingerprint.join(',');
 
     return output;
-  }
-
-  _syncDependentInputs() {
-    for (const inputEl of this._jobOptionInputs) {
-      const parentJob = inputEl.dataset.parentJob;
-      const parentInput = this._jobInputMap.get(parentJob);
-
-      inputEl.disabled = !parentInput?.checked;
-    }
   }
 }
