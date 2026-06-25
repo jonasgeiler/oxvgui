@@ -1,6 +1,10 @@
 # OXVGUI changelog file
 # TODO: Schema
 
+- version: 0.2.9
+  changes:
+    - 'Fix "WARNING: Unstable!" styling.'
+
 - version: 0.2.8
   changes:
     - Fix migration of stored settings.

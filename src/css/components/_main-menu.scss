@@ -81,10 +81,12 @@
       text-decoration: none;
     }
 
-    &:focus,
-    &:hover {
-      outline: none;
-      background-color: rgba(#000, 0.1);
+    &:not(span) {
+      &:focus,
+      &:hover {
+        outline: none;
+        background-color: rgba(#000, 0.1);
+      }
     }
 
     .icon {
