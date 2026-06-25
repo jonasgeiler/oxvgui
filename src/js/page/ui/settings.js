@@ -10,7 +10,14 @@ export default class Settings {
 
     domReady.then(() => {
       this.container = document.querySelector('.settings');
-      this._jobInputs = [...this.container.querySelectorAll('.jobs input')];
+      this._jobInputs = [
+        ...this.container.querySelectorAll(
+          '.jobs input:not([data-parent-job])',
+        ),
+      ];
+      this._jobOptionInputs = [
+        ...this.container.querySelectorAll('.jobs input[data-parent-job]'),
+      ];
       this._globalInputs = [
         ...this.container.querySelectorAll('.global input'),
       ];
@@ -22,12 +29,23 @@ export default class Settings {
       this._resetRipple = new Ripple();
       resetBtn.append(this._resetRipple.container);
 
-      // map real range elements to Slider instances
+      // Map real range elements to Slider instances.
       this._sliderMap = new WeakMap();
-
-      // enhance ranges
       for (const range of ranges) {
         this._sliderMap.set(range, new MaterialSlider(range));
+      }
+
+      // Map parent jobs to job option input elements.
+      this._parentJobOptionInputsMap = new Map();
+      for (const jobOptionInput of this._jobOptionInputs) {
+        const parentJob = jobOptionInput.dataset.parentJob;
+        const existingOptionInputs =
+          this._parentJobOptionInputsMap.get(parentJob);
+        if (existingOptionInputs) {
+          existingOptionInputs.push(jobOptionInput);
+        } else {
+          this._parentJobOptionInputsMap.set(parentJob, [jobOptionInput]);
+        }
       }
 
       this.container.addEventListener('input', (event) =>
@@ -56,6 +74,15 @@ export default class Settings {
         150,
       );
     } else {
+      const optionInputs = this._parentJobOptionInputsMap.get(
+        event.target.name,
+      );
+      if (optionInputs) {
+        for (const optionInput of optionInputs) {
+          optionInput.disabled = !event.target.checked;
+        }
+      }
+
       this.emitter.emit('change');
     }
   }
@@ -75,6 +102,14 @@ export default class Settings {
 
     for (const inputEl of this._jobInputs) {
       inputEl.checked = inputEl.hasAttribute('checked');
+
+      const optionInputs = this._parentJobOptionInputsMap.get(inputEl.name);
+      if (optionInputs) {
+        for (const optionInput of optionInputs) {
+          optionInput.checked = optionInput.hasAttribute('checked');
+          optionInput.disabled = !inputEl.checked;
+        }
+      }
     }
 
     this.emitter.emit('reset', oldSettings);
@@ -94,7 +129,20 @@ export default class Settings {
 
     for (const inputEl of this._jobInputs) {
       if (!(inputEl.name in settings.jobs)) continue;
-      inputEl.checked = settings.jobs[inputEl.name];
+      inputEl.checked = settings.jobs[inputEl.name].enabled;
+
+      if (settings.jobs[inputEl.name].options) {
+        const optionInputs = this._parentJobOptionInputsMap.get(inputEl.name);
+        if (optionInputs) {
+          for (const optionInput of optionInputs) {
+            if (optionInput.name in settings.jobs[inputEl.name].options) {
+              optionInput.checked =
+                settings.jobs[inputEl.name].options[optionInput.name];
+            }
+            optionInput.disabled = !inputEl.checked;
+          }
+        }
+      }
     }
   }
 
@@ -120,7 +168,17 @@ export default class Settings {
 
     for (const inputEl of this._jobInputs) {
       fingerprint.push(Number(inputEl.checked));
-      output.jobs[inputEl.name] = inputEl.checked;
+      output.jobs[inputEl.name] = { enabled: inputEl.checked };
+
+      const optionInputs = this._parentJobOptionInputsMap.get(inputEl.name);
+      if (optionInputs) {
+        output.jobs[inputEl.name].options = {};
+        for (const optionInput of optionInputs) {
+          fingerprint.push(`{${Number(optionInput.checked)}}`);
+          output.jobs[inputEl.name].options[optionInput.name] =
+            optionInput.checked;
+        }
+      }
     }
 
     output.fingerprint = fingerprint.join(',');

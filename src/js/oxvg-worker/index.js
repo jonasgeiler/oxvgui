@@ -58,12 +58,14 @@ function compress(svgInput, settings) {
   const floatPrecision = Number(settings.floatPrecision);
   const transformPrecision = Number(settings.transformPrecision);
   const jobs = {};
-  for (const [name, enabled] of Object.entries(settings.jobs)) {
+  for (const [name, { enabled, options }] of Object.entries(settings.jobs)) {
     if (!enabled) continue;
 
     jobs[name] = booleanJobs.includes(name)
       ? true
       : {
+          ...options,
+
           // 0 almost always breaks images when used on `cleanupNumericValues` and others.
           // Better to allow 0 for everything else, but switch to 1 for this job.
           floatPrecision:
