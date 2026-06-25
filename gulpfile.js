@@ -51,7 +51,7 @@ const buildConfig = {
     collapseBooleanAttributes: true,
     collapseInlineTagWhitespace: false,
     collapseWhitespace: true,
-    decodeEntities: true,
+    decodeEntities: false,
     minifyCSS: false,
     minifyJS: true,
     removeAttributeQuotes: true,

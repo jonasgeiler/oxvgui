@@ -1,6 +1,10 @@
 # OXVGUI changelog file
 # TODO: Schema
 
+- version: 0.2.10
+  changes:
+    - Fix HTML entities in the web app.
+
 - version: 0.2.9
   changes:
     - 'Fix "WARNING: Unstable!" styling.'
