@@ -1,7 +1,7 @@
 {
   "name": "oxvgui",
   "private": true,
-  "version": "0.2.9",
+  "version": "0.2.10",
   "license": "MIT",
   "repository": "github:jonasgeiler/oxvgui",
   "author": "Jonas Geiler",
