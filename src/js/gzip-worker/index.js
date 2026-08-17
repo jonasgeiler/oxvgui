@@ -1,4 +1,4 @@
-import { gzip } from 'pako/dist/pako_deflate.js';
+import { gzip } from 'pako';
 
 self.addEventListener('message', (event) => {
   try {

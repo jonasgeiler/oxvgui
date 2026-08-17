@@ -1,0 +1,4 @@
+{
+  "buildCommand": "rustup target add wasm32-unknown-unknown && pnpm run build",
+  "outputDirectory": "build"
+}

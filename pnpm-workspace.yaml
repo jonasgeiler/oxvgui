@@ -1,3 +1,6 @@
+allowBuilds:
+  '@parcel/watcher': false
+  wasm-pack: true
 onlyBuiltDependencies:
   - unrs-resolver
   - '@parcel/watcher'
