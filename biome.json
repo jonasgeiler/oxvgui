@@ -8,12 +8,17 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!src/rust/dist"]
+    "includes": ["**", "!brand", "!src/rust/dist", "!src", "!test-svgs"]
   },
   "formatter": {
     "enabled": true,
     "useEditorconfig": true,
     "includes": ["**", "!package.json"]
+  },
+  "html": {
+    "parser": {
+      "interpolation": true
+    }
   },
   "javascript": {
     "formatter": {
@@ -23,13 +28,13 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "preset": "recommended"
     }
   },
   "assist": {
     "enabled": true,
     "actions": {
-      "recommended": true
+      "preset": "recommended"
     }
   }
 }

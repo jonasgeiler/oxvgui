@@ -9,7 +9,7 @@ const vinylMap = require('vinyl-map');
 const gulp = require('gulp');
 const gulpif = require('gulp-if');
 const gulpSass = require('gulp-sass')(sass);
-const gulpNunjucks = require('gulp-nunjucks');
+const { nunjucksCompile } = require('gulp-nunjucks');
 const gulpHtmlmin = require('gulp-htmlmin');
 const rollup = require('rollup');
 const { nodeResolve: rollupResolve } = require('@rollup/plugin-node-resolve');
@@ -129,7 +129,7 @@ async function html() {
   return gulp
     .src('src/*.html')
     .pipe(
-      gulpNunjucks.compile({
+      nunjucksCompile({
         OXVGUI_VERSION: packageJson.version,
         OXVG_VERSION: cargoToml.package.version,
         headCSS,
@@ -193,13 +193,23 @@ async function jsEntry(entry, outputPath) {
 
 async function rust() {
   await new Promise((resolve, reject) => {
-    const wasmPack = childProcess.spawn('wasm-pack', [
-      BUILD_FOLDER,
-      IS_DEV_TASK ? '--dev' : '--release',
-      '--target=web',
-      '--no-pack', // Don't create package.json
-      '--out-dir=src/rust/dist',
-    ]);
+    const wasmPack = childProcess.spawn(
+      'wasm-pack',
+      [
+        BUILD_FOLDER,
+        IS_DEV_TASK ? '--dev' : '--release',
+        '--target=web',
+        '--no-pack', // Don't create package.json
+        '--out-dir=src/rust/dist',
+      ],
+      {
+        // Übergibt das erforderliche Flag direkt an Cargo / wasm-pack
+        env: {
+          ...process.env,
+          RUSTFLAGS: '--cfg getrandom_backend="wasm_js"',
+        },
+      },
+    );
 
     wasmPack.stdout.pipe(process.stdout);
     wasmPack.stderr.pipe(process.stderr);
