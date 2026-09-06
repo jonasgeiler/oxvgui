@@ -226,6 +226,11 @@ export default class MainController {
     const settings = this._settingsUi.getSettings();
     this._userHasInteracted = true;
 
+    // strip leading/trailing whitespace (e.g. from pasted markup) so a stray
+    // newline before `<?xml ...?>` doesn't cause the parser to reject the
+    // declaration as misplaced
+    data = data.trim();
+
     try {
       this._inputItem = await oxvg.wrapOriginal(data);
       this._inputFilename = filename;
