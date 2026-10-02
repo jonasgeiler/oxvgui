@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Schema for the changelog.yaml file",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "version": {
+        "type": "string"
+      },
+      "changes": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": ["version", "changes"]
+  }
+}
