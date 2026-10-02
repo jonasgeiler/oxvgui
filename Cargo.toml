@@ -1,11 +1,12 @@
-# Based on https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/Cargo.toml
-# and https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/packages/wasm/Cargo.toml
-# and one line from https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/crates/oxvg_optimiser/Cargo.toml#L47
+# Based on https://github.com/noahbald/oxvg/blob/a4309d54da1e0d1f5c0cc80f995fc29098f9502b/Cargo.toml
+# and https://github.com/noahbald/oxvg/blob/a4309d54da1e0d1f5c0cc80f995fc29098f9502b/packages/wasm/Cargo.toml
+# and lightningcss, serde, serde_with and log dependencies
+# from https://github.com/noahbald/oxvg/blob/a4309d54da1e0d1f5c0cc80f995fc29098f9502b/crates/oxvg_optimiser/Cargo.toml#L50
 
 [package]
 name = "oxvg-wasm-bindings"
 version = "0.0.8" # This reflects the "@oxvg/wasm" NPM package version, and is used by the Maintenance workflow to commit updates
-edition = "2021"
+edition = "2024"
 description = "WebAssembly bindings for OXVG based on '@oxvg/wasm', but customized for OXVGUI"
 license = "MIT"
 repository = "https://github.com/jonasgeiler/oxvgui"
@@ -36,25 +37,28 @@ path = "src/rust/oxvg_wasm_bindings.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-oxvg_optimiser = { version = "0.0.5", features = ["wasm"] }
-oxvg_ast = { version = "0.0.5", features = ["roxmltree", "serialize"] }
-oxvg_collections = { version = "0.0.5" }
+oxvg_optimiser = { version = "0.0.8", features = ["wasm", "web_sys"] }
+oxvg_ast = { version = "0.0.8", features = ["web_sys", "serialize"] }
+oxvg_collections = { version = "0.0.8" }
+oxvg_actions = { version = "0.0.8", features = ["wasm"] }
 
 console_error_panic_hook = "0.1.7"
-getrandom = { version = "0.2", features = ["js"] }
-roxmltree = "0.20"
+getrandom = { version = "0.4", features = ["wasm_js"] }
+getrandom_v0_3 = { package = "getrandom", version = "^0.3", features = [
+  "wasm_js",
+] }
+roxmltree = "0.21"
 serde_json = "1.0"
 serde-wasm-bindgen = "0.6"
 typed-arena = "2.0"
-wasm-bindgen = "=0.2.100"
+wasm-bindgen = "=0.2.127"
 tsify = { version = "0.5", default-features = false, features = ["js"] }
-lightningcss = { version = "1.0.0-alpha.63", default-features = false, features = [
-  "grid",
+lightningcss = { version = "1.0.0-alpha.72", default-features = false, features = [
   "visitor",
 ] }
 serde = { version = "1.0", features = ["derive"] }
-log = { version = "0.4", features = ["release_max_level_off"] }
+log = { version = "0.4" }
 serde_with = "3.15"
-#web-sys = { version = "0.3", features = ["console"] }
+web-sys = { version = "0.3", features = ["Document"] }
 
 [dev-dependencies]

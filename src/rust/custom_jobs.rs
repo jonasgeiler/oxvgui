@@ -10,7 +10,7 @@ use tsify::Tsify;
 
 use crate::extract_dimensions::ExtractDimensions;
 
-// Based on https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/crates/oxvg_optimiser/src/jobs/mod.rs
+// Based on https://github.com/noahbald/oxvg/blob/a4309d54da1e0d1f5c0cc80f995fc29098f9502b/crates/oxvg_optimiser/src/jobs/mod.rs
 // Note that "serde" and "wasm" features are implied.
 // Also, I have used RustRover to recursively expand the original source macro code and check it.
 // And keep in mind that `extract_dimensions` is not an `Option<...>` here.
@@ -18,7 +18,9 @@ use crate::extract_dimensions::ExtractDimensions;
 #[skip_serializing_none]
 #[derive(Tsify)]
 #[tsify(from_wasm_abi, into_wasm_abi)]
+#[allow(clippy::unsafe_derive_deserialize)]
 #[derive(Deserialize, Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 /// Custom implementation of `Jobs` that only runs my `extract_dimensions` job.
 pub struct CustomJobs {
@@ -38,7 +40,7 @@ impl CustomJobs {
     /// Runs each job in the config, returning the number of non-skipped jobs
     fn run_jobs<'input, 'arena>(
         &self,
-        element: &Element<'input, 'arena>,
+        element: Element<'input, 'arena>,
         info: &Info<'input, 'arena>,
     ) -> Result<usize, JobsError<'input>> {
         let mut count = 0;
@@ -67,7 +69,7 @@ impl CustomJobs {
             return Ok(());
         };
 
-        let count = self.run_jobs(&root_element, info)?;
+        let count = self.run_jobs(root_element, info)?;
         log::debug!("completed {count} jobs");
         Ok(())
     }

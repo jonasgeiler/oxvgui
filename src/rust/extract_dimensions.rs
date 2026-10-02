@@ -11,8 +11,8 @@ use std::cell::RefCell;
 use tsify::Tsify;
 
 // Based on:
-// - https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/crates/oxvg_optimiser/src/jobs/remove_view_box.rs
-// - https://github.com/noahbald/oxvg/blob/e156479dd9d4634542fa9849a45253e089c8d150/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
+// - https://github.com/noahbald/oxvg/blob/a4309d54da1e0d1f5c0cc80f995fc29098f9502b/crates/oxvg_optimiser/src/jobs/remove_view_box.rs
+// - https://github.com/noahbald/oxvg/blob/a4309d54da1e0d1f5c0cc80f995fc29098f9502b/crates/oxvg_optimiser/src/jobs/remove_dimensions.rs
 
 #[derive(Tsify, Deserialize, Serialize, Clone, Debug)]
 #[tsify(from_wasm_abi, into_wasm_abi)]
@@ -43,7 +43,7 @@ impl<'input, 'arena> Visitor<'input, 'arena> for ExtractDimensions {
 
     fn element(
         &self,
-        element: &Element<'input, 'arena>,
+        element: Element<'input, 'arena>,
         _context: &mut Context<'input, 'arena, '_>,
     ) -> Result<(), Self::Error> {
         // Return if already extracted
