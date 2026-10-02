@@ -1,5 +1,5 @@
+# $schema: ./changelog.schema.json
 # OXVGUI changelog file
-# TODO: Schema
 
 - version: 0.2.11
   changes:

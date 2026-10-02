@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Schema for the config.yaml file",
+  "type": "object",
+  "properties": {
+    "baseUrl": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "longName": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string"
+    },
+    "themeColor": {
+      "type": "string"
+    },
+    "appBackgroundColor": {
+      "type": "string"
+    },
+    "appDisplay": {
+      "type": "string"
+    },
+    "appStartUrl": {
+      "type": "string"
+    },
+    "appIcons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "src": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "sizes": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          }
+        },
+        "required": ["src", "type", "sizes"]
+      }
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "enabledByDefault": {
+            "type": "boolean"
+          },
+          "disabled": {
+            "type": "boolean"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": ["id", "name"]
+            }
+          }
+        },
+        "required": ["id", "name"]
+      }
+    }
+  },
+  "required": [
+    "baseUrl",
+    "name",
+    "longName",
+    "title",
+    "description",
+    "author",
+    "themeColor",
+    "appBackgroundColor",
+    "appDisplay",
+    "appStartUrl",
+    "appIcons",
+    "jobs"
+  ]
+}
