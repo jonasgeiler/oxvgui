@@ -5,7 +5,7 @@
 
 [package]
 name = "oxvg-wasm-bindings"
-version = "0.0.8" # This reflects the "@oxvg/wasm" NPM package version, and is used by the Maintenance workflow to commit updates
+version = "0.0.9" # This reflects the "@oxvg/wasm" NPM package version, and is used by the Maintenance workflow to commit updates
 edition = "2024"
 description = "WebAssembly bindings for OXVG based on '@oxvg/wasm', but customized for OXVGUI"
 license = "MIT"
