@@ -169,9 +169,6 @@ export interface AddClassesToSVGElement {
  *
  * When specifying a precision there may be rounding errors affecting the accuracy of documents.
  *
- * When specifying to apply to apply transforms to a stroked path the stroke may be visually
- * warped when compared to the original.
- *
  * # Errors
  *
  * Never.
@@ -184,7 +181,10 @@ export interface ApplyTransforms {
      */
     transformPrecision?: number;
     /**
-     * Whether or not to apply transforms to paths with a stroke.
+     * Whether or not to apply transforms to paths with a stroke. Defaults to `true`, as in SVGO.
+     *
+     * Transforms are only applied to a stroked path when they neither skew it nor scale it
+     * unevenly, and the stroke width is scaled with them.
      */
     applyTransformsStroked?: boolean;
 }
