@@ -231,7 +231,7 @@ export default class MainController {
       this._inputFilename = filename;
     } catch (error) {
       this._mainMenuUi.stopSpinner();
-      this._handleError(new Error(`Load failed: ${error.message}`));
+      this._handleError(error);
       return;
     }
 

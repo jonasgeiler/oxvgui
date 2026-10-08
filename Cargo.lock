@@ -965,11 +965,11 @@ dependencies = [
  "oxvg_serialize",
  "paste",
  "precomputed-hash",
+ "roxmltree",
  "selectors",
  "servo_arc",
  "smallvec",
  "typed-arena",
- "web-sys",
 ]
 
 [[package]]
