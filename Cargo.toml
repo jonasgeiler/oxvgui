@@ -5,7 +5,7 @@
 
 [package]
 name = "oxvg-wasm-bindings"
-version = "0.0.8" # This reflects the "@oxvg/wasm" NPM package version, and is used by the Maintenance workflow to commit updates
+version = "0.0.9" # This reflects the "@oxvg/wasm" NPM package version, and is used by the Maintenance workflow to commit updates
 edition = "2024"
 description = "WebAssembly bindings for OXVG based on '@oxvg/wasm', but customized for OXVGUI"
 license = "MIT"
@@ -37,10 +37,10 @@ path = "src/rust/oxvg_wasm_bindings.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-oxvg_optimiser = { version = "0.0.8", features = ["wasm", "web_sys"] }
-oxvg_ast = { version = "0.0.8", features = ["roxmltree", "serialize"] }
-oxvg_collections = { version = "0.0.8" }
-oxvg_actions = { version = "0.0.8", features = ["wasm"] }
+oxvg_optimiser = { version = "0.0.9", features = ["wasm", "web_sys"] }
+oxvg_ast = { version = "0.0.9", features = ["roxmltree", "serialize"] }
+oxvg_collections = { version = "0.0.9" }
+oxvg_actions = { version = "0.0.9", features = ["wasm"] }
 
 console_error_panic_hook = "0.1.7"
 getrandom = { version = "0.4", features = ["wasm_js"] }
