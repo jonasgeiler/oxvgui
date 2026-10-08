@@ -4,7 +4,6 @@
 - version: 0.3.0
   changes:
     - Updated to OXVG v0.0.8!
-    - Rewrote WASM bindings for new web-sys DOM parser.
 
 - version: 0.2.11
   changes:

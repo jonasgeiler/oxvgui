@@ -8,7 +8,11 @@ mod custom_jobs;
 mod extract_dimensions;
 
 use oxvg_ast::{
-    parse::web_sys::parse, serialize, serialize::Node as _, serialize::Options, visitor::Info,
+    parse::roxmltree::{ParsingOptions, parse_with_options},
+    serialize,
+    serialize::Node as _,
+    visitor::Info,
+    xmlwriter::Options,
 };
 use oxvg_optimiser::Jobs;
 use serde::{Deserialize, Serialize};
@@ -82,21 +86,28 @@ pub fn optimise(
 
     let config = config.unwrap_or_default();
     let custom_jobs = CustomJobs::default();
-    let data = parse(svg, |dom, allocator| {
-        let info = Info::new(allocator);
-        config.run(dom, &info).map_err(|e| e.to_string())?;
-        custom_jobs.run(dom, &info).map_err(|e| e.to_string())?;
+    let data = parse_with_options(
+        svg,
+        ParsingOptions {
+            allow_dtd: true,
+            ..ParsingOptions::default()
+        },
+        |dom, allocator| {
+            let info = Info::new(allocator);
+            config.run(dom, &info).map_err(|e| e.to_string())?;
+            custom_jobs.run(dom, &info).map_err(|e| e.to_string())?;
 
-        dom.serialize_with_options(Options {
-            indent: if prettify.unwrap_or(false) {
-                serialize::Indent::Spaces(2)
-            } else {
-                serialize::Indent::None
-            },
-            ..Default::default()
-        })
-        .map_err(|e| e.to_string())
-    })
+            dom.serialize_with_options(Options {
+                indent: if prettify.unwrap_or(false) {
+                    serialize::Indent::Spaces(2)
+                } else {
+                    serialize::Indent::None
+                },
+                ..Default::default()
+            })
+            .map_err(|e| e.to_string())
+        },
+    )
     .map_err(|e| e.to_string())??;
 
     Ok(OptimiseResult {
@@ -120,11 +131,18 @@ pub fn get_dimensions(svg: &str) -> Result<Dimensions, String> {
     console_error_panic_hook::set_once();
 
     let custom_jobs = CustomJobs::default();
-    parse(svg, |dom, allocator| {
-        custom_jobs
-            .run(dom, &Info::new(allocator))
-            .map_err(|e| e.to_string())
-    })
+    parse_with_options(
+        svg,
+        ParsingOptions {
+            allow_dtd: true,
+            ..ParsingOptions::default()
+        },
+        |dom, allocator| {
+            custom_jobs
+                .run(dom, &Info::new(allocator))
+                .map_err(|e| e.to_string())
+        },
+    )
     .map_err(|e| e.to_string())??;
 
     Ok(custom_jobs.extract_dimensions.0.into_inner())
