@@ -104,9 +104,9 @@ checksum = "1fd0f2584146f6f2ef48085050886acf353beff7305ebd1ae69500e27c67f64b"
 
 [[package]]
 name = "cc"
-version = "1.5.1"
+version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f360145194ee8e21db5ee7f3fcd4fe52210864c75c985dae33218202c8bbe040"
+checksum = "f74872d07caf508b30a21f6836e7d7016a2eaf7d9ff4f48deaa58cd8a0407630"
 dependencies = [
  "find-msvc-tools",
  "shlex",
@@ -377,9 +377,9 @@ dependencies = [
 
 [[package]]
 name = "either"
-version = "1.18.0"
+version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "252afb9ae5eaa683babdc6a068b3f5726eb19e05070c731f9b2a23a7c3e8ed34"
+checksum = "0e9c71c2167ca323c882b99918929403426e2373ea17242ff5653e0d5e1058be"
 
 [[package]]
 name = "equivalent"
@@ -728,9 +728,9 @@ checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
 
 [[package]]
 name = "jiff"
-version = "0.2.37"
+version = "0.2.38"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ab1baf72f08796de0260609515130699b890ac25f30e610ad894bc5856cafdb"
+checksum = "b2b005715dcbeb0089a3c0dab99f2ff1cc3b2525323552703d648585d342a383"
 dependencies = [
  "defmt",
  "jiff-core",
@@ -755,9 +755,9 @@ dependencies = [
 
 [[package]]
 name = "jiff-static"
-version = "0.2.37"
+version = "0.2.38"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "378268a1116ad67ae6228701118ac9f491d78fda38a40a1f1a9e1348de6f7212"
+checksum = "2cc9817253cf7c7ee4684451bd327e88d6f3658014e54a29198625590650695c"
 dependencies = [
  "jiff-core",
  "proc-macro2",
@@ -767,9 +767,9 @@ dependencies = [
 
 [[package]]
 name = "jiff-tzdb"
-version = "0.1.8"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "142bd39932ad231f10513df9ab62661fead8719872150b7ad02a2df79f4e141e"
+checksum = "fa8377070c6bae868759445e5a77f66d84f0b72f3a054bfb00e6d038b8282da7"
 
 [[package]]
 name = "jiff-tzdb-platform"
@@ -799,9 +799,9 @@ checksum = "20870f649af7073d53e38067b2a84312175d56ea15217e1b15bc83506ec50afb"
 
 [[package]]
 name = "libc"
-version = "0.2.189"
+version = "0.2.190"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3eaf3ede3fee6db1a4c2ee091bf8a8b4dccdc6d17f656fb07896ee72867612f2"
+checksum = "ce5d3ddc6d3fa000eb1536d85e147bfe31aacaba692ed6a876f95cb7c855be78"
 
 [[package]]
 name = "libm"
@@ -904,7 +904,7 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "oxvg-wasm-bindings"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "console_error_panic_hook",
  "getrandom 0.3.4",
@@ -928,9 +928,9 @@ dependencies = [
 
 [[package]]
 name = "oxvg_actions"
-version = "0.0.8"
+version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e708307d6ed78cc3bad04caa0b400257addc909e323ebc944956de27cdcd9f49"
+checksum = "61548262846fc4beca0f819fa760ef348ef8980e5129e59b6c005dd10cb2f214"
 dependencies = [
  "getrandom 0.4.3",
  "lightningcss",
@@ -948,9 +948,9 @@ dependencies = [
 
 [[package]]
 name = "oxvg_ast"
-version = "0.0.8"
+version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4b94b587413e1895be5eb9db394813c7d54d34c33800faf31018e13425ca71f6"
+checksum = "cf5d74773dfb9066b6f520550484f5a9654b750a72cb239a16466c9b15f0122e"
 dependencies = [
  "bitflags 2.13.2",
  "cfg-if",
@@ -974,9 +974,9 @@ dependencies = [
 
 [[package]]
 name = "oxvg_collections"
-version = "0.0.8"
+version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "efcb30f2073c1bc1845407c712a95fccf306ca84c6ea66cd1d9d3c1cc651f6f1"
+checksum = "de07208a8c5fae475afe391d49c0cda144f0300c7202d931d0c1a5159bb7d55c"
 dependencies = [
  "bitflags 2.13.2",
  "cssparser",
@@ -995,9 +995,9 @@ dependencies = [
 
 [[package]]
 name = "oxvg_optimiser"
-version = "0.0.8"
+version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2395b212ad29df23a6ab6e393e572c0bcb2d4e826a2d0d03fdd0b4985ba2f542"
+checksum = "a73cb6f1b6226d6f1b9ca9f213eeadc8aa3e75c464b016e38dd76a15b52e666d"
 dependencies = [
  "anyhow",
  "bitflags 2.13.2",
@@ -1029,9 +1029,9 @@ dependencies = [
 
 [[package]]
 name = "oxvg_parse"
-version = "0.0.8"
+version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8bda083f2cefdb6c6dd4f34467e5f3f3acc1241fd099dc60c46729a3b7d7c6a2"
+checksum = "dc72a7b8983d2f18fb3144095c8f14cf8e1426ae755249e419b264a4c957f795"
 dependencies = [
  "cssparser",
  "lightningcss",
@@ -1039,9 +1039,9 @@ dependencies = [
 
 [[package]]
 name = "oxvg_path"
-version = "0.0.8"
+version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f86c27e63774b493e591eaf27deeebd792117986d23ee3fab0678ce99c8e76ad"
+checksum = "3b8c9d78048f4cce0a3952100bf0d9b9d9dd1e3a2b8e39e56a90a67ba55c31cb"
 dependencies = [
  "bitflags 2.13.2",
  "geo",
@@ -1064,9 +1064,9 @@ dependencies = [
 
 [[package]]
 name = "oxvg_serialize"
-version = "0.0.8"
+version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cbe0f14721db5eb1ab2e57d4544b9053611c4654297b8165fce8d9661ccdda97"
+checksum = "c8c51a8a6e50ed1ca90bdd8412ff2ef4217d8db93f09e0177ab8087e27d3e934"
 dependencies = [
  "cssparser",
  "lightningcss",
@@ -1276,9 +1276,9 @@ dependencies = [
 
 [[package]]
 name = "powerfmt"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "439ee305def115ba05938db6eb1644ff94165c5ab5e9420d1c1bcedbba909391"
+checksum = "4a6394b9e965e73d0a289ee54f589087e2c676aedf60885baf52c76b771e4958"
 
 [[package]]
 name = "precomputed-hash"
@@ -1982,18 +1982,18 @@ checksum = "1ebf944e87a7c253233ad6766e082e3cd714b5d03812acc24c318f549614536e"
 
 [[package]]
 name = "zerocopy"
-version = "0.8.59"
+version = "0.8.62"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6df92bf3d9227be3d53173901ddbffac2babc27ae50f397776ffd6dc33f800cb"
+checksum = "86502bf56ac7c77571a32e2647bb2a15894565e981fb2a48d7bde2d91c965a9d"
 dependencies = [
  "zerocopy-derive",
 ]
 
 [[package]]
 name = "zerocopy-derive"
-version = "0.8.59"
+version = "0.8.62"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac4f328cf2f05d084e496c3e9c3f33ed0a183656a16e1fcec4d464d8373aec82"
+checksum = "5457206954b06561e2608c7e19cf58b1926586d999c246eebe4502f7e2039d1a"
 dependencies = [
  "proc-macro2",
  "quote",
