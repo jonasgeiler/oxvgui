@@ -35,6 +35,12 @@ jobs:
           # Replace the version field in Cargo.toml with the latest version
           sed -i -E "s/^\s*version\s*=\s*('|\")\s*[a-zA-Z0-9.-]+\s*('|\")/version = \"${version}\"/" Cargo.toml
 
+          # Replace the version fields of the OXVG dependencies in Cargo.toml with the latest version
+          sed -i -E "s/^(\s*oxvg_\w+\s*.*?)version\s*=\s*('|\")\s*[a-zA-Z0-9.-]+\s*('|\")/\1version = \"${version}\"/" Cargo.toml
+
+      - name: Re-generate Cargo.lock
+        run: cargo generate-lockfile
+
       - name: Draft a pull request if needed
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
