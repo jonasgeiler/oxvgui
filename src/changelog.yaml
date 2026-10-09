@@ -1,6 +1,10 @@
 # $schema: ./changelog.schema.json
 # OXVGUI changelog file
 
+- version: 0.2.14
+  changes:
+    - Trim leading whitespace on input to prevent load failure.
+
 - version: 0.2.13
   changes:
     - Updated to OXVG v0.0.9!

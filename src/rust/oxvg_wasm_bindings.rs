@@ -87,7 +87,9 @@ pub fn optimise(
     let config = config.unwrap_or_default();
     let custom_jobs = CustomJobs::default();
     let data = parse_with_options(
-        svg,
+        // Strip leading whitespace (e.g. from pasted markup) so whitespace before `<?xml ...?>`
+        // doesn't cause the parser to reject the declaration as misplaced.
+        svg.trim_start(),
         ParsingOptions {
             allow_dtd: true,
             ..ParsingOptions::default()
@@ -132,7 +134,7 @@ pub fn get_dimensions(svg: &str) -> Result<Dimensions, String> {
 
     let custom_jobs = CustomJobs::default();
     parse_with_options(
-        svg,
+        svg.trim_start(),
         ParsingOptions {
             allow_dtd: true,
             ..ParsingOptions::default()
